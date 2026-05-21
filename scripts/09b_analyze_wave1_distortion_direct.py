@@ -129,15 +129,25 @@ def main() -> int:
 
     root = Path(args.project_root).resolve()
 
-    K_sv_path = root / "step6b_hardware_subset_package/outputs/statevector_reference/zz4_K_all_all.npy"
-    labels_path = root / "step6b_hardware_subset_package/outputs/data/zz4_frozen_subset_labels.csv"
-    kernels_dir = root / "step6b_hardware_subset_package/outputs/hardware_kernels"
-    analysis_dir = root / "step6b_hardware_subset_package/outputs/analysis"
+    K_sv_path = root / "statevector_reference/zz4_K_all_all.npy"
+    labels_path = root / "frozen_subset/hardware_subset_event_onset_next_1h.csv"
+    kernels_dir = root / "hardware_kernels"
+    analysis_dir = root / "hardware_analysis"
     analysis_dir.mkdir(parents=True, exist_ok=True)
 
     K_sv = np.load(K_sv_path)
     labels = pd.read_csv(labels_path)
-    y = labels["label"].to_numpy()
+
+    if "y_event_onset_next_1h" not in labels.columns:
+        raise ValueError(
+            "Expected column 'y_event_onset_next_1h' in frozen subset file: "
+            f"{labels_path}"
+        )
+
+    if "hardware_row_order" in labels.columns:
+        labels = labels.sort_values("hardware_row_order").reset_index(drop=True)
+
+    y = labels["y_event_onset_next_1h"].to_numpy(dtype=int)
 
     if K_sv.shape != (24, 24):
         raise SystemExit(f"Unexpected statevector shape: {K_sv.shape}")

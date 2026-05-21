@@ -127,6 +127,12 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | `LICENSE` | License file. |
 | `.gitignore` | Local and sensitive-file exclusion rules. |
 
+## Decision-record artifacts
+
+| Path | Purpose |
+|---|---|
+| `decision_records/zz4_wave1_decision_record.json` | Final Wave 1 decision record with `decision = STOP_AFTER_WAVE1_REPORT_RESULTS`. It records that the Wave 1 ZZ4 pilot is stopped after reporting, that the allowed subset is `frozen N=24 only`, that subset change and threshold relaxation are blocked in v9, and that Wave 2 is not allowed without a new decision record. |
+
 ## Claim limitation
 
 This package supports kernel-geometry survival and distortion analysis only.

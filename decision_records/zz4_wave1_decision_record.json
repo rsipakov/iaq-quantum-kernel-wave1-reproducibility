@@ -1,0 +1,47 @@
+{
+  "artifact_type": "zz4_wave1_decision_record",
+  "schema_version": "v9.0.decision_record.1",
+  "created_utc": "2026-05-09T09:04:35Z",
+  "operator_identifier": "unspecified",
+  "decision": "STOP_AFTER_WAVE1_REPORT_RESULTS",
+  "decision_record_created": true,
+  "rationale": "AUTO conservative default: report Wave 1 results; do not proceed automatically.",
+  "allowed_decisions": [
+    "NO_GO_HARDWARE_RESULTS_UNUSABLE",
+    "PROCEED_TO_WAVE2_SENTINEL_ONLY",
+    "RETRY_WAVE1_WITH_DOCUMENTED_REASON",
+    "STOP_AFTER_WAVE1_REPORT_RESULTS"
+  ],
+  "wave2_status": "not_allowed_without_new_decision_record",
+  "wave2_allowed_regimes_if_proceed": [],
+  "wave2_full_300_pair_execution_allowed": false,
+  "rma_hardware_status": "DEFER",
+  "rma_excluded": true,
+  "scope_restrictions": {
+    "allowed_kernel": "ZZ4 only",
+    "allowed_feature_set": "F_quantum_4",
+    "allowed_subset": "frozen N=24 only",
+    "allowed_wave1_regimes": [
+      "H0",
+      "H1",
+      "H2"
+    ],
+    "blocked_indefinitely_in_v9": [
+      "RMA6 hardware",
+      "RMA-QFM hardware",
+      "subset change",
+      "threshold relaxation"
+    ]
+  },
+  "claims_policy": {
+    "quantum_advantage_claim_allowed": false,
+    "hardware_classifier_superiority_claim_allowed": false,
+    "rma_hardware_readiness_claim_allowed": false,
+    "allowed_interpretation": "kernel-survival / hardware-distortion only"
+  },
+  "retrieval_manifest_sha256": "a2ab7ad7331d69b8f60aaa97cb3dda53222d368a83996e7a7e88729087e7f3b8",
+  "kernel_manifest_sha256": "224ee022240fa08ce0115755baff106a7ccc0af151477381cc6711632fe21ca2",
+  "distortion_summary_sha256": "a9d936ea7ac433923442e08adad33c40cb6735e952c25178be00c7fb78fd2046",
+  "failure_reasons": [],
+  "token_value_absent_from_artifact": true
+}

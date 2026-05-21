@@ -89,6 +89,9 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 - `environment/`  
   Python version and package-freeze information used to document the reproduction environment.
 
+- `decision_records/zz4_wave1_decision_record.json`  
+  Final Wave 1 decision record documenting `STOP_AFTER_WAVE1_REPORT_RESULTS`, frozen `N=24` subset scope, blocked subset change, blocked threshold relaxation, and no Wave 2 execution without a new decision record.
+
 - `checksums/`  
   SHA-256 checksums for verifying the reproduction package state.
 

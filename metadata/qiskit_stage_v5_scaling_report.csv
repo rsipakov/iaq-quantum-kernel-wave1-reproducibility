@@ -1,0 +1,10 @@
+target,feature_set,split,n_rows,n_positive,n_negative,positive_rate,n_features_original,n_features_used,dropped_all_null_train_features,scaled_values_clipped_low,scaled_values_clipped_high
+event_onset_next_1h,F_quantum_4,train,1163,237,926,0.20378331900257954,4,4,,0,0
+event_onset_next_1h,F_quantum_4,validation,471,124,347,0.2632696390658174,4,4,,87,2
+event_onset_next_1h,F_quantum_4,external_test,931,213,718,0.22878625134264233,4,4,,71,5
+event_onset_next_1h,F_quantum_5_RMA,train,1163,237,926,0.20378331900257954,5,5,,0,0
+event_onset_next_1h,F_quantum_5_RMA,validation,471,124,347,0.2632696390658174,5,5,,104,256
+event_onset_next_1h,F_quantum_5_RMA,external_test,931,213,718,0.22878625134264233,5,5,,71,5
+event_onset_next_1h,F_quantum_6_RMA_plus,train,1163,237,926,0.20378331900257954,6,6,,0,0
+event_onset_next_1h,F_quantum_6_RMA_plus,validation,471,124,347,0.2632696390658174,6,6,,104,256
+event_onset_next_1h,F_quantum_6_RMA_plus,external_test,931,213,718,0.22878625134264233,6,6,,71,5

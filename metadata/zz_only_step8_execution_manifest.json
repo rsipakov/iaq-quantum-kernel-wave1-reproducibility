@@ -1,0 +1,179 @@
+{
+  "artifact_type": "zz_only_step8_execution_manifest",
+  "schema_version": "v8b.step8.1.package.1",
+  "created_utc": "2026-05-09T06:55:51Z",
+  "operator_identifier": "Rostyslav Sipakov",
+  "project_root": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks",
+  "authorized_by": {
+    "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_pilot_go_v8b.json",
+    "sha256": "9ca925a189bc2826f6e1339793679aacd7977df510660d849c02a9037ae878e2",
+    "decision": "GO",
+    "execution_authorized_utc": "2026-05-09T06:36:14Z"
+  },
+  "scope": {
+    "hardware_scope": "ZZ-only tiny hardware kernel-survival pilot",
+    "feature_set": "F_quantum_4",
+    "kernel_name": "zz4",
+    "feature_map_label": "ZZ4",
+    "target": "event_onset_next_1h",
+    "subset_status": "frozen_immutable",
+    "subset_n": 24,
+    "purpose": "statevector-to-hardware kernel-survival / distortion analysis only"
+  },
+  "backend_selection": {
+    "selected_backend": "ibm_fez",
+    "selected_backend_status": "generic_compile_pass_backend_metadata_required_at_submission",
+    "backend_selection_path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_backend_selection.json",
+    "backend_selection_sha256": "cd2fb460b725271e1131b5e10ef98330f5feb3d955f51bd3613c8109f6c132c0",
+    "runtime_metadata_not_queried_by_this_script": true
+  },
+  "wave1_regimes": [
+    {
+      "regime_id": "H0",
+      "regime_label": "sampler_unmitigated_baseline",
+      "primitive": "Sampler",
+      "mitigation_scope": "none",
+      "allowed_before_wave1_review": true,
+      "runtime_option_notes": "Baseline sampler execution. Do not enable DD/twirling/ZNE unless explicitly recorded as another regime."
+    },
+    {
+      "regime_id": "H1",
+      "regime_label": "sampler_dynamical_decoupling",
+      "primitive": "Sampler",
+      "mitigation_scope": "dynamical_decoupling_only",
+      "allowed_before_wave1_review": true,
+      "runtime_option_notes": "Sampler with dynamical decoupling only. Record exact DD settings in job manifest."
+    },
+    {
+      "regime_id": "H2",
+      "regime_label": "sampler_pauli_or_gate_twirling",
+      "primitive": "Sampler",
+      "mitigation_scope": "pauli_or_gate_twirling_only",
+      "allowed_before_wave1_review": true,
+      "runtime_option_notes": "Sampler with twirling only. Record exact twirling settings in job manifest."
+    }
+  ],
+  "inventories": {
+    "pair_inventory_csv": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_pair_inventory.csv",
+    "pair_inventory_sha256": "cda6d2708e7212213292fdeed352851d7530c428fb8db10c741f84ac84df5973",
+    "pair_count": 300,
+    "diagonal_pair_count": 24,
+    "offdiagonal_unique_pair_count": 276,
+    "circuit_inventory_csv": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_circuit_inventory.csv",
+    "circuit_inventory_sha256": "64d57b77900812fc5120d2de2a495049495ae731c8d5681deedeb912d2322369",
+    "circuit_count": 900,
+    "shots_planned_per_circuit": 4096
+  },
+  "input_artifacts": {
+    "v8b_authorization": {
+      "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_pilot_go_v8b.json",
+      "exists": true,
+      "required": true,
+      "sha256": "9ca925a189bc2826f6e1339793679aacd7977df510660d849c02a9037ae878e2"
+    },
+    "original_go_artifact": {
+      "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_pilot_go.json",
+      "exists": true,
+      "required": false,
+      "sha256": "635e39b228c8b68403d4dd2d4023da348fd4d1fafbea950e44197ffb497c66b8"
+    },
+    "security_token_rotation": {
+      "path": "step6b_hardware_subset_package/outputs/security/token_rotation_confirmation.json",
+      "exists": true,
+      "required": true,
+      "sha256": "332942bdb5d295190cbc87bafe799b6ebeace21ef48e3402f4d5cf34b7304d45"
+    },
+    "compile_summary_v7b": {
+      "path": "step6b_hardware_subset_package/outputs/hardware_compile/compile_gate_summary_v7b.json",
+      "exists": true,
+      "required": true,
+      "sha256": "ea59057d027a405befbbbd12b9a31fbcde12cfb339ccfa7f15d7dbc2105a68fe"
+    },
+    "statistical_quality_check": {
+      "path": "step6_v6_consolidation/outputs/metadata/qiskit_statistical_interpretation_quality_check.json",
+      "exists": true,
+      "required": true,
+      "sha256": "6b5472e6beaf9b002d6678a3a92ecde11961f8a7bef57a9491e596a29453bc71"
+    },
+    "significance_summary": {
+      "path": "step6_v6_consolidation/outputs/tables/qiskit_significance_summary.csv",
+      "exists": true,
+      "required": false,
+      "sha256": "7bb35581c62d492b651705bf50b044f2adf0923b04fd7481f6597de1dfe8c283"
+    },
+    "bootstrap_interpretation": {
+      "path": "step6_v6_consolidation/outputs/notes/qiskit_bootstrap_interpretation.md",
+      "exists": true,
+      "required": false,
+      "sha256": "8b4dccd69d5461d6afa67058dd2e3d609f192f70950cfafa492d1a70bc4e4798"
+    },
+    "subset_scope_note": {
+      "path": "step6b_hardware_subset_package/outputs/diagnostics/zz4_subset_seed_stability_scope_note.md",
+      "exists": true,
+      "required": true,
+      "sha256": "73d9440043b7140f74b07420471ce936a9780ba716d5e48f1d463f3a9ab6894c"
+    }
+  },
+  "output_artifacts": {
+    "execution_manifest": {
+      "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_execution_manifest.json",
+      "exists": true,
+      "required": true,
+      "sha256": "1aabcfbb916b597ba5e90967ad11a7e3b9f589bd2c24c13988a3779bdccf76b0"
+    },
+    "backend_selection": {
+      "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_backend_selection.json",
+      "exists": true,
+      "required": true,
+      "sha256": "cd2fb460b725271e1131b5e10ef98330f5feb3d955f51bd3613c8109f6c132c0"
+    },
+    "circuit_inventory_csv": {
+      "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_circuit_inventory.csv",
+      "exists": true,
+      "required": true,
+      "sha256": "64d57b77900812fc5120d2de2a495049495ae731c8d5681deedeb912d2322369"
+    },
+    "pair_inventory_csv": {
+      "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_pair_inventory.csv",
+      "exists": true,
+      "required": true,
+      "sha256": "cda6d2708e7212213292fdeed352851d7530c428fb8db10c741f84ac84df5973"
+    },
+    "pair_inventory_summary": {
+      "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_pair_inventory_summary.json",
+      "exists": true,
+      "required": true,
+      "sha256": "9e8467e51a1ae7113ac4bfaeae68da53b4a812d9075ecc6b1283ed572a428708"
+    },
+    "pre_submit_checklist": {
+      "path": "step6b_hardware_subset_package/outputs/logs/zz_only_step8_pre_submit_checklist.md",
+      "exists": true,
+      "required": true,
+      "sha256": "3f4c7f9ba640d70743d22fd3a68bde49bc86ef17a440bed7ecaf2ba2b54a3b2a"
+    }
+  },
+  "must_record_at_actual_submission": [
+    "backend_name",
+    "backend_version",
+    "job_id for each regime/job bundle",
+    "session_id if Runtime session is used",
+    "qiskit package version",
+    "qiskit_ibm_runtime package version",
+    "primitive class/name/version",
+    "exact runtime options for H0/H1/H2",
+    "runtime options SHA256",
+    "shots actually submitted",
+    "circuit count actually submitted",
+    "submission UTC timestamp"
+  ],
+  "not_allowed": [
+    "RMA6 hardware execution",
+    "RMA-QFM hardware execution",
+    "changing the frozen N=24 hardware subset",
+    "relaxing active-qubit/depth/two-qubit thresholds",
+    "adding Wave 2 regimes before Wave 1 review",
+    "claiming quantum advantage",
+    "claiming hardware classifier superiority"
+  ],
+  "terminal_pre_submit_condition": "This package is preparation only. Submit IBM jobs only after manually verifying this manifest and checklist."
+}

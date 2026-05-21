@@ -1,0 +1,91 @@
+{
+  "artifact_type": "zz_only_pilot_operational_plan",
+  "schema_version": "v7b.step7.operational_plan.1",
+  "created_utc": "2026-05-09T05:35:05Z",
+  "frozen_by": "rsipakov",
+  "decision_state_before_authorization": "conditional_GO_not_execution_GO",
+  "scope": "ZZ-only tiny hardware pilot",
+  "target": "event_onset_next_1h",
+  "feature_map": "F_quantum_4 / ZZ-only",
+  "subset_policy": "Use frozen N=24 subset only; no new subset selection after seeing hardware results.",
+  "subset_artifact": "step6b_hardware_subset_package/outputs/subsets/hardware_subset_event_onset_next_1h.csv",
+  "statevector_reference_artifact": "step6b_hardware_subset_package/outputs/statevector_reference/statevector_reference_metadata.json",
+  "n_subset": 24,
+  "unique_pair_count": {
+    "offdiagonal_only": 276,
+    "including_diagonal": 300,
+    "note": "Diagonal kernel entries are expected to be 1 in ideal statevector; hardware measurement plans may omit or verify them explicitly."
+  },
+  "backend_candidates": [
+    "ibm_fez",
+    "ibm_marrakesh",
+    "ibm_kingston"
+  ],
+  "selected_backend_policy": "Choose among allowed backends with current availability, calibration quality, queue length, and compile_gate_summary_v7b pass=True for ZZ4.",
+  "shots_or_precision_policy": {
+    "sampler_shots_per_circuit": 4096,
+    "policy": "Use fixed shots for Sampler regimes; do not alter shots after seeing early hardware kernels."
+  },
+  "runtime_budget_envelope": "Wave 1 only unless explicit post-Wave-1 decision update approves Wave 2.",
+  "regime_priority": {
+    "Wave 1_minimum_viable_pilot": {
+      "regimes": [
+        "H0",
+        "H1",
+        "H2"
+      ],
+      "definitions": {
+        "H0": "Sampler unmitigated baseline",
+        "H1": "Sampler + dynamical decoupling",
+        "H2": "Sampler + Pauli/gate twirling"
+      },
+      "policy": "Run first. These regimes provide the minimum viable kernel-survival evidence."
+    },
+    "Wave 2_optional_after_review": {
+      "regimes": [
+        "H3",
+        "H4",
+        "H5"
+      ],
+      "definitions": {
+        "H3": "Sampler + dynamical decoupling + twirling",
+        "H4": "Estimator all-zero projector + readout/TREX-style mitigation on sentinel pairs only",
+        "H5": "Estimator + TREX + ZNE on sentinel pairs only"
+      },
+      "policy": "Run only if Wave 1 succeeds and budget/queue conditions justify continuation. H4/H5 are sentinel-only."
+    }
+  },
+  "sentinel_pair_policy_if_applicable": {
+    "status": "not_used_for_wave1; required_before_H4_H5",
+    "sentinel_pairs": [],
+    "selection_policy": "Sentinel pairs must be selected before seeing hardware results; include representative high/medium/low statevector similarities and both same-class/cross-class pairs."
+  },
+  "abort_conditions": [
+    "security gate fails or token leakage is rediscovered",
+    "selected backend no longer passes ZZ4 active-qubit compile gate",
+    "queue/runtime cost exceeds budget envelope",
+    "Wave 1 produces unusable job metadata or failed executions that prevent kernel reconstruction",
+    "any attempt is made to broaden scope to RMA6, classifier superiority, or quantum advantage without a new decision artifact"
+  ],
+  "success_criteria": [
+    "hardware-vs-statevector off-diagonal Spearman correlation is interpretable and reported",
+    "median absolute kernel error / MAE / RMSE are reported",
+    "KTA and effective-rank changes relative to statevector are reported",
+    "PSD correction magnitude and backend/mitigation metadata are reported",
+    "success is framed only as kernel geometry survival, not hardware classification improvement"
+  ],
+  "allowed_claims": [
+    "statevector-to-hardware kernel distortion analysis",
+    "ZZ4 kernel geometry survival or degradation under selected IBM backend/regime",
+    "reproducible pre-execution launch-gate closure"
+  ],
+  "not_allowed_claims": [
+    "quantum advantage",
+    "hardware classifier superiority",
+    "RMA-QFM predictive superiority",
+    "hardware improves classification",
+    "RMA6 hardware-ready under current gate",
+    "post hoc threshold relaxation"
+  ],
+  "RMA_status": "DEFER; not part of this operational plan"
+}

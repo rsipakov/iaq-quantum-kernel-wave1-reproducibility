@@ -1,0 +1,42 @@
+{
+  "target": "event_onset_next_1h",
+  "subset": "step6b_hardware_subset_package/outputs/subsets/hardware_subset_event_onset_next_1h.parquet",
+  "statevector_kernel_definition": "K(x,y)=|<phi(x)|phi(y)>|^2",
+  "feature_maps": [
+    {
+      "kernel_name": "zz4",
+      "feature_set": "F_quantum_4",
+      "feature_order": [
+        "pm25_mean_last_1h",
+        "pm10_mean_last_1h",
+        "hcho_mean_last_1h",
+        "tvoc_mean_last_1h"
+      ],
+      "n_train": 16,
+      "n_test": 8,
+      "n_all": 24,
+      "K_train_train": "step6b_hardware_subset_package/outputs/statevector_reference/zz4_K_train_train.npy",
+      "K_test_train": "step6b_hardware_subset_package/outputs/statevector_reference/zz4_K_test_train.npy",
+      "K_all_all": "step6b_hardware_subset_package/outputs/statevector_reference/zz4_K_all_all.npy"
+    },
+    {
+      "kernel_name": "rma6",
+      "feature_set": "F_quantum_6_RMA_plus",
+      "feature_order": [
+        "pm25_mean_last_1h",
+        "pm10_mean_last_1h",
+        "hcho_mean_last_1h",
+        "tvoc_mean_last_1h",
+        "reliability_mean_core",
+        "momentum_core_mean"
+      ],
+      "n_train": 16,
+      "n_test": 8,
+      "n_all": 24,
+      "K_train_train": "step6b_hardware_subset_package/outputs/statevector_reference/rma6_K_train_train.npy",
+      "K_test_train": "step6b_hardware_subset_package/outputs/statevector_reference/rma6_K_test_train.npy",
+      "K_all_all": "step6b_hardware_subset_package/outputs/statevector_reference/rma6_K_all_all.npy"
+    }
+  ],
+  "important_note": "Replace rma6_circuit with exact repository RMA-QFM if v6 used a different circuit."
+}

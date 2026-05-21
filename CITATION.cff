@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: "IAQ Quantum Kernel Wave 1 Reproducibility Package"
+message: "If you use this reproducibility package, please cite it using the metadata from this file."
+type: software
+authors:
+  - family-names: Sipakov
+    given-names: Rostyslav
+year: 2026
+repository-code: "https://github.com/rsipakov/iaq-quantum-kernel-wave1-reproducibility"
+abstract: "Curated reproducibility package supporting the manuscript materials-and-methods subsection on real indoor air-quality sensor data, event-onset prediction, the F_quantum_4 feature set, frozen N=24 subset, and ZZ4 quantum kernel."
+keywords:
+  - indoor air quality
+  - quantum kernel
+  - Qiskit
+  - sensor monitoring
+  - reproducibility
+license: MIT

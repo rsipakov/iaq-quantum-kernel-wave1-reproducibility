@@ -1,0 +1,48 @@
+{
+  "artifact_type": "zz4_subset_seed_stability_summary",
+  "schema_version": "v7b.step7.subset_stability.1",
+  "created_utc": "2026-05-09T05:35:05Z",
+  "n_seeds": 7,
+  "informal_bands": {
+    "effective_rank": [
+      12.0,
+      22.0
+    ],
+    "KTA": [
+      0.05,
+      0.25
+    ]
+  },
+  "effective_rank": {
+    "min": 17.971891698723308,
+    "median": 17.971891698723315,
+    "max": 17.971891698723326,
+    "mean": 17.97189169872332,
+    "std": 7.105427357601002e-15
+  },
+  "KTA": {
+    "min": 0.13290938949796352,
+    "median": 0.13290938949796355,
+    "max": 0.13290938949796358,
+    "mean": 0.13290938949796358,
+    "std": 3.204937810639273e-17
+  },
+  "CKA": {
+    "min": 0.15851109235208097,
+    "median": 0.15851109235208097,
+    "max": 0.15851109235208097,
+    "mean": 0.15851109235208097,
+    "std": 0.0
+  },
+  "pass_fraction_effective_rank_band": 1.0,
+  "pass_fraction_KTA_band": 1.0,
+  "stability_verdict": "acceptable_for_tiny_ZZ_pilot",
+  "policy_note": "This is a representativeness/stability check, not a claim of quantum advantage or classifier superiority.",
+  "stability_scope": "frozen_subset_permutation_or_order_stability",
+  "alternative_balanced_subsets_evaluated": false,
+  "alternative_subset_status": "not_required_for_launch_due_frozen_subset",
+  "reason": "hardware subset was frozen before IBM execution authorization",
+  "manuscript_caveat_required": true,
+  "frozen_subset_may_be_changed_after_hardware_results": false,
+  "updated_utc": "2026-05-09T06:27:45Z"
+}

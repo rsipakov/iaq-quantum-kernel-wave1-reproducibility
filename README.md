@@ -92,6 +92,12 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 - `decision_records/zz4_wave1_decision_record.json`  
   Final Wave 1 decision record documenting `STOP_AFTER_WAVE1_REPORT_RESULTS`, frozen `N=24` subset scope, blocked subset change, blocked threshold relaxation, and no Wave 2 execution without a new decision record.
 
+- `decision_records/zz4_wave1_decision_record.json`  
+  Final Wave 1 decision record documenting `STOP_AFTER_WAVE1_REPORT_RESULTS`, frozen `N=24` subset scope, blocked subset change, blocked threshold relaxation, and no Wave 2 execution without a new decision record.
+
+- `scripts/09b_analyze_wave1_distortion_direct.py`  
+  Direct Wave 1 distortion-analysis script adapted for the curated reproduction layout. It reads labels from `frozen_subset/hardware_subset_event_onset_next_1h.csv`, loads the statevector reference from `statevector_reference/`, loads hardware kernels from `hardware_kernels/`, and writes outputs to `hardware_analysis/`.
+
 - `checksums/`  
   SHA-256 checksums for verifying the reproduction package state.
 

@@ -105,7 +105,7 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | `scripts/07_retrieve_wave1_results.py` | Retrieves Wave 1 hardware results. |
 | `scripts/08_build_hardware_kernels.py` | Builds hardware-derived kernels from retrieved Wave 1 results. |
 | `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion. |
-| `scripts/09b_analyze_wave1_distortion_direct.py` | Direct analysis script for Wave 1 distortion using curated artifacts. |
+| `scripts/09b_analyze_wave1_distortion_direct.py` | Direct Wave 1 distortion-analysis script adapted for the reproduction package layout. It reads labels from `frozen_subset/hardware_subset_event_onset_next_1h.csv` using `y_event_onset_next_1h`, loads the statevector reference from `statevector_reference/`, loads hardware kernels from `hardware_kernels/`, and writes outputs to `hardware_analysis/`. No separate `zz4_frozen_subset_labels.csv` artifact is required. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
 
@@ -131,7 +131,7 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 
 | Path | Purpose |
 |---|---|
-| `decision_records/zz4_wave1_decision_record.json` | Final Wave 1 decision record with `decision = STOP_AFTER_WAVE1_REPORT_RESULTS`. It records that the Wave 1 ZZ4 pilot is stopped after reporting, that the allowed subset is `frozen N=24 only`, that subset change and threshold relaxation are blocked in v9, and that Wave 2 is not allowed without a new decision record. |
+| `decision_records/zz4_wave1_decision_record.json` | Final Wave 1 decision record with `decision = STOP_AFTER_WAVE1_REPORT_RESULTS`. It records the frozen `N=24` subset scope, blocked subset change, blocked threshold relaxation, and that Wave 2 is not allowed without a new decision record. |
 
 ## Claim limitation
 

@@ -1,0 +1,22 @@
+{
+  "artifact_type": "zz4_wave1_distortion_summary",
+  "created_utc": "2026-05-09T09:03:32Z",
+  "analysis_mode": "direct_npy_loader_budget_safe_1024_shots",
+  "all_required_regimes_reported": true,
+  "regimes_reported": [
+    "H0",
+    "H1",
+    "H2"
+  ],
+  "statevector_kernel_path": "step6b_hardware_subset_package/outputs/statevector_reference/zz4_K_all_all.npy",
+  "labels_path": "step6b_hardware_subset_package/outputs/data/zz4_frozen_subset_labels.csv",
+  "metrics_path": "step6b_hardware_subset_package/outputs/analysis/zz4_wave1_distortion_metrics.csv",
+  "failure_reasons": [],
+  "interpretation_policy": [
+    "Kernel-survival / hardware-distortion analysis only.",
+    "No quantum advantage claim.",
+    "No hardware classifier superiority claim.",
+    "RMA hardware remains DEFER.",
+    "Budget-safe Wave 1 used 1024 shots per circuit, not the originally planned 4096."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "artifact_type": "zz4_wave1_retrieval_manifest",
+  "schema_version": "v9.0.retrieval.1",
+  "created_utc": "2026-05-09T08:58:03Z",
+  "operator_identifier": "unspecified",
+  "retrieved_or_failures_recorded": true,
+  "rows": [
+    {
+      "regime_id": "H0",
+      "job_id": "d7vf6n3ack5s73bfc0eg",
+      "retrieved_status": "retrieved",
+      "job_status": "DONE",
+      "raw_result_path": "step6b_hardware_subset_package/outputs/hardware_results/zz4_H0_raw_results.json",
+      "pub_result_count": 300,
+      "failure_or_exception_if_any": ""
+    },
+    {
+      "regime_id": "H1",
+      "job_id": "d7vf8ocinasc738u1bhg",
+      "retrieved_status": "retrieved",
+      "job_status": "DONE",
+      "raw_result_path": "step6b_hardware_subset_package/outputs/hardware_results/zz4_H1_raw_results.json",
+      "pub_result_count": 300,
+      "failure_or_exception_if_any": ""
+    },
+    {
+      "regime_id": "H2",
+      "job_id": "d7vfbsfmrars73d84u20",
+      "retrieved_status": "retrieved",
+      "job_status": "DONE",
+      "raw_result_path": "step6b_hardware_subset_package/outputs/hardware_results/zz4_H2_raw_results.json",
+      "pub_result_count": 300,
+      "failure_or_exception_if_any": ""
+    }
+  ],
+  "failure_reasons": [],
+  "rma_excluded": true,
+  "wave2_excluded": true,
+  "token_value_absent_from_artifact": true
+}

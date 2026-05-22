@@ -1,26 +1,44 @@
 # IAQ Quantum Kernel Wave 1 Reproducibility Package
 
-This repository is a curated reproducibility package for the manuscript subsection
-"Dataset and prediction context" and related Wave 1 quantum-kernel artifacts.
+This repository is a curated reproducibility package for the manuscript Materials and Methods section, including:
+
+- **2.1. Dataset and prediction context**
+- **2.2. Frozen subset**
+- **2.3. ZZ4 quantum feature map**
+
+The package preserves the non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis.
 
 The package is derived from the private working repository:
 
-`rsipakov/QuantumKernel`
+```text
+rsipakov/QuantumKernel
+```
 
-Only non-sensitive files required to support the manuscript claims are included.
+Only non-sensitive files required to support the manuscript claims are included. IBM Quantum tokens, local credentials, IDE state, local virtual environments, and other machine-specific artifacts are not part of this package.
 
 ## Scope
 
 - Domain: real indoor air-quality duplicate-sensor monitoring data
 - Prediction target: `event_onset_next_1h` / `y_event_onset_next_1h`
 - Feature set: `F_quantum_4`
-- Frozen subset: `N=24` fixed observation windows
-- Kernel: `ZZ4`
+- Feature map / kernel family: `ZZ4`
+- Input dimension: 4 train-scaled pollutant features
+- Frozen subset: `N = 24` fixed observation windows
+- Frozen hardware split: 16 train windows + 8 test windows
+- Statevector reference: exact ZZ4 squared-fidelity kernel
+- Pair inventory: 300 unordered pairs including diagonal entries
+- Unique off-diagonal pairs: 276
+- Hardware regimes: `H0`, `H1`, `H2`
+- Fidelity circuits: 900 total, i.e. 300 pairs × 3 regimes
+- Submitted shots: 1024 per circuit for `H0`, `H1`, and `H2`
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
+- Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
+
+The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map or the statevector reference kernel.
 
 ## Frozen subset policy
 
-This reproduction package uses a fixed `N=24` subset of observation windows from the duplicate-sensor indoor air-quality monitoring dataset.
+This reproduction package uses a fixed `N = 24` subset of observation windows from the duplicate-sensor indoor air-quality monitoring dataset.
 
 ```text
 N = 24
@@ -42,76 +60,115 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 ## Included materials
 
 - `config/config.py`  
-  Target and feature-set definitions, including `F_quantum_4`.
+	  Target and feature-set definitions, including `event_onset_next_1h` and `F_quantum_4`.
 
 - `preprocessing/data.py`  
-  Dataset loading, valid-label filtering, train-only imputation, train-only scaling to `[0, pi]`, and clipping.
+	  Dataset loading, valid-label filtering, train-only imputation, train-only scaling to `[0, pi]`, and clipping.
 
 - `preprocessing/feature_maps.py`  
-  ZZ feature-map implementation for the `F_quantum_4 / ZZ4` kernel.
+	  ZZ feature-map implementation for the `F_quantum_4 / ZZ4` kernel.
 
 - `metadata/qiskit_stage_v5_scaling_report.csv`  
-  Split counts and scaling diagnostics.
+	  Split counts and feature-scaling diagnostics for the full event-onset context.
 
 - `frozen_subset/hardware_subset_event_onset_next_1h.csv`  
-  Fixed `N=24` subset of observation windows used for the Wave 1 ZZ4 hardware pilot.
+	  Fixed `N = 24` subset of observation windows used for the Wave 1 ZZ4 hardware pilot.
 
 - `metadata/zz_only_pilot_operational_plan.json`  
-  Operational plan defining the ZZ-only hardware pilot scope, frozen-subset policy, allowed claims, and Wave 2 restrictions.
+	  Operational plan defining the ZZ-only hardware pilot scope, frozen-subset policy, allowed claims, pair counts, and Wave 2 restrictions.
 
 - `metadata/zz_only_step8_execution_manifest.json`  
-  Execution manifest recording the authorized Wave 1 scope, including the frozen `N=24` subset and ZZ4 kernel configuration.
+	  Execution manifest recording the authorized Wave 1 scope, including the frozen `N = 24` subset and ZZ4 kernel configuration.
 
 - `metadata/v9_audit_freeze_manifest.json`  
-  Audit/freeze manifest recording the allowed subset, allowed feature set, allowed kernel, threshold policy, and freeze state.
+	  Audit/freeze manifest recording the allowed subset, allowed feature set, allowed kernel, threshold policy, and freeze state.
 
 - `metadata/zz4_subset_seed_stability_summary.json`  
-  Subset-stability summary confirming that the frozen subset was not changed after hardware results.
+	  Subset-stability summary confirming that the frozen subset was not changed after hardware results.
 
 - `metadata/statevector_reference_metadata.json`  
-  Statevector kernel definition and ZZ4 feature order.
+	  Statevector reference metadata for the ZZ4 feature order and the exact squared-fidelity kernel.
 
 - `statevector_reference/zz4_K_all_all.npy`  
-  Full `24 x 24` ZZ4 statevector reference kernel for the frozen subset.
+	  Full `24 x 24` ZZ4 statevector reference kernel for the frozen subset.
 
 - `hardware_kernels/`  
-  IBM hardware-derived ZZ4 kernels for the Wave 1 regimes.
+	  IBM hardware-derived ZZ4 kernels for Wave 1 regimes `H0`, `H1`, and `H2`, stored in both `.npy` and `.csv` form.
 
 - `job_metadata/`  
-  IBM job manifests and retrieval records for the Wave 1 hardware execution.
+	  IBM job manifests and retrieval records for the Wave 1 hardware execution.
 
 - `hardware_analysis/`  
-  Wave 1 distortion and kernel-comparison analysis outputs.
+	  Wave 1 distortion and kernel-comparison analysis outputs.
 
 - `scripts/`  
-  Scripts used to lock, validate, retrieve, build, and analyze the Wave 1 hardware kernel artifacts.
+	  Scripts used to lock, validate, retrieve, build, and analyze the Wave 1 hardware kernel artifacts.
 
 - `environment/`  
-  Python version and package-freeze information used to document the reproduction environment.
+	  Python version and package-freeze information used to document the reproduction environment.
 
 - `decision_records/zz4_wave1_decision_record.json`  
-  Final Wave 1 decision record documenting `STOP_AFTER_WAVE1_REPORT_RESULTS`, frozen `N=24` subset scope, blocked subset change, blocked threshold relaxation, and no Wave 2 execution without a new decision record.
-
-- `decision_records/zz4_wave1_decision_record.json`  
-  Final Wave 1 decision record documenting `STOP_AFTER_WAVE1_REPORT_RESULTS`, frozen `N=24` subset scope, blocked subset change, blocked threshold relaxation, and no Wave 2 execution without a new decision record.
+	  Final Wave 1 decision record documenting `STOP_AFTER_WAVE1_REPORT_RESULTS`, frozen `N = 24` subset scope, blocked subset change, blocked threshold relaxation, and no Wave 2 execution without a new decision record.
 
 - `scripts/09b_analyze_wave1_distortion_direct.py`  
-  Direct Wave 1 distortion-analysis script adapted for the curated reproduction layout. It reads labels from `frozen_subset/hardware_subset_event_onset_next_1h.csv`, loads the statevector reference from `statevector_reference/`, loads hardware kernels from `hardware_kernels/`, and writes outputs to `hardware_analysis/`.
+	  Direct Wave 1 distortion-analysis script adapted for the curated reproduction layout. It reads labels from `frozen_subset/hardware_subset_event_onset_next_1h.csv`, loads the statevector reference from `statevector_reference/`, loads hardware kernels from `hardware_kernels/`, and writes outputs to `hardware_analysis/`.
 
-- `checksums/`  
-  SHA-256 checksums for verifying the reproduction package state.
+- `checksums/SHA256SUMS.txt`  
+	  SHA-256 checksums for verifying the reproduction package state.
 
 - `MANIFEST.md`  
-  Human-readable artifact manifest for the curated reproduction package.
+	  Human-readable artifact manifest for the curated reproduction package.
 
 - `CITATION.cff`  
-  Citation metadata for the reproduction package.
+	  Citation metadata for the reproduction package.
+
+## Reproducing the Wave 1 distortion analysis
+
+The curated package is intended to reproduce the reported statevector-to-hardware kernel distortion analysis without re-submitting IBM Quantum jobs.
+
+From the repository root:
+
+```bash
+python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+```
+
+This script reads:
+
+```text
+frozen_subset/hardware_subset_event_onset_next_1h.csv
+statevector_reference/zz4_K_all_all.npy
+hardware_kernels/zz4_H0_kernel.npy
+hardware_kernels/zz4_H1_kernel.npy
+hardware_kernels/zz4_H2_kernel.npy
+```
+
+and writes or updates:
+
+```text
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+hardware_analysis/zz4_wave1_distortion_summary.json
+hardware_analysis/zz4_wave1_distortion_summary.md
+```
+
+The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. Reproduction of the reported results should not re-submit IBM Quantum hardware jobs unless explicitly authorized by a new decision record.
+
+## Integrity verification
+
+The package state can be verified with:
+
+```bash
+shasum -a 256 -c checksums/SHA256SUMS.txt
+```
+
+The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
+
+If repository files are intentionally updated, regenerate the checksum file from the repository root after all edits are complete.
 
 ## Claim limitation
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N=24` subset.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset.
 
 ## License
 

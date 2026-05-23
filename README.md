@@ -159,6 +159,12 @@ The companion circuit inventory crosses the same 300 pair entries with the three
 - `manuscript/section_2_4_pair_inventory.md`  
   Manuscript-ready text for Section 2.4, Pair inventory.
 
+- `config/wave1_scope.json`  
+  Wave 1 scope configuration used by the circuit-build workflow. It records the fixed ZZ4 hardware scope, including `feature_dimension = 4`, `reps = 2`, `entanglement = "linear"`, the compute--uncompute fidelity-circuit policy, the all-zero bitstring policy, `frozen_subset_n = 24`, `train_n = 16`, `test_n = 8`, `pair_count_expected = 300`, and `circuit_count_expected = 900`.
+
+- `metadata/zz4_wave1_feature_map_spec.json`  
+  Manuscript-support metadata for the ZZ4 feature-map specification. It mirrors the scope-config values for feature dimension, repetitions, entanglement, subset size, and circuit counts, and records the `alpha = 2.0` convention used in the manuscript description of the Qiskit ZZFeatureMap data map.
+
 ## Reproducing the Wave 1 distortion analysis
 
 The curated package is intended to reproduce the reported statevector-to-hardware kernel distortion analysis without re-submitting IBM Quantum jobs.
@@ -188,6 +194,8 @@ hardware_analysis/zz4_wave1_distortion_summary.md
 ```
 
 The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. Reproduction of the reported results should not re-submit IBM Quantum hardware jobs unless explicitly authorized by a new decision record.
+
+The hardware circuit-construction script reads the ZZ4 circuit parameters from `config/wave1_scope.json`. The reproduction package therefore includes this scope configuration so that the manuscript statements about four features, two repetitions, linear entanglement, the compute--uncompute fidelity circuit, and the all-zero bitstring interpretation are supported by a published structured artifact.
 
 ## Integrity verification
 

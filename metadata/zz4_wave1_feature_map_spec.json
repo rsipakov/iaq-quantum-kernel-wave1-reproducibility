@@ -1,0 +1,28 @@
+{
+  "artifact_type": "zz4_wave1_feature_map_specification",
+  "schema_version": "repro.1",
+  "purpose": "Manuscript-support metadata for the ZZ4 feature-map parameters used in Wave 1.",
+  "source_scope_config": "config/wave1_scope.json",
+  "implementation_script": "scripts/05_build_zz4_wave1_circuits.py",
+  "qiskit_class": "qiskit.circuit.library.ZZFeatureMap",
+  "feature_set": "F_quantum_4",
+  "kernel_name": "ZZ4",
+  "feature_dimension": 4,
+  "reps": 2,
+  "entanglement": "linear",
+  "coupled_qubit_pairs_for_four_features": [[0, 1], [1, 2], [2, 3]],
+  "data_map_terms": {
+    "first_order": "phi_{k}(x)=x_k",
+    "second_order": "phi_{a,b}(x)=(pi-x_a)(pi-x_b)"
+  },
+  "alpha": 2.0,
+  "alpha_status": "Records the manuscript convention for the Qiskit ZZFeatureMap phase scaling used to describe the fixed ZZ4 map; alpha was not an independently varied runtime option in the Wave 1 execution script.",
+  "fidelity_circuit": "U(x_i) followed by inverse U(x_j), then measure all qubits",
+  "all_zero_bitstring_policy": "all-zero probability is interpreted as hardware kernel entry",
+  "frozen_subset_n": 24,
+  "train_n": 16,
+  "test_n": 8,
+  "pair_count_expected": 300,
+  "circuit_count_expected": 900,
+  "claims_scope": "kernel-survival / hardware-distortion only"
+}

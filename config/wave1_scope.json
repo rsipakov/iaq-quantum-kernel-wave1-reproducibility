@@ -1,0 +1,66 @@
+{
+  "artifact_type": "wave1_scope_config",
+  "schema_version": "v9.0.scope.1",
+  "selected_backend": "ibm_fez",
+  "allowed_backends": [
+    "ibm_fez",
+    "ibm_marrakesh",
+    "ibm_kingston"
+  ],
+  "allowed_kernel": "ZZ4 only",
+  "allowed_feature_set": "F_quantum_4",
+  "allowed_subset": "frozen N=24 only",
+  "allowed_wave1_regimes": [
+    "H0",
+    "H1",
+    "H2"
+  ],
+  "blocked_until_wave1_decision": [
+    "H3",
+    "H4",
+    "H5"
+  ],
+  "blocked_indefinitely_in_v9": [
+    "RMA6 hardware",
+    "RMA-QFM hardware",
+    "subset change",
+    "threshold relaxation"
+  ],
+  "pair_count_expected": 300,
+  "circuit_count_expected": 900,
+  "shots_planned_per_circuit": 4096,
+  "frozen_subset_n": 24,
+  "train_n": 16,
+  "test_n": 8,
+  "feature_dimension": 4,
+  "feature_map": {
+    "name": "ZZFeatureMap",
+    "feature_dimension": 4,
+    "reps": 2,
+    "entanglement": "linear",
+    "fidelity_circuit": "U(x_i) followed by inverse U(x_j), then measure all qubits",
+    "all_zero_bitstring_policy": "all-zero probability is interpreted as hardware kernel entry"
+  },
+  "resource_gate": {
+    "max_active_qubits": 4,
+    "max_depth": 102,
+    "max_two_qubit_count": 22,
+    "two_qubit_gate_names": [
+      "cx",
+      "cz",
+      "ecr",
+      "rzz"
+    ]
+  },
+  "kernel_reconstruction": {
+    "diagonal_policy": "measured_diagonal",
+    "symmetrization_policy": "average_duplicate_entries_then_mirror",
+    "psd_policy": "diagnostic_only_clip_negative_eigenvalues_for_metrics; do_not_hide_uncorrected_min_eigenvalue"
+  },
+  "claims_policy": {
+    "quantum_advantage_claim_allowed": false,
+    "hardware_classifier_superiority_claim_allowed": false,
+    "rma_hardware_readiness_claim_allowed": false,
+    "allowed_interpretation": "kernel-survival / hardware-distortion only"
+  }
+}

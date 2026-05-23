@@ -113,6 +113,13 @@ The reserved split- and target-label columns (`sample_i_split`, `sample_j_split`
 | `metadata/statevector_reference_metadata.json` | Defines the statevector reference metadata for the ZZ4 feature order and the exact squared-fidelity kernel. |
 | `statevector_reference/zz4_K_all_all.npy`      | Full `24 x 24` ZZ4 statevector reference kernel for the frozen subset.                                      |
 
+## Feature-map and execution-scope configuration
+
+| Path | Purpose |
+| --- | --- |
+| `config/wave1_scope.json` | Wave 1 scope configuration consumed by the circuit-build workflow. It records the fixed ZZ4 hardware scope, including feature dimension 4, two repetitions, linear entanglement, compute--uncompute fidelity-circuit policy, all-zero bitstring policy, frozen subset size `N = 24`, 16/8 train/test split, 300 expected pair entries, and 900 expected circuits. |
+| `metadata/zz4_wave1_feature_map_spec.json` | Manuscript-support feature-map specification for ZZ4. It records the Qiskit ZZFeatureMap class, feature dimension, repetitions, linear nearest-neighbor coupling pairs, data-map terms, `alpha = 2.0` manuscript convention, fidelity-circuit policy, and all-zero bitstring policy. |
+
 ## Hardware kernel artifacts
 
 | Path                                                 | Purpose                                                                            |

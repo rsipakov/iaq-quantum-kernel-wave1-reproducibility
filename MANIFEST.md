@@ -79,6 +79,10 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | `metadata/zz4_wave1_preflight_report.json`     | Confirms expected and observed pair/circuit counts and records the pair-inventory checksum used at preflight.                                |
 | `metadata/zz4_wave1_kernel_manifest.json`      | Confirms that the reconstructed hardware kernels are `24 x 24`, have no missing entries, use a measured-diagonal policy, and retain diagnostic PSD metadata. |
 
+The compiled circuit bundle `zz4_wave1_circuits.qpy` is not redistributed in this package; it is regenerable via `scripts/05_build_zz4_wave1_circuits.py` from `config/wave1_scope.json`, and its integrity is pinned by `qpy_sha256` in `metadata/zz4_wave1_preflight_report.json`.
+
+The configured symmetrization policy (`average_duplicate_entries_then_mirror`) reduced to mirror-only in Wave 1, because each unordered pair was measured exactly once and no duplicate entries existed to average; the reduction is recorded in `metadata/zz4_wave1_feature_map_spec.json` (`symmetrization_status_wave1`).
+
 ### Pair-inventory column schema
 
 `metadata/zz_only_step8_pair_inventory.csv` contains 300 rows (276 `off_diagonal` + 24 `diagonal`) and the following 18 columns:
@@ -118,7 +122,7 @@ The reserved split- and target-label columns (`sample_i_split`, `sample_j_split`
 | Path | Purpose |
 | --- | --- |
 | `config/wave1_scope.json` | Wave 1 scope configuration consumed by the circuit-build workflow. It records the fixed ZZ4 hardware scope, including feature dimension 4, two repetitions, linear entanglement, compute--uncompute fidelity-circuit policy, all-zero bitstring policy, frozen subset size `N = 24`, 16/8 train/test split, 300 expected pair entries, and 900 expected circuits. |
-| `metadata/zz4_wave1_feature_map_spec.json` | Manuscript-support feature-map specification for ZZ4. It records the Qiskit ZZFeatureMap class, feature dimension, repetitions, linear nearest-neighbor coupling pairs, data-map terms, `alpha = 2.0` manuscript convention, fidelity-circuit policy, and all-zero bitstring policy. |
+| `metadata/zz4_wave1_feature_map_spec.json` | Manuscript-support feature-map specification for ZZ4. It records the Qiskit ZZFeatureMap class, feature dimension, repetitions, linear nearest-neighbor coupling pairs, data-map terms, `alpha = 2.0` manuscript convention, fidelity-circuit policy, all-zero bitstring policy, and the symmetrization policy with its Wave 1 mirror-only reduction (`symmetrization_status_wave1`). |
 
 ## Hardware kernel artifacts
 

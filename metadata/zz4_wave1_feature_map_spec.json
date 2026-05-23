@@ -19,6 +19,8 @@
   "alpha_status": "Records the manuscript convention for the Qiskit ZZFeatureMap phase scaling used to describe the fixed ZZ4 map; alpha was not an independently varied runtime option in the Wave 1 execution script.",
   "fidelity_circuit": "U(x_i) followed by inverse U(x_j), then measure all qubits",
   "all_zero_bitstring_policy": "all-zero probability is interpreted as hardware kernel entry",
+  "symmetrization_policy": "average_duplicate_entries_then_mirror",
+  "symmetrization_status_wave1": "Wave 1 contained no directed or replicated observations: each unordered pair (i, j) with i <= j was measured exactly once. The duplicate-averaging branch of the policy was therefore inactive, and symmetrization reduced to mirroring the measured upper triangle, K_r(j, i) = K_r(i, j). This is consistent with the uniform measurement_policy column of the circuit inventory across all 900 circuits.",
   "frozen_subset_n": 24,
   "train_n": 16,
   "test_n": 8,

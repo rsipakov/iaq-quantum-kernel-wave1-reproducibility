@@ -73,6 +73,8 @@ In the frozen Wave 1 inventory, `include_in_wave1_full_kernel` is `true` for all
 
 The companion circuit inventory crosses the same 300 pair entries with the three pre-authorized Wave 1 regimes, producing 900 planned fidelity-circuit records. The reported budget-safe execution submitted 900 circuits at 1024 shots per circuit.
 
+The configured kernel-reconstruction symmetrization policy is `average_duplicate_entries_then_mirror`. In Wave 1 it reduced to mirror-only, because each unordered pair was measured exactly once and no duplicate entries existed to average; symmetrization therefore amounted to mirroring the measured upper triangle, `K_r(j, i) = K_r(i, j)`. This reduction is recorded in `metadata/zz4_wave1_feature_map_spec.json` (`symmetrization_status_wave1`).
+
 ## Included materials
 
 - `config/config.py`  
@@ -104,6 +106,16 @@ The companion circuit inventory crosses the same 300 pair entries with the three
 
 - `metadata/zz4_wave1_circuit_build_manifest.json`  
   Circuit-build manifest confirming the expected 300 pairs and 900 Wave 1 fidelity circuits.
+
+**Compiled circuits.** The compiled circuit bundle `zz4_wave1_circuits.qpy` is intentionally not redistributed in this package. It is regenerated deterministically by `scripts/05_build_zz4_wave1_circuits.py` from `config/wave1_scope.json`, the frozen subset, and the pair/circuit inventories. Its integrity is pinned by `qpy_sha256` in `metadata/zz4_wave1_preflight_report.json` (`8463f87754646a9fef6d7fcb5c751891f3a1baf9ff969875374b471ddd9ab4ad`), so a regenerated bundle can be confirmed bit-identical to the audited circuits:
+
+```bash
+python scripts/05_build_zz4_wave1_circuits.py --scope-config config/wave1_scope.json
+sha256sum step6b_hardware_subset_package/outputs/circuits/zz4_wave1_circuits.qpy
+# expected: 8463f87754646a9fef6d7fcb5c751891f3a1baf9ff969875374b471ddd9ab4ad
+```
+
+QPY is not redistributed because it is sensitive to the Qiskit serialization version; the regeneration path above remains valid across environments, whereas a shipped binary may not.
 
 - `metadata/zz4_wave1_preflight_report.json`  
   Preflight report confirming expected and observed pair/circuit counts and recording the pair-inventory checksum.
@@ -163,7 +175,7 @@ The companion circuit inventory crosses the same 300 pair entries with the three
   Wave 1 scope configuration used by the circuit-build workflow. It records the fixed ZZ4 hardware scope, including `feature_dimension = 4`, `reps = 2`, `entanglement = "linear"`, the compute--uncompute fidelity-circuit policy, the all-zero bitstring policy, `frozen_subset_n = 24`, `train_n = 16`, `test_n = 8`, `pair_count_expected = 300`, and `circuit_count_expected = 900`.
 
 - `metadata/zz4_wave1_feature_map_spec.json`  
-  Manuscript-support metadata for the ZZ4 feature-map specification. It mirrors the scope-config values for feature dimension, repetitions, entanglement, subset size, and circuit counts, and records the `alpha = 2.0` convention used in the manuscript description of the Qiskit ZZFeatureMap data map.
+  Manuscript-support metadata for the ZZ4 feature-map specification. It mirrors the scope-config values for feature dimension, repetitions, entanglement, subset size, and circuit counts, records the `alpha = 2.0` convention used in the manuscript description of the Qiskit ZZFeatureMap data map, and documents the symmetrization policy together with its Wave 1 mirror-only reduction (`symmetrization_status_wave1`).
 
 ## Reproducing the Wave 1 distortion analysis
 

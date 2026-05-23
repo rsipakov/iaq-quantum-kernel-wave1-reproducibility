@@ -1,0 +1,45 @@
+{
+  "artifact_type": "zz4_wave1_preflight_report",
+  "schema_version": "v9.0.preflight.1",
+  "created_utc": "2026-05-09T08:33:52Z",
+  "operator_identifier": "unspecified",
+  "preflight_pass": true,
+  "failure_reasons": [],
+  "selected_backend": "ibm_fez",
+  "allowed_backends": [
+    "ibm_fez",
+    "ibm_marrakesh",
+    "ibm_kingston"
+  ],
+  "allowed_kernel": "ZZ4 only",
+  "allowed_feature_set": "F_quantum_4",
+  "allowed_subset": "frozen N=24 only",
+  "regimes": [
+    "H0",
+    "H1",
+    "H2"
+  ],
+  "shots_planned_per_circuit": 4096,
+  "pair_count_expected": 300,
+  "pair_count_observed": 300,
+  "circuit_count_expected": 900,
+  "circuit_count_observed": 900,
+  "qpy_sha256": "8463f87754646a9fef6d7fcb5c751891f3a1baf9ff969875374b471ddd9ab4ad",
+  "circuit_index_sha256": "3be7bb55d3eb7f87a8b2078cf8826f1d2b68e8c5e60d184d7df8fbc5f0d80ae2",
+  "artifact_lock_sha256": "226224d35f1b4a03ece69b8633304502f08353522ecec926082ea9622a4f4d56",
+  "live_backend_metadata_sha256": "bee49fe646417c5952b2190be495c744a70c7f4dbe464077d6a2e4717cfb9550",
+  "runtime_options_sha256": "94c135f6d3182cd590a4b5096bc8f28b45d841d20aa078137c525ddce875cb76",
+  "pair_inventory_sha256": "cda6d2708e7212213292fdeed352851d7530c428fb8db10c741f84ac84df5973",
+  "circuit_inventory_sha256": "64d57b77900812fc5120d2de2a495049495ae731c8d5681deedeb912d2322369",
+  "execution_manifest_sha256": "821636e05bfc2ca4f8ecbf35f2c8ff1dd36e20e6c03e2b95f96adc33c7639b64",
+  "scope_lock_confirmed": true,
+  "rma_excluded": true,
+  "wave2_excluded": true,
+  "token_value_absent_from_artifact": true,
+  "local_secret_scan": {
+    "scan_root": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks/step6b_hardware_subset_package/outputs",
+    "status": "passed",
+    "finding_count": 0,
+    "findings": {}
+  }
+}

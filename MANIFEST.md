@@ -7,6 +7,7 @@ The package supports the manuscript Materials and Methods subsections:
 - **2.1. Dataset and prediction context**
 - **2.2. Frozen subset**
 - **2.3. ZZ4 quantum feature map**
+- **2.4. Pair inventory**
 
 ## Scope
 
@@ -18,8 +19,9 @@ The package supports the manuscript Materials and Methods subsections:
 - Frozen subset: `N = 24` fixed observation windows
 - Frozen hardware split: 16 train windows + 8 test windows
 - Statevector reference: exact ZZ4 squared-fidelity kernel
-- Pair inventory: 300 unordered pairs including diagonal entries
+- Pair inventory: 300 unordered upper-triangular pairs including diagonal entries
 - Unique off-diagonal pairs: 276
+- Diagonal entries: 24
 - Hardware regimes: `H0`, `H1`, `H2`
 - Fidelity circuits: 900 total, i.e. 300 pairs × 3 regimes
 - Submitted shots: 1024 per circuit for `H0`, `H1`, and `H2`
@@ -27,7 +29,7 @@ The package supports the manuscript Materials and Methods subsections:
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
-The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This shot count affects sampling precision, not the definition of the ZZ4 feature map or the statevector reference kernel.
+The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This shot count affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, or the 300-row pair inventory.
 
 ## Frozen subset policy
 
@@ -63,9 +65,19 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `frozen_subset/hardware_subset_event_onset_next_1h.csv` | Fixed `N = 24` subset of observation windows used for the Wave 1 ZZ4 hardware pilot.                                                    |
 | `metadata/zz_only_pilot_operational_plan.json`          | Defines the ZZ-only hardware-pilot scope, frozen-subset policy, allowed claims, pair counts, and Wave 2 restrictions.                   |
-| `metadata/zz_only_step8_execution_manifest.json`        | Records the authorized hardware execution scope: `F_quantum_4`, `ZZ4`, frozen `N = 24` subset, and Wave 1 regime metadata.              |
+| `metadata/zz_only_step8_execution_manifest.json`        | Records the authorized hardware execution scope: `F_quantum_4`, `ZZ4`, frozen `N = 24` subset, pair-count metadata, and pair-inventory checksum. |
 | `metadata/v9_audit_freeze_manifest.json`                | Records the audit/freeze state, allowed subset, allowed feature set, allowed kernel, threshold policy, and immutable scope constraints. |
 | `metadata/zz4_subset_seed_stability_summary.json`       | Records the subset-stability caveat and confirms that the frozen subset was not changed after hardware results.                         |
+
+## Pair inventory and circuit-index artifacts
+
+| Path                                           | Purpose                                                                                                                                      |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `metadata/zz_only_step8_pair_inventory.csv`    | Deterministic 300-row upper-triangular pair inventory for the frozen `N = 24` subset: 276 unique off-diagonal pairs plus 24 diagonal entries. |
+| `metadata/zz_only_step8_circuit_inventory.csv` | 900-row circuit inventory obtained by crossing the 300 pair entries with regimes `H0`, `H1`, and `H2`.                                       |
+| `metadata/zz4_wave1_circuit_build_manifest.json` | Confirms circuit-build pass status, expected pair count of 300, expected circuit count of 900, and the path to the pair inventory.          |
+| `metadata/zz4_wave1_preflight_report.json`     | Confirms expected and observed pair/circuit counts and records the pair-inventory checksum used at preflight.                                |
+| `metadata/zz4_wave1_kernel_manifest.json`      | Confirms that the reconstructed hardware kernels are `24 x 24`, have no missing entries, use a measured-diagonal policy, and retain diagnostic PSD metadata. |
 
 ## Statevector reference artifacts
 
@@ -90,6 +102,7 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 
 | Path                                               | Purpose                                                           |
 | -------------------------------------------------- | ----------------------------------------------------------------- |
+| `job_metadata/zz4_wave1_job_manifest.json`         | Combined Wave 1 job manifest recording regimes `H0`, `H1`, and `H2`, 1024 submitted shots per circuit, 300 covered pairs per regime, and 900 total submitted circuits. |
 | `job_metadata/zz4_wave1_retrieval_manifest.json`   | Records retrieval metadata for the Wave 1 hardware results.       |
 | `job_metadata/zz4_wave1_job_manifest_H0_1024.csv`  | CSV job manifest for Wave 1 regime `H0` at 1024 submitted shots.  |
 | `job_metadata/zz4_wave1_job_manifest_H1_1024.csv`  | CSV job manifest for Wave 1 regime `H1` at 1024 submitted shots.  |
@@ -115,7 +128,7 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | `scripts/02_lock_runtime_options.py`                  | Locks runtime options used for Wave 1 execution.                                                                                                                                                                                                                                                                                                                                                                               |
 | `scripts/03_optional_backend_compile_confirmation.py` | Optionally confirms backend compile behavior before execution.                                                                                                                                                                                                                                                                                                                                                                 |
 | `scripts/04_validate_wave1_preflight.py`              | Validates Wave 1 preflight conditions before job construction or submission.                                                                                                                                                                                                                                                                                                                                                   |
-| `scripts/05_build_zz4_wave1_circuits.py`              | Builds ZZ4 Wave 1 fidelity circuits for the frozen subset.                                                                                                                                                                                                                                                                                                                                                                     |
+| `scripts/05_build_zz4_wave1_circuits.py`              | Builds ZZ4 Wave 1 fidelity circuits for the frozen subset using the fixed 300-row pair inventory and the 900-row circuit inventory.                                                                                                                                                                                                                                                                                            |
 | `scripts/06_submit_wave1_jobs.py`                     | Submits Wave 1 hardware jobs. Included for traceability only; reproduction should not re-submit jobs unless explicitly authorized.                                                                                                                                                                                                                                                                                             |
 | `scripts/07_retrieve_wave1_results.py`                | Retrieves Wave 1 hardware results.                                                                                                                                                                                                                                                                                                                                                                                             |
 | `scripts/08_build_hardware_kernels.py`                | Builds hardware-derived kernels from retrieved Wave 1 results.                                                                                                                                                                                                                                                                                                                                                                 |
@@ -132,11 +145,17 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | `environment/pip_freeze.txt`     | Package-freeze record documenting the Python environment.               |
 | `checksums/SHA256SUMS.txt`       | SHA-256 checksum manifest for verifying the reproduction package state. |
 
+## Manuscript support artifacts
+
+| Path                                      | Purpose                                                      |
+| ----------------------------------------- | ------------------------------------------------------------ |
+| `manuscript/section_2_4_pair_inventory.md` | Manuscript-ready text for Section 2.4, Pair inventory.      |
+
 ## Repository metadata
 
 | Path           | Purpose                                                         |
 | -------------- | --------------------------------------------------------------- |
-| `README.md`    | Main reproduction-package description and frozen-subset policy. |
+| `README.md`    | Main reproduction-package description, frozen-subset policy, and pair-inventory policy. |
 | `MANIFEST.md`  | This artifact manifest.                                         |
 | `CITATION.cff` | Citation metadata for the reproduction package.                 |
 | `LICENSE`      | License file.                                                   |
@@ -162,4 +181,4 @@ The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virt
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.

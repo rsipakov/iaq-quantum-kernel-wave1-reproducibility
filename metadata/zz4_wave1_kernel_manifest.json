@@ -1,0 +1,63 @@
+{
+  "artifact_type": "zz4_wave1_kernel_manifest",
+  "schema_version": "v9.0.kernel_manifest.1",
+  "created_utc": "2026-05-09T08:58:03Z",
+  "operator_identifier": "unspecified",
+  "kernel_matrices_shape_24x24": true,
+  "all_three_kernels_present": true,
+  "no_missing_entries": true,
+  "failure_reasons": [],
+  "rows": [
+    {
+      "regime_id": "H0",
+      "kernel_csv": "step6b_hardware_subset_package/outputs/hardware_kernels/zz4_H0_kernel.csv",
+      "kernel_npy": "step6b_hardware_subset_package/outputs/hardware_kernels/zz4_H0_kernel.npy",
+      "shape_rows": 24,
+      "shape_cols": 24,
+      "finite_entry_count": 576,
+      "missing_entry_count": 0,
+      "diagonal_policy": "measured_diagonal",
+      "symmetrization_policy": "average_duplicate_entries_then_mirror",
+      "min_eigenvalue_before_psd": 0.428763111071851,
+      "min_eigenvalue_after_psd": 0.42876311107185167,
+      "psd_correction_frobenius_norm": 8.583547173776992e-15,
+      "psd_correction_frobenius_relative": 1.627201233628325e-15
+    },
+    {
+      "regime_id": "H1",
+      "kernel_csv": "step6b_hardware_subset_package/outputs/hardware_kernels/zz4_H1_kernel.csv",
+      "kernel_npy": "step6b_hardware_subset_package/outputs/hardware_kernels/zz4_H1_kernel.npy",
+      "shape_rows": 24,
+      "shape_cols": 24,
+      "finite_entry_count": 576,
+      "missing_entry_count": 0,
+      "diagonal_policy": "measured_diagonal",
+      "symmetrization_policy": "average_duplicate_entries_then_mirror",
+      "min_eigenvalue_before_psd": 0.46215593566687874,
+      "min_eigenvalue_after_psd": 0.4621559356668794,
+      "psd_correction_frobenius_norm": 9.259630923313487e-15,
+      "psd_correction_frobenius_relative": 1.7621621375280847e-15
+    },
+    {
+      "regime_id": "H2",
+      "kernel_csv": "step6b_hardware_subset_package/outputs/hardware_kernels/zz4_H2_kernel.csv",
+      "kernel_npy": "step6b_hardware_subset_package/outputs/hardware_kernels/zz4_H2_kernel.npy",
+      "shape_rows": 24,
+      "shape_cols": 24,
+      "finite_entry_count": 576,
+      "missing_entry_count": 0,
+      "diagonal_policy": "measured_diagonal",
+      "symmetrization_policy": "average_duplicate_entries_then_mirror",
+      "min_eigenvalue_before_psd": 0.23216438914772836,
+      "min_eigenvalue_after_psd": 0.23216438914772797,
+      "psd_correction_frobenius_norm": 1.070945942310601e-14,
+      "psd_correction_frobenius_relative": 1.9070781048728023e-15
+    }
+  ],
+  "kernel_entries_long_path": "step6b_hardware_subset_package/outputs/hardware_kernels/zz4_wave1_kernel_entries_long.csv",
+  "diagonal_policy": "measured_diagonal",
+  "psd_policy": "diagnostic_only_clip_negative_eigenvalues_for_metrics; do_not_hide_uncorrected_min_eigenvalue",
+  "rma_excluded": true,
+  "wave2_excluded": true,
+  "token_value_absent_from_artifact": true
+}

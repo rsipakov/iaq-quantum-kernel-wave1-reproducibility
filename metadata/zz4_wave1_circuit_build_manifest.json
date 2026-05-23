@@ -1,0 +1,31 @@
+{
+  "artifact_type": "zz4_wave1_circuit_build_manifest",
+  "schema_version": "v9.0.circuit_build.1",
+  "created_utc": "2026-05-09T08:33:46Z",
+  "operator_identifier": "unspecified",
+  "circuit_build_pass": true,
+  "failure_reasons": [],
+  "feature_source_path": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks/step6b_hardware_subset_package/outputs/subsets/hardware_subset_event_onset_next_1h.csv",
+  "feature_columns": [
+    "scaled__F_quantum_4__pm25_mean_last_1h",
+    "scaled__F_quantum_4__pm10_mean_last_1h",
+    "scaled__F_quantum_4__hcho_mean_last_1h",
+    "scaled__F_quantum_4__tvoc_mean_last_1h"
+  ],
+  "pair_inventory_path": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks/step6b_hardware_subset_package/outputs/metadata/zz_only_step8_pair_inventory.csv",
+  "circuit_inventory_path": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks/step6b_hardware_subset_package/outputs/metadata/zz_only_step8_circuit_inventory.csv",
+  "qpy_output_path": "step6b_hardware_subset_package/outputs/circuits/zz4_wave1_circuits.qpy",
+  "circuit_index_path": "step6b_hardware_subset_package/outputs/circuits/zz4_wave1_circuit_index.csv",
+  "built_circuit_count": 900,
+  "pair_count_expected": 300,
+  "circuit_count_expected": 900,
+  "regimes": [
+    "H0",
+    "H1",
+    "H2"
+  ],
+  "rma_excluded": true,
+  "wave2_excluded": true,
+  "all_zero_measurement_interpretation": "all-zero probability is interpreted as hardware kernel entry",
+  "token_value_absent_from_artifact": true
+}

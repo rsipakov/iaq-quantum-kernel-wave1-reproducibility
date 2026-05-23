@@ -79,6 +79,33 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | `metadata/zz4_wave1_preflight_report.json`     | Confirms expected and observed pair/circuit counts and records the pair-inventory checksum used at preflight.                                |
 | `metadata/zz4_wave1_kernel_manifest.json`      | Confirms that the reconstructed hardware kernels are `24 x 24`, have no missing entries, use a measured-diagonal policy, and retain diagnostic PSD metadata. |
 
+### Pair-inventory column schema
+
+`metadata/zz_only_step8_pair_inventory.csv` contains 300 rows (276 `off_diagonal` + 24 `diagonal`) and the following 18 columns:
+
+| Column                         | Description                                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `pair_id`                      | Stable pair identifier (e.g. `zz4_pair_0000`).                                                                 |
+| `pair_order`                   | Integer enumeration order, `0`–`299`.                                                                          |
+| `pair_mode`                    | Enumeration mode; constant `upper_triangle_including_diagonal`.                                                |
+| `kernel_i`                     | First kernel coordinate (row index, `0`–`23`).                                                                 |
+| `kernel_j`                     | Second kernel coordinate (column index, `0`–`23`), with `kernel_i <= kernel_j`.                               |
+| `sample_i_id`                  | Frozen-subset sample identifier for `i`; opaque `row_id` digest from the frozen-subset file.                  |
+| `sample_j_id`                  | Frozen-subset sample identifier for `j`; opaque `row_id` digest from the frozen-subset file.                  |
+| `sample_i_split`               | Reserved split-membership field for `i`; unpopulated in Wave 1.                                               |
+| `sample_j_split`               | Reserved split-membership field for `j`; unpopulated in Wave 1.                                               |
+| `sample_i_target`              | Reserved target-label field for `i`; unpopulated in Wave 1.                                                   |
+| `sample_j_target`              | Reserved target-label field for `j`; unpopulated in Wave 1.                                                   |
+| `pair_type`                    | Pair type label: `diagonal` or `off_diagonal`.                                                                |
+| `split_pair`                   | Reserved derived split-pair field; unpopulated in Wave 1.                                                     |
+| `target_pair`                  | Reserved derived target-pair field; unpopulated in Wave 1.                                                    |
+| `expected_symmetry_mirror`     | `true` for off-diagonal rows (mirrored under `K_r(j,i) = K_r(i,j)`), `false` for diagonal rows.               |
+| `include_in_wave1_full_kernel` | Wave 1 full-kernel inclusion flag; `true` for all 300 rows.                                                   |
+| `sentinel_pair`                | Sentinel-pair designation; `false` for all 300 rows (no sentinel pairs designated in Wave 1).                 |
+| `notes`                        | Free-text field; non-empty only on the 24 diagonal rows, recording the diagonal execution-policy note.        |
+
+The reserved split- and target-label columns (`sample_i_split`, `sample_j_split`, `sample_i_target`, `sample_j_target`, `split_pair`, `target_pair`) are present in the schema but unpopulated, so pair rows reference samples only by opaque identifiers and carry no split membership or class label. Combined with the exhaustive upper-triangular enumeration, this makes pair inclusion label-blind by construction.
+
 ## Statevector reference artifacts
 
 | Path                                           | Purpose                                                                                                     |

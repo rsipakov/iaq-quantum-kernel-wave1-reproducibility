@@ -67,7 +67,9 @@ The Wave 1 pair inventory is a deterministic upper-triangular enumeration of the
 276 off-diagonal pairs + 24 diagonal entries = 300 pair entries
 ```
 
-The pair inventory is not a random sample, not a class-balanced sample, and not an adaptive subset selected after hardware execution. Each row has a stable `pair_id`, `pair_order`, pair type, kernel indices, frozen-subset sample identifiers, symmetry-mirror flag, Wave 1 inclusion flag, and sentinel-pair flag.
+The pair inventory is not a random sample, not a class-balanced sample, and not an adaptive subset selected after hardware execution. Each row carries a stable `pair_id`, an integer `pair_order` (`0`–`299`), the enumeration mode `pair_mode` (`upper_triangle_including_diagonal`), the kernel coordinates `kernel_i` and `kernel_j` (with `kernel_i <= kernel_j`), the frozen-subset sample identifiers `sample_i_id` and `sample_j_id`, a `pair_type` label (`diagonal` or `off_diagonal`), the reserved fields `sample_i_split`, `sample_j_split`, `sample_i_target`, `sample_j_target`, `split_pair`, and `target_pair`, an `expected_symmetry_mirror` flag, an `include_in_wave1_full_kernel` flag, a `sentinel_pair` flag, and a free-text `notes` field. The full column schema is documented in `MANIFEST.md`.
+
+In the frozen Wave 1 inventory, `include_in_wave1_full_kernel` is `true` for all 300 rows, and `sentinel_pair` is `false` for all 300 rows: no sentinel pairs are designated in Wave 1, consistent with the Wave 2 / sentinel restrictions above. `expected_symmetry_mirror` is `true` for the 276 off-diagonal rows and `false` for the 24 diagonal rows. The reserved split- and target-label fields are present in the schema but left unpopulated; pair rows reference samples only by their opaque `sample_*_id` identifiers, so no split membership or class label is attached to any pair. Pair inclusion is therefore label-blind by construction.
 
 The companion circuit inventory crosses the same 300 pair entries with the three pre-authorized Wave 1 regimes, producing 900 planned fidelity-circuit records. The reported budget-safe execution submitted 900 circuits at 1024 shots per circuit.
 
@@ -95,7 +97,7 @@ The companion circuit inventory crosses the same 300 pair entries with the three
   Execution manifest recording the authorized Wave 1 scope, including the frozen `N = 24` subset, ZZ4 kernel configuration, pair-count metadata, and pair-inventory checksum.
 
 - `metadata/zz_only_step8_pair_inventory.csv`  
-  Deterministic 300-row upper-triangular inventory for the frozen `24 x 24` kernel, including all 276 off-diagonal pairs and all 24 diagonal entries.
+  Deterministic 300-row upper-triangular inventory for the frozen `24 x 24` kernel, including all 276 off-diagonal pairs and all 24 diagonal entries. Full column schema documented in `MANIFEST.md`.
 
 - `metadata/zz_only_step8_circuit_inventory.csv`  
   900-row circuit inventory obtained by crossing the 300 pair entries with regimes `H0`, `H1`, and `H2`.
@@ -153,6 +155,9 @@ The companion circuit inventory crosses the same 300 pair entries with the three
 
 - `CITATION.cff`  
   Citation metadata for the reproduction package.
+
+- `manuscript/section_2_4_pair_inventory.md`  
+  Manuscript-ready text for Section 2.4, Pair inventory.
 
 ## Reproducing the Wave 1 distortion analysis
 

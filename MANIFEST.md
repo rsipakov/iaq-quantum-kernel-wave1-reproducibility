@@ -10,6 +10,7 @@ The package supports the manuscript Materials and Methods subsections:
 - **2.4. Pair inventory**
 - **2.5. IBM Quantum hardware protocol**
 - **2.6. Execution configurations**
+- **2.7. Kernel reconstruction**
 
 ## Scope
 
@@ -35,11 +36,17 @@ The package supports the manuscript Materials and Methods subsections:
 | Originally planned shots | 4096 per circuit |
 | Actual submitted shots | 1024 per circuit |
 | Total submitted circuit-configuration rows | 900 |
+| Raw retrieved results | 300 PUB results per regime |
+| Kernel-entry rows | 900 long-form entries |
+| Hardware kernel matrices | Three complete `24 x 24` matrices |
+| Kernel-reconstruction diagonal policy | `measured_diagonal` |
+| Kernel-reconstruction symmetrization policy | `average_duplicate_entries_then_mirror` |
+| PSD policy | Diagnostic only; uncorrected minimum eigenvalue retained |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
 | Claim scope | No quantum-advantage claim and no hardware classifier-superiority claim |
 
-The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This shot count affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, or the 300-row pair inventory.
+The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This shot count affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the 300-row pair inventory, or the kernel-reconstruction rules.
 
 ## Frozen subset policy
 
@@ -85,7 +92,7 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 | `metadata/zz_only_step8_circuit_inventory.csv` | 900-row circuit inventory obtained by crossing the 300 pair entries with regimes `H0`, `H1`, and `H2`. |
 | `metadata/zz4_wave1_circuit_build_manifest.json` | Confirms circuit-build pass status, 900 built circuits, expected pair count 300, expected circuit count 900, regimes `H0`/`H1`/`H2`, and all-zero measurement interpretation. |
 | `metadata/zz4_wave1_preflight_report.json` | Confirms selected backend, allowed scope, expected and observed pair/circuit counts, checksums, scope lock, and local secret-scan status. |
-| `circuits/zz4_wave1_circuit_index.csv` | Row-order ledger linking circuit order to `circuit_inventory_id`, `pair_id`, pair row, coordinates, and regime. |
+| `circuits/zz4_wave1_circuit_index.csv` | Row-order ledger linking circuit order to `circuit_inventory_id`, `pair_id`, pair row, coordinates, and regime; used directly during kernel reconstruction. |
 | `circuits/zz4_wave1_circuits.qpy` | QPY archive of the built Wave 1 ZZ4 circuits. |
 
 ### Pair-inventory column schema
@@ -128,7 +135,7 @@ The configured kernel-reconstruction symmetrization policy is `average_duplicate
 
 | Path | Purpose |
 | --- | --- |
-| `config/wave1_scope.json` | Wave 1 scope configuration consumed by the circuit-build workflow. It records the fixed ZZ4 hardware scope, including feature dimension 4, two repetitions, linear entanglement, compute--uncompute fidelity-circuit policy, all-zero bitstring policy, frozen subset size `N = 24`, 16/8 train/test split, 300 expected pair entries, and 900 expected circuits. |
+| `config/wave1_scope.json` | Wave 1 scope configuration consumed by the circuit-build and kernel-reconstruction workflows. It records the fixed ZZ4 hardware scope, including feature dimension 4, two repetitions, linear entanglement, compute--uncompute fidelity-circuit policy, all-zero bitstring policy, frozen subset size `N = 24`, 16/8 train/test split, 300 expected pair entries, 900 expected circuits, and kernel-reconstruction policies. |
 | `metadata/zz4_wave1_feature_map_spec.json` | Manuscript-support feature-map specification for ZZ4. It records the Qiskit ZZFeatureMap class, feature dimension, repetitions, linear nearest-neighbor coupling pairs, data-map terms, `alpha = 2.0` manuscript convention, fidelity-circuit policy, and all-zero bitstring policy. |
 
 ## Execution configuration label policy
@@ -180,10 +187,11 @@ All artifact filenames, JSON fields, CSV regime columns, raw-result files, kerne
 | `hardware_results/zz4_H1_raw_results.json` | Raw SamplerV2 count results for `H1` / manuscript `M1`; stores per-PUB count dictionaries, observed shots, and circuit metadata. |
 | `hardware_results/zz4_H2_raw_results.json` | Raw SamplerV2 count results for `H2` / manuscript `M2`; stores per-PUB count dictionaries, observed shots, circuit metadata, and twirling metadata where present. |
 
-## Hardware kernel artifacts
+## Hardware kernel-reconstruction artifacts
 
 | Path | Purpose |
 | --- | --- |
+| `hardware_kernels/zz4_wave1_kernel_entries_long.csv` | Long-form Wave 1 kernel-entry table recording regime, PUB order, circuit ID, pair ID, coordinates, all-zero bitstring, all-zero count, observed shots, and raw kernel value. |
 | `metadata/zz4_wave1_kernel_manifest.json` | Confirms that the reconstructed hardware kernels are `24 x 24`, have no missing entries, use a measured-diagonal policy, and retain diagnostic PSD metadata. |
 | `hardware_kernels/zz4_H0_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H0` / manuscript `M0`. |
 | `hardware_kernels/zz4_H1_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H1` / manuscript `M1`. |
@@ -191,7 +199,16 @@ All artifact filenames, JSON fields, CSV regime columns, raw-result files, kerne
 | `hardware_kernels/zz4_H0_kernel.csv` | CSV representation of the `H0` / `M0` hardware-derived kernel. |
 | `hardware_kernels/zz4_H1_kernel.csv` | CSV representation of the `H1` / `M1` hardware-derived kernel. |
 | `hardware_kernels/zz4_H2_kernel.csv` | CSV representation of the `H2` / `M2` hardware-derived kernel. |
-| `hardware_kernels/zz4_wave1_kernel_entries_long.csv` | Long-form Wave 1 kernel-entry table recording regime, PUB order, circuit ID, pair ID, coordinates, all-zero count, observed shots, and raw kernel value. |
+
+### Kernel-reconstruction diagnostics
+
+| Artifact regime | Manuscript label | Shape | Finite entries | Missing entries | Diagonal policy | Minimum eigenvalue before PSD diagnostic | PSD correction Frobenius norm |
+| --- | --- | --- | ---: | ---: | --- | ---: | ---: |
+| `H0` | `M0` | `24 x 24` | 576 | 0 | `measured_diagonal` | 0.428763111071851 | 8.583547173776992e-15 |
+| `H1` | `M1` | `24 x 24` | 576 | 0 | `measured_diagonal` | 0.46215593566687874 | 9.259630923313487e-15 |
+| `H2` | `M2` | `24 x 24` | 576 | 0 | `measured_diagonal` | 0.23216438914772836 | 1.070945942310601e-14 |
+
+The PSD calculation is diagnostic only. The uncorrected kernels remain the reported hardware kernels, and the uncorrected minimum eigenvalue is retained in the manifest.
 
 ## Hardware analysis artifacts
 
@@ -217,7 +234,7 @@ All artifact filenames, JSON fields, CSV regime columns, raw-result files, kerne
 | `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion. |
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct Wave 1 distortion-analysis script adapted for the curated reproduction layout. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
-| `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
+| `scripts/common.py` | Shared utilities for the Wave 1 scripts, including all-zero probability extraction, matrix CSV writing, and PSD diagnostic routines. |
 
 ## Environment and verification artifacts
 

@@ -8,6 +8,7 @@ This repository is a curated reproducibility package for the manuscript Material
 - **2.4. Pair inventory**
 - **2.5. IBM Quantum hardware protocol**
 - **2.6. Execution configurations**
+- **2.7. Kernel reconstruction**
 
 The package preserves the non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis.
 
@@ -40,11 +41,15 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Fidelity circuits: 900 total, i.e. 300 pairs x 3 regimes
 - Originally planned shots: 4096 per circuit
 - Submitted shots in the reported Wave 1 execution: 1024 per circuit
-- Total submitted circuit-configuration rows: 900
+- Raw retrieved results: 300 PUB results per regime, three regimes
+- Reconstructed hardware kernels: three complete `24 x 24` matrices
+- Kernel-reconstruction diagonal policy: measured diagonal
+- Kernel-reconstruction symmetrization policy: average duplicate entries, then mirror
+- PSD policy: diagnostic only; do not hide the uncorrected minimum eigenvalue
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
-The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, or the 300-row pair inventory.
+The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the pair inventory, or the kernel-reconstruction rules.
 
 ## Frozen subset policy
 
@@ -125,6 +130,28 @@ a(M2) = H2
 
 and the hardware kernel for manuscript configuration `m` is the artifact kernel `K_{a(m)}`. The complete Wave 1 analysis set is therefore `{M0, M1, M2}` in manuscript notation and `{H0, H1, H2}` in the persisted artifacts. There is no fourth combined dynamical-decoupling-plus-twirling configuration in Wave 1.
 
+## Kernel reconstruction
+
+Kernel reconstruction starts from the retrieved SamplerV2 result payloads and does not re-submit hardware jobs. The reconstruction script maps each PUB order back to the circuit index for the same artifact regime, reads the pair coordinates `(i, j)`, computes the all-zero probability, writes the long-form kernel-entry table, and assembles one hardware kernel matrix per regime.
+
+For each regime `H0`, `H1`, and `H2`, the raw-result JSON file contains 300 PUB entries. Each entry stores `pub_order`, a count dictionary, `shots_observed`, and circuit metadata containing `circuit_inventory_id`, `pair_id`, `pair_inventory_row`, coordinates `i` and `j`, and the regime label. For `H2`, twirling metadata are also preserved where present. The long-form table `hardware_kernels/zz4_wave1_kernel_entries_long.csv` records the derived all-zero count, observed shots, and raw kernel value for every retrieved PUB.
+
+The reconstructed matrices are persisted in both CSV and NumPy formats:
+
+| Artifact regime | Manuscript label | CSV | NumPy |
+| --- | --- | --- | --- |
+| `H0` | `M0` | `hardware_kernels/zz4_H0_kernel.csv` | `hardware_kernels/zz4_H0_kernel.npy` |
+| `H1` | `M1` | `hardware_kernels/zz4_H1_kernel.csv` | `hardware_kernels/zz4_H1_kernel.npy` |
+| `H2` | `M2` | `hardware_kernels/zz4_H2_kernel.csv` | `hardware_kernels/zz4_H2_kernel.npy` |
+
+The kernel manifest confirms that all three matrices are present, each has shape `24 x 24`, each has 576 finite entries, and each has zero missing entries. The diagonal is retained as measured rather than overwritten by unity. PSD projection is diagnostic only: the manifest retains the uncorrected minimum eigenvalue and reports the Frobenius norm of the diagnostic eigenvalue-clipping correction.
+
+| Artifact regime | Manuscript label | Minimum eigenvalue before PSD diagnostic | Missing entries | PSD correction Frobenius norm |
+| --- | --- | ---: | ---: | ---: |
+| `H0` | `M0` | 0.428763111071851 | 0 | 8.583547173776992e-15 |
+| `H1` | `M1` | 0.46215593566687874 | 0 | 9.259630923313487e-15 |
+| `H2` | `M2` | 0.23216438914772836 | 0 | 1.070945942310601e-14 |
+
 ## Included materials
 
 ### Dataset and preprocessing
@@ -164,10 +191,10 @@ and the hardware kernel for manuscript configuration `m` is the artifact kernel 
 - `metadata/zz4_subset_seed_stability_summary.json`  
   Subset-stability summary confirming that the frozen subset was not changed after hardware results.
 
-### Feature-map and statevector reference
+### Feature-map and execution-scope configuration
 
 - `config/wave1_scope.json`  
-  Wave 1 scope configuration used by the circuit-build workflow.
+  Wave 1 scope configuration used by the circuit-build and kernel-reconstruction workflows.
 
 - `metadata/zz4_wave1_feature_map_spec.json`  
   Manuscript-support metadata for the ZZ4 feature-map specification.
@@ -240,7 +267,7 @@ and the hardware kernel for manuscript configuration `m` is the artifact kernel 
 - `logs/zz4_wave1_retrieval_log.md`  
   Retrieval log for Wave 1 IBM hardware jobs.
 
-### Hardware results and kernels
+### Hardware results and reconstructed kernels
 
 - `hardware_results/zz4_H0_raw_results.json`  
   Raw SamplerV2 count results for regime `H0`.
@@ -312,6 +339,10 @@ The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. 
 - `MANIFEST.md`
 - `CITATION.cff`
 - `LICENSE`
+
+## Reconstructing the Wave 1 hardware kernels
+
+The curated package includes the raw hardware-result JSON files, the circuit-index ledger, the long-form kernel-entry table, the three reconstructed kernel matrices, and the kernel manifest required to audit the Wave 1 kernel reconstruction without re-submitting IBM Quantum jobs. The source-layout reconstruction script `scripts/08_build_hardware_kernels.py` is included for traceability; use the persisted reconstructed kernels in this curated package unless the path configuration is explicitly adapted to the local repository layout.
 
 ## Reproducing the Wave 1 distortion analysis
 

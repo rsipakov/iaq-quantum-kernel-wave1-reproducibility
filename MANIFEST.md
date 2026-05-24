@@ -9,6 +9,7 @@ The package supports the manuscript Materials and Methods subsections:
 - **2.3. ZZ4 quantum feature map**
 - **2.4. Pair inventory**
 - **2.5. IBM Quantum hardware protocol**
+- **2.6. Execution configurations**
 
 ## Scope
 
@@ -27,7 +28,9 @@ The package supports the manuscript Materials and Methods subsections:
 | Diagonal entries | 24 |
 | IBM backend | `ibm_fez` |
 | IBM primitive | Qiskit Runtime `SamplerV2` |
-| Hardware regimes | `H0`, `H1`, `H2` |
+| Artifact hardware-regime labels | `H0`, `H1`, `H2` |
+| Manuscript execution-configuration labels | `M0`, `M1`, `M2` |
+| Label mapping | `M0 = H0`, `M1 = H1`, `M2 = H2` |
 | Fidelity circuits | 900 total = 300 pairs x 3 regimes |
 | Originally planned shots | 4096 per circuit |
 | Actual submitted shots | 1024 per circuit |
@@ -128,62 +131,74 @@ The configured kernel-reconstruction symmetrization policy is `average_duplicate
 | `config/wave1_scope.json` | Wave 1 scope configuration consumed by the circuit-build workflow. It records the fixed ZZ4 hardware scope, including feature dimension 4, two repetitions, linear entanglement, compute--uncompute fidelity-circuit policy, all-zero bitstring policy, frozen subset size `N = 24`, 16/8 train/test split, 300 expected pair entries, and 900 expected circuits. |
 | `metadata/zz4_wave1_feature_map_spec.json` | Manuscript-support feature-map specification for ZZ4. It records the Qiskit ZZFeatureMap class, feature dimension, repetitions, linear nearest-neighbor coupling pairs, data-map terms, `alpha = 2.0` manuscript convention, fidelity-circuit policy, and all-zero bitstring policy. |
 
+## Execution configuration label policy
+
+The source artifacts retain the hardware-regime labels `H0`, `H1`, and `H2`. The manuscript uses `M0`, `M1`, and `M2` as execution-configuration labels to avoid confusion between the artifact regime `H0` and statistical null-hypothesis notation. This label map is a reporting convention only; it does not create additional circuits, jobs, kernels, or analysis outputs.
+
+| Manuscript label | Artifact label | Configuration | Runtime distinction |
+| --- | ---: | --- | --- |
+| `M0 baseline` | `H0` | Sampler baseline | Dynamical decoupling off; gate twirling off; measurement twirling off. |
+| `M1 dynamical decoupling` | `H1` | Sampler + dynamical decoupling | Dynamical decoupling on with `XX`, `alap`, middle slack; twirling off. |
+| `M2 twirling` | `H2` | Sampler + gate/Pauli twirling | Gate twirling on with `active-accum` and automatic randomization; dynamical decoupling and measurement twirling off. |
+
+All artifact filenames, JSON fields, CSV regime columns, raw-result files, kernel matrices, and checksum records remain keyed by `H0`, `H1`, and `H2`. Manuscript tables may report both labels for traceability.
+
 ## IBM Quantum hardware protocol artifacts
 
 | Path | Purpose |
 | --- | --- |
-| `metadata/zz4_wave1_runtime_options.json` | Locked Wave 1 runtime-options artifact for `H0`, `H1`, and `H2`; records `SamplerV2`, planned 4096 shots, selected backend `ibm_fez`, expected 300 pairs, and expected 900 circuits. |
+| `metadata/zz4_wave1_runtime_options.json` | Locked Wave 1 runtime-options artifact for artifact regimes `H0`, `H1`, and `H2`, corresponding to manuscript execution configurations `M0`, `M1`, and `M2`. Records `SamplerV2`, planned 4096 shots, selected backend `ibm_fez`, expected 300 pairs, expected 900 circuits, per-regime runtime options, and per-regime SHA-256 digests. |
 | `metadata/zz4_wave1_runtime_options_sha256.txt` | SHA-256 checksum for the locked runtime-options artifact. |
 | `metadata/zz_only_step9_live_backend_metadata.json` | Live backend metadata snapshot for `ibm_fez`: backend version, qubit count, operational status, primitive class, runtime options, package versions, metadata-gate status, and scope-drift status. |
 | `hardware_compile/zz4_step9_backend_compile_confirmation_ibm_fez.json` | Compile-confirmation summary for `ibm_fez`: compiled-circuit count, maximum depth, maximum two-qubit count, active-qubit resource gate, and pass/fail status. |
 | `hardware_compile/zz4_step9_backend_compile_confirmation_ibm_fez.csv` | Per-circuit compile records for the 900 compiled circuits. |
 | `job_metadata/zz4_wave1_job_manifest.json` | Combined budget-safe Wave 1 job manifest recording `H0`, `H1`, `H2`, 1024 submitted shots per circuit, three IBM job IDs, 300 circuits/pairs per regime, and 900 total submitted circuits. |
 | `job_metadata/zz4_wave1_job_manifest.csv` | CSV representation of the combined Wave 1 job manifest. |
-| `job_metadata/zz4_wave1_job_manifest_H0_1024.json` | JSON job manifest for `H0` at 1024 submitted shots per circuit. |
-| `job_metadata/zz4_wave1_job_manifest_H0_1024.csv` | CSV job manifest for `H0` at 1024 submitted shots per circuit. |
-| `job_metadata/zz4_wave1_job_manifest_H1_1024.json` | JSON job manifest for `H1` at 1024 submitted shots per circuit. |
-| `job_metadata/zz4_wave1_job_manifest_H1_1024.csv` | CSV job manifest for `H1` at 1024 submitted shots per circuit. |
-| `job_metadata/zz4_wave1_job_manifest_H2_1024.json` | JSON job manifest for `H2` at 1024 submitted shots per circuit. |
-| `job_metadata/zz4_wave1_job_manifest_H2_1024.csv` | CSV job manifest for `H2` at 1024 submitted shots per circuit. |
+| `job_metadata/zz4_wave1_job_manifest_H0_1024.json` | JSON job manifest for `H0` / manuscript `M0` at 1024 submitted shots per circuit. |
+| `job_metadata/zz4_wave1_job_manifest_H0_1024.csv` | CSV job manifest for `H0` / manuscript `M0` at 1024 submitted shots per circuit. |
+| `job_metadata/zz4_wave1_job_manifest_H1_1024.json` | JSON job manifest for `H1` / manuscript `M1` at 1024 submitted shots per circuit. |
+| `job_metadata/zz4_wave1_job_manifest_H1_1024.csv` | CSV job manifest for `H1` / manuscript `M1` at 1024 submitted shots per circuit. |
+| `job_metadata/zz4_wave1_job_manifest_H2_1024.json` | JSON job manifest for `H2` / manuscript `M2` at 1024 submitted shots per circuit. |
+| `job_metadata/zz4_wave1_job_manifest_H2_1024.csv` | CSV job manifest for `H2` / manuscript `M2` at 1024 submitted shots per circuit. |
 | `job_metadata/zz4_wave1_retrieval_manifest.json` | Retrieval manifest recording all three jobs as `DONE`, 300 retrieved PUB results per regime, and no recorded retrieval failure. |
 | `logs/zz4_wave1_submission_log.md` | Human-readable submission log. |
 | `logs/zz4_wave1_retrieval_log.md` | Human-readable retrieval log. |
 
 ### IBM Quantum job inventory
 
-| Regime | Runtime mode | Mitigation/twirling policy | Job ID | Submitted shots | Circuits | Retrieved PUBs |
-| --- | --- | --- | --- | ---: | ---: | ---: |
-| `H0` | `SamplerV2` | Baseline, no DD, no twirling | `d7vf6n3ack5s73bfc0eg` | 1024 | 300 | 300 |
-| `H1` | `SamplerV2` | Dynamical decoupling only | `d7vf8ocinasc738u1bhg` | 1024 | 300 | 300 |
-| `H2` | `SamplerV2` | Gate/Pauli twirling only | `d7vfbsfmrars73d84u20` | 1024 | 300 | 300 |
+| Manuscript label | Artifact regime | Runtime mode | Mitigation/twirling policy | Job ID | Submitted shots | Circuits | Retrieved PUBs |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: |
+| `M0` | `H0` | `SamplerV2` | Baseline, no DD, no twirling | `d7vf6n3ack5s73bfc0eg` | 1024 | 300 | 300 |
+| `M1` | `H1` | `SamplerV2` | Dynamical decoupling only | `d7vf8ocinasc738u1bhg` | 1024 | 300 | 300 |
+| `M2` | `H2` | `SamplerV2` | Gate/Pauli twirling only | `d7vfbsfmrars73d84u20` | 1024 | 300 | 300 |
 
 ## Raw hardware-result artifacts
 
 | Path | Purpose |
 | --- | --- |
-| `hardware_results/zz4_H0_raw_results.json` | Raw SamplerV2 count results for `H0`; stores per-PUB count dictionaries, observed shots, and circuit metadata. |
-| `hardware_results/zz4_H1_raw_results.json` | Raw SamplerV2 count results for `H1`; stores per-PUB count dictionaries, observed shots, and circuit metadata. |
-| `hardware_results/zz4_H2_raw_results.json` | Raw SamplerV2 count results for `H2`; stores per-PUB count dictionaries, observed shots, circuit metadata, and twirling metadata where present. |
+| `hardware_results/zz4_H0_raw_results.json` | Raw SamplerV2 count results for `H0` / manuscript `M0`; stores per-PUB count dictionaries, observed shots, and circuit metadata. |
+| `hardware_results/zz4_H1_raw_results.json` | Raw SamplerV2 count results for `H1` / manuscript `M1`; stores per-PUB count dictionaries, observed shots, and circuit metadata. |
+| `hardware_results/zz4_H2_raw_results.json` | Raw SamplerV2 count results for `H2` / manuscript `M2`; stores per-PUB count dictionaries, observed shots, circuit metadata, and twirling metadata where present. |
 
 ## Hardware kernel artifacts
 
 | Path | Purpose |
 | --- | --- |
 | `metadata/zz4_wave1_kernel_manifest.json` | Confirms that the reconstructed hardware kernels are `24 x 24`, have no missing entries, use a measured-diagonal policy, and retain diagnostic PSD metadata. |
-| `hardware_kernels/zz4_H0_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for regime `H0`. |
-| `hardware_kernels/zz4_H1_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for regime `H1`. |
-| `hardware_kernels/zz4_H2_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for regime `H2`. |
-| `hardware_kernels/zz4_H0_kernel.csv` | CSV representation of the `H0` hardware-derived kernel. |
-| `hardware_kernels/zz4_H1_kernel.csv` | CSV representation of the `H1` hardware-derived kernel. |
-| `hardware_kernels/zz4_H2_kernel.csv` | CSV representation of the `H2` hardware-derived kernel. |
+| `hardware_kernels/zz4_H0_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H0` / manuscript `M0`. |
+| `hardware_kernels/zz4_H1_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H1` / manuscript `M1`. |
+| `hardware_kernels/zz4_H2_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H2` / manuscript `M2`. |
+| `hardware_kernels/zz4_H0_kernel.csv` | CSV representation of the `H0` / `M0` hardware-derived kernel. |
+| `hardware_kernels/zz4_H1_kernel.csv` | CSV representation of the `H1` / `M1` hardware-derived kernel. |
+| `hardware_kernels/zz4_H2_kernel.csv` | CSV representation of the `H2` / `M2` hardware-derived kernel. |
 | `hardware_kernels/zz4_wave1_kernel_entries_long.csv` | Long-form Wave 1 kernel-entry table recording regime, PUB order, circuit ID, pair ID, coordinates, all-zero count, observed shots, and raw kernel value. |
 
 ## Hardware analysis artifacts
 
 | Path | Purpose |
 | --- | --- |
-| `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. |
-| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 distortion metrics for comparing hardware kernels against the statevector reference. |
+| `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics; records that all required regimes `H0`, `H1`, and `H2` are reported. |
+| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 distortion metrics for comparing hardware kernels against the statevector reference across `H0`, `H1`, and `H2`. |
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary. |
 
 ## Reproduction scripts
@@ -242,4 +257,4 @@ The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virt
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.

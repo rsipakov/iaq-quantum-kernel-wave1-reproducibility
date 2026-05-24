@@ -7,6 +7,7 @@ This repository is a curated reproducibility package for the manuscript Material
 - **2.3. ZZ4 quantum feature map**
 - **2.4. Pair inventory**
 - **2.5. IBM Quantum hardware protocol**
+- **2.6. Execution configurations**
 
 The package preserves the non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis.
 
@@ -33,7 +34,9 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Diagonal entries: 24
 - Hardware backend: `ibm_fez`
 - Primitive: Qiskit Runtime `SamplerV2`
-- Hardware regimes: `H0`, `H1`, `H2`
+- Artifact hardware-regime labels: `H0`, `H1`, `H2`
+- Manuscript execution-configuration labels: `M0`, `M1`, `M2`
+- Label mapping: `M0` = `H0`, `M1` = `H1`, `M2` = `H2`
 - Fidelity circuits: 900 total, i.e. 300 pairs x 3 regimes
 - Originally planned shots: 4096 per circuit
 - Submitted shots in the reported Wave 1 execution: 1024 per circuit
@@ -82,7 +85,7 @@ The configured kernel-reconstruction symmetrization policy is `average_duplicate
 
 Wave 1 IBM Quantum execution used the backend `ibm_fez` and Qiskit Runtime `SamplerV2`. A live backend snapshot recorded backend version 2, 156 physical qubits, operational status, and a passed metadata gate with no detected scope drift.
 
-The runtime protocol used three regimes:
+The runtime protocol used three artifact regimes:
 
 - `H0`: unmitigated Sampler baseline; dynamical decoupling disabled; gate and measurement twirling disabled.
 - `H1`: dynamical decoupling only; `XX` sequence; `alap` scheduling; middle extra-slack distribution; twirling disabled.
@@ -94,13 +97,33 @@ Before submission, the 900 circuits were built and validated, then compiled agai
 
 The actual reported hardware execution used one IBM Quantum job per regime:
 
-| Regime | Job ID | Submitted shots per circuit | Circuits | Pairs |
+| Artifact regime | Job ID | Submitted shots per circuit | Circuits | Pairs |
 | --- | --- | ---: | ---: | ---: |
 | `H0` | `d7vf6n3ack5s73bfc0eg` | 1024 | 300 | 300 |
 | `H1` | `d7vf8ocinasc738u1bhg` | 1024 | 300 | 300 |
 | `H2` | `d7vfbsfmrars73d84u20` | 1024 | 300 | 300 |
 
 The retrieval manifest records all three jobs as `DONE`, with 300 retrieved PUB results per regime. The raw-result artifacts store per-PUB count dictionaries and circuit metadata. The long-form kernel-entry table stores all-zero counts, observed shot counts, and raw finite-shot kernel values. The hardware-kernel manifest records one complete `24 x 24` hardware kernel for each regime, with no missing entries and a measured-diagonal policy.
+
+## Execution configuration label policy
+
+The source artifacts retain the hardware-regime labels `H0`, `H1`, and `H2`. The manuscript uses the labels `M0`, `M1`, and `M2` for execution configurations to avoid confusion between the baseline regime `H0` and statistical null-hypothesis notation. This relabeling is a reporting convention only; it does not define new circuits, new jobs, new kernels, or new analysis outputs.
+
+| Manuscript label | Artifact label | Configuration | Runtime distinction |
+| --- | ---: | --- | --- |
+| `M0 baseline` | `H0` | Sampler baseline | Dynamical decoupling off; gate twirling off; measurement twirling off. |
+| `M1 dynamical decoupling` | `H1` | Sampler + dynamical decoupling | Dynamical decoupling on with `XX`, `alap`, middle slack; twirling off. |
+| `M2 twirling` | `H2` | Sampler + gate/Pauli twirling | Gate twirling on with `active-accum` and automatic randomization; dynamical decoupling and measurement twirling off. |
+
+All artifact filenames, JSON fields, CSV regime columns, raw-result files, kernel matrices, and checksum records remain keyed by `H0`, `H1`, and `H2`. Manuscript tables may report both labels for traceability. For manuscript notation, the label map is
+
+```text
+a(M0) = H0
+a(M1) = H1
+a(M2) = H2
+```
+
+and the hardware kernel for manuscript configuration `m` is the artifact kernel `K_{a(m)}`. The complete Wave 1 analysis set is therefore `{M0, M1, M2}` in manuscript notation and `{H0, H1, H2}` in the persisted artifacts. There is no fourth combined dynamical-decoupling-plus-twirling configuration in Wave 1.
 
 ## Included materials
 
@@ -158,7 +181,7 @@ The retrieval manifest records all three jobs as `DONE`, with 300 retrieved PUB 
 ### IBM hardware protocol and execution metadata
 
 - `metadata/zz4_wave1_runtime_options.json`  
-  Locked Wave 1 runtime options for `H0`, `H1`, and `H2`.
+  Locked Wave 1 runtime options for artifact regimes `H0`, `H1`, and `H2`; these correspond to manuscript execution configurations `M0`, `M1`, and `M2`, respectively.
 
 - `metadata/zz4_wave1_runtime_options_sha256.txt`  
   Checksum for the locked runtime-options artifact.
@@ -232,22 +255,22 @@ The retrieval manifest records all three jobs as `DONE`, with 300 retrieved PUB 
   Hardware-kernel manifest confirming `24 x 24` matrices, no missing entries, measured-diagonal policy, and diagnostic PSD metadata.
 
 - `hardware_kernels/zz4_H0_kernel.npy`  
-  Wave 1 hardware-derived ZZ4 kernel for regime `H0`.
+  Wave 1 hardware-derived ZZ4 kernel for regime `H0` / manuscript configuration `M0`.
 
 - `hardware_kernels/zz4_H1_kernel.npy`  
-  Wave 1 hardware-derived ZZ4 kernel for regime `H1`.
+  Wave 1 hardware-derived ZZ4 kernel for regime `H1` / manuscript configuration `M1`.
 
 - `hardware_kernels/zz4_H2_kernel.npy`  
-  Wave 1 hardware-derived ZZ4 kernel for regime `H2`.
+  Wave 1 hardware-derived ZZ4 kernel for regime `H2` / manuscript configuration `M2`.
 
 - `hardware_kernels/zz4_H0_kernel.csv`  
-  CSV representation of the `H0` hardware-derived kernel.
+  CSV representation of the `H0` / `M0` hardware-derived kernel.
 
 - `hardware_kernels/zz4_H1_kernel.csv`  
-  CSV representation of the `H1` hardware-derived kernel.
+  CSV representation of the `H1` / `M1` hardware-derived kernel.
 
 - `hardware_kernels/zz4_H2_kernel.csv`  
-  CSV representation of the `H2` hardware-derived kernel.
+  CSV representation of the `H2` / `M2` hardware-derived kernel.
 
 - `hardware_kernels/zz4_wave1_kernel_entries_long.csv`  
   Long-form Wave 1 kernel-entry table for count-level inspection.
@@ -334,7 +357,7 @@ If repository files are intentionally updated, regenerate the checksum file from
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.
 
 ## License
 

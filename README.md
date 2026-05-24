@@ -363,9 +363,9 @@ The distortion summary records that all required regimes are reported and that n
 - `scripts/08_build_hardware_kernels.py`
 - `scripts/09_analyze_wave1_distortion.py`
 - `scripts/09b_analyze_wave1_distortion_direct.py`
+- `scripts/09c_wave1_distortion_uncertainty.py`
 - `scripts/10_create_wave1_decision_record.py`
 - `scripts/common.py`
-- `scripts/09c_wave1_distortion_uncertainty.py`
 
 The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. Reproduction of the reported results should not re-submit IBM Quantum hardware jobs unless explicitly authorized by a new decision record.
 
@@ -410,6 +410,22 @@ hardware_analysis/zz4_wave1_distortion_summary.json
 hardware_analysis/zz4_wave1_distortion_summary.md
 ```
 
+
+For the Section 2.8 robustness and uncertainty diagnostics, run:
+
+```bash
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+```
+
+This script writes or updates:
+
+```text
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.json
+```
+
+The uncertainty/robustness outputs provide the directed-versus-unique off-diagonal equivalence check, unit-diagonal sensitivity diagnostics, and leave-one-window-out jackknife contrasts. These are descriptive robustness checks on the frozen `N = 24` window scale, not formal significance tests.
+
 A successful reproduction should report all required regimes `H0`, `H1`, and `H2`, with no failure reasons in `hardware_analysis/zz4_wave1_distortion_summary.json`.
 
 ## Integrity verification
@@ -429,6 +445,8 @@ If repository files are intentionally updated, regenerate the checksum file from
 This package supports kernel-geometry survival and distortion analysis only.
 
 It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. The centered kernel-target alignment values in the distortion analysis are descriptive geometry diagnostics on the frozen subset and are not classifier-performance claims.
+
+The leave-one-window-out jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests.
 
 ## License
 

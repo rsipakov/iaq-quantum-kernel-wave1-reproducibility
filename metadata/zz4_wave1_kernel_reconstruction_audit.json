@@ -1,0 +1,51 @@
+{
+  "artifact_type": "zz4_wave1_kernel_reconstruction_audit",
+  "schema_version": "v9.0.kernel_reconstruction_audit.1",
+  "created_utc": "2026-05-24T06:49:55Z",
+  "purpose": "Independent verification of the positional PUB-to-coordinate mapping and reconstruction QC summaries; no kernel value is modified.",
+  "coordinate_mapping_consistent": true,
+  "total_configurations_checked": 900,
+  "per_pub_audit_csv": "hardware_kernels/zz4_wave1_kernel_reconstruction_audit.csv",
+  "spectral_reference": {
+    "statevector_min_eigenvalue": 0.056457501828920675,
+    "note": "Comparative spectral interpretation is reported with the hardware-distortion results, not here."
+  },
+  "regimes": [
+    {
+      "regime_id": "H0",
+      "manuscript_label": "M0",
+      "n_pubs": 300,
+      "coordinate_matches": 300,
+      "pair_id_matches": 300,
+      "all_consistent": true,
+      "measured_diagonal_mean": 0.938354,
+      "measured_diagonal_min": 0.922852,
+      "measured_diagonal_max": 0.954102,
+      "hardware_min_eigenvalue": 0.4287631110718508
+    },
+    {
+      "regime_id": "H1",
+      "manuscript_label": "M1",
+      "n_pubs": 300,
+      "coordinate_matches": 300,
+      "pair_id_matches": 300,
+      "all_consistent": true,
+      "measured_diagonal_mean": 0.935994,
+      "measured_diagonal_min": 0.922852,
+      "measured_diagonal_max": 0.950195,
+      "hardware_min_eigenvalue": 0.46215593566687874
+    },
+    {
+      "regime_id": "H2",
+      "manuscript_label": "M2",
+      "n_pubs": 300,
+      "coordinate_matches": 300,
+      "pair_id_matches": 300,
+      "all_consistent": true,
+      "measured_diagonal_mean": 0.94401,
+      "measured_diagonal_min": 0.932617,
+      "measured_diagonal_max": 0.958984,
+      "hardware_min_eigenvalue": 0.2321643891477279
+    }
+  ]
+}

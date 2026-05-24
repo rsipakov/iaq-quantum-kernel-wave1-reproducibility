@@ -107,13 +107,13 @@ The retrieval manifest records all three jobs as `DONE`, with 300 retrieved PUB 
 
 ## Execution configuration label policy
 
-The source artifacts retain the hardware-regime labels `H0`, `H1`, and `H2`. The manuscript uses the labels `M0`, `M1`, and `M2` for execution configurations to avoid confusion between the baseline regime `H0` and statistical null-hypothesis notation. This relabeling is a reporting convention only; it does not define new circuits, new jobs, new kernels, or new analysis outputs.
+The source artifacts retain the hardware-regime labels H0, H1, and H2. The manuscript uses manuscript-level execution-configuration labels M0, M1, and M2 to avoid confusion between the artifact label H0 and the conventional null-hypothesis symbol H_0. This relabeling is a reporting convention only; it does not define new circuits, new jobs, new kernels, or new analysis outputs.
 
 | Manuscript label | Artifact label | Configuration | Runtime distinction |
 | --- | ---: | --- | --- |
-| `M0 baseline` | `H0` | Sampler baseline | Dynamical decoupling off; gate twirling off; measurement twirling off. |
-| `M1 dynamical decoupling` | `H1` | Sampler + dynamical decoupling | Dynamical decoupling on with `XX`, `alap`, middle slack; twirling off. |
-| `M2 twirling` | `H2` | Sampler + gate/Pauli twirling | Gate twirling on with `active-accum` and automatic randomization; dynamical decoupling and measurement twirling off. |
+| `M0` | `H0` | Sampler baseline | Dynamical decoupling off; gate twirling off; measurement twirling off. |
+| `M1` | `H1` | Sampler + dynamical decoupling | Dynamical decoupling on with `XX`, `alap`, middle slack; twirling off. |
+| `M2` | `H2` | Sampler + gate/Pauli twirling | Gate twirling on with `active-accum` and automatic randomization; dynamical decoupling and measurement twirling off. |
 
 All artifact filenames, JSON fields, CSV regime columns, raw-result files, kernel matrices, and checksum records remain keyed by `H0`, `H1`, and `H2`. Manuscript tables may report both labels for traceability. For manuscript notation, the label map is
 

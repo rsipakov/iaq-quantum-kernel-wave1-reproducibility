@@ -1,0 +1,92 @@
+{
+  "artifact_type": "zz_only_step9_live_backend_metadata",
+  "schema_version": "v9.0.live_backend_metadata.1",
+  "created_utc": "2026-05-09T08:33:44Z",
+  "operator_identifier": "unspecified",
+  "selected_backend": "ibm_fez",
+  "backend_name": "ibm_fez",
+  "backend_version": 2,
+  "backend_num_qubits": 156,
+  "backend_status_or_availability_snapshot": {
+    "backend_name": "ibm_fez",
+    "backend_version": "",
+    "operational": true,
+    "pending_jobs": 0,
+    "status_msg": "active"
+  },
+  "operation_names": [
+    "cz",
+    "delay",
+    "id",
+    "if_else",
+    "measure",
+    "reset",
+    "rz",
+    "sx",
+    "x"
+  ],
+  "dt": 4e-09,
+  "online_date": "2024-05-14 04:00:00+00:00",
+  "queue_or_selection_rationale": "v9 package selected backend retained unless live metadata gate fails.",
+  "qiskit_version": "2.4.1",
+  "qiskit_ibm_runtime_version": "0.46.1",
+  "numpy_version": "2.4.4",
+  "pandas_version": "3.0.2",
+  "scipy_version": "1.17.1",
+  "matplotlib_version": "3.10.9",
+  "primitive_name": "SamplerV2",
+  "primitive_version_or_class": "qiskit_ibm_runtime.sampler.SamplerV2",
+  "runtime_options_H0": {
+    "default_shots": 4096,
+    "dynamical_decoupling": {
+      "enable": false
+    },
+    "twirling": {
+      "enable_gates": false,
+      "enable_measure": false
+    }
+  },
+  "runtime_options_H1": {
+    "default_shots": 4096,
+    "dynamical_decoupling": {
+      "enable": true,
+      "sequence_type": "XX",
+      "scheduling_method": "alap",
+      "extra_slack_distribution": "middle",
+      "skip_reset_qubits": false
+    },
+    "twirling": {
+      "enable_gates": false,
+      "enable_measure": false
+    }
+  },
+  "runtime_options_H2": {
+    "default_shots": 4096,
+    "dynamical_decoupling": {
+      "enable": false
+    },
+    "twirling": {
+      "enable_gates": true,
+      "enable_measure": false,
+      "num_randomizations": "auto",
+      "shots_per_randomization": "auto",
+      "strategy": "active-accum"
+    }
+  },
+  "runtime_options_sha256_H0": "c962a9bc5dcbbf3b24b6e0d0416fd0411dee5291889ea7dc9bd54cb14ee134af",
+  "runtime_options_sha256_H1": "f3db14fe06202c2a9385947a052d52904e6594668dc407ac5fdd6ae4d0032ebd",
+  "runtime_options_sha256_H2": "74bf3e5285a619ead97b0fc252eb5228263dab169863a74f795f3b3bf97e37e7",
+  "runtime_options_all_sha256": "5b135e935e487c591b5b4fcbaa5230ac2d258f53c2405c40276bd9b2054746ec",
+  "shots_planned_per_circuit": 4096,
+  "pair_count_expected": 300,
+  "circuit_count_expected": 900,
+  "execution_manifest_path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_execution_manifest.json",
+  "execution_manifest_sha256": "821636e05bfc2ca4f8ecbf35f2c8ff1dd36e20e6c03e2b95f96adc33c7639b64",
+  "backend_selection_path": "step6b_hardware_subset_package/outputs/metadata/zz_only_step8_backend_selection.json",
+  "backend_selection_sha256": "cd2fb460b725271e1131b5e10ef98330f5feb3d955f51bd3613c8109f6c132c0",
+  "token_value_absent_from_artifact": true,
+  "scope_drift_detected": false,
+  "metadata_capture_status": "passed",
+  "metadata_gate_pass": true,
+  "failure_reasons": []
+}

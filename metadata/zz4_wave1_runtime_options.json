@@ -1,0 +1,72 @@
+{
+  "artifact_type": "zz4_wave1_runtime_options",
+  "schema_version": "v9.0.runtime_options.1",
+  "primitive_name": "SamplerV2",
+  "shots_planned_per_circuit": 4096,
+  "regimes": {
+    "H0": {
+      "regime_id": "H0",
+      "regime_label": "Sampler unmitigated baseline",
+      "sampler_options": {
+        "default_shots": 4096,
+        "dynamical_decoupling": {
+          "enable": false
+        },
+        "twirling": {
+          "enable_gates": false,
+          "enable_measure": false
+        }
+      }
+    },
+    "H1": {
+      "regime_id": "H1",
+      "regime_label": "Sampler + dynamical decoupling only",
+      "sampler_options": {
+        "default_shots": 4096,
+        "dynamical_decoupling": {
+          "enable": true,
+          "sequence_type": "XX",
+          "scheduling_method": "alap",
+          "extra_slack_distribution": "middle",
+          "skip_reset_qubits": false
+        },
+        "twirling": {
+          "enable_gates": false,
+          "enable_measure": false
+        }
+      }
+    },
+    "H2": {
+      "regime_id": "H2",
+      "regime_label": "Sampler + Pauli/gate twirling only",
+      "sampler_options": {
+        "default_shots": 4096,
+        "dynamical_decoupling": {
+          "enable": false
+        },
+        "twirling": {
+          "enable_gates": true,
+          "enable_measure": false,
+          "num_randomizations": "auto",
+          "shots_per_randomization": "auto",
+          "strategy": "active-accum"
+        }
+      }
+    }
+  },
+  "compatibility_note": "H1 and H2 are intentionally separate because Sampler gate twirling and dynamical decoupling are not combined in Wave 1.",
+  "created_utc": "2026-05-09T08:33:39Z",
+  "operator_identifier": "unspecified",
+  "selected_backend": "ibm_fez",
+  "pair_count_expected": 300,
+  "circuit_count_expected": 900,
+  "rma_excluded": true,
+  "wave2_excluded": true,
+  "runtime_options_sha256_H0": "c962a9bc5dcbbf3b24b6e0d0416fd0411dee5291889ea7dc9bd54cb14ee134af",
+  "runtime_options_sha256_H1": "f3db14fe06202c2a9385947a052d52904e6594668dc407ac5fdd6ae4d0032ebd",
+  "runtime_options_sha256_H2": "74bf3e5285a619ead97b0fc252eb5228263dab169863a74f795f3b3bf97e37e7",
+  "runtime_options_all_sha256": "fedd44b873cb5b566e3119ba13406bc2685a8127d425a6b5c03bb4cb1d18d7d9",
+  "options_explicit_and_hashed": true,
+  "failure_reasons": [],
+  "token_value_absent_from_artifact": true
+}

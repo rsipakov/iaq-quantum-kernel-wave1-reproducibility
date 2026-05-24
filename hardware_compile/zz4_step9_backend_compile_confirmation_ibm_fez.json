@@ -1,0 +1,28 @@
+{
+  "artifact_type": "zz4_step9_backend_compile_confirmation",
+  "schema_version": "v9.0.backend_compile.1",
+  "created_utc": "2026-05-09T08:33:52Z",
+  "operator_identifier": "unspecified",
+  "selected_backend": "ibm_fez",
+  "compiled_circuit_count": 900,
+  "sample_limit": 0,
+  "max_depth": 102,
+  "max_two_qubit_count": 22,
+  "max_num_qubits_in_compiled_circuit": 156,
+  "resource_gate_pass": true,
+  "resource_gate": {
+    "max_active_qubits": 4,
+    "max_depth": 102,
+    "max_two_qubit_count": 22,
+    "two_qubit_gate_names": [
+      "cx",
+      "cz",
+      "ecr",
+      "rzz"
+    ]
+  },
+  "failure_reasons": [],
+  "rma_excluded": true,
+  "wave2_excluded": true,
+  "token_value_absent_from_artifact": true
+}

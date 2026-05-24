@@ -9,6 +9,7 @@ This repository is a curated reproducibility package for the manuscript Material
 - **2.5. IBM Quantum hardware protocol**
 - **2.6. Execution configurations**
 - **2.7. Kernel reconstruction**
+- **2.8. Geometry and distortion metrics**
 
 The package preserves the non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis.
 
@@ -31,8 +32,9 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Frozen hardware split: 16 train windows + 8 test windows
 - Statevector reference: exact ZZ4 squared-fidelity kernel
 - Pair inventory: 300 unordered upper-triangular pairs including diagonal entries
-- Unique off-diagonal pairs: 276
+- Unique unordered off-diagonal pairs: 276
 - Diagonal entries: 24
+- Off-diagonal matrix entries used for distortion metrics: 552 directed off-diagonal entries (`i != j`)
 - Hardware backend: `ibm_fez`
 - Primitive: Qiskit Runtime `SamplerV2`
 - Artifact hardware-regime labels: `H0`, `H1`, `H2`
@@ -46,10 +48,11 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Kernel-reconstruction diagonal policy: measured diagonal
 - Kernel-reconstruction symmetrization policy: average duplicate entries, then mirror
 - PSD policy: diagnostic only; do not hide the uncorrected minimum eigenvalue
+- Geometry metrics: Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, and centered kernel-target alignment
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
-The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the pair inventory, or the kernel-reconstruction rules.
+The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the pair inventory, the reconstruction rules, or the distortion-metric definitions.
 
 ## Frozen subset policy
 
@@ -151,6 +154,34 @@ The kernel manifest confirms that all three matrices are present, each has shape
 | `H0` | `M0` | 0.428763111071851 | 0 | 8.583547173776992e-15 |
 | `H1` | `M1` | 0.46215593566687874 | 0 | 9.259630923313487e-15 |
 | `H2` | `M2` | 0.23216438914772836 | 0 | 1.070945942310601e-14 |
+
+## Geometry and distortion metrics
+
+The Wave 1 distortion analysis compares each reconstructed hardware kernel with the statevector reference kernel on the off-diagonal matrix set `i != j`. For `N = 24`, this gives 552 directed off-diagonal entries. Because the matrices are symmetric, this is the duplicate-weighted representation of the 276 unique unordered off-diagonal pairs; the correlation coefficients and mean loss summaries are descriptive geometry summaries, not independent-sample inferential tests.
+
+The direct reproduction script computes the following metrics:
+
+- Spearman correlation between off-diagonal statevector and hardware entries.
+- Pearson correlation between off-diagonal statevector and hardware entries.
+- Mean absolute error and root-mean-squared error against the statevector kernel.
+- Median absolute error and maximum absolute error against the statevector kernel.
+- Hardware and statevector off-diagonal variances and their difference.
+- Effective rank of the hardware and statevector kernels.
+- Centered kernel alignment between each hardware kernel and the statevector reference.
+- Centered kernel-target alignment using the frozen-subset binary labels.
+- PSD diagnostics retained from the matrix-valued kernel check.
+
+The persisted Wave 1 distortion metrics are:
+
+| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Effective rank |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.741297 | 0.827253 | 0.049036 | 0.087770 | 0.026154 | 0.568666 | 0.933391 | 21.184209 |
+| `M1` | `H1` | 0.774951 | 0.842774 | 0.047290 | 0.086428 | 0.026143 | 0.563897 | 0.937373 | 21.217026 |
+| `M2` | `H2` | 0.943744 | 0.986203 | 0.025726 | 0.042727 | 0.016161 | 0.263978 | 0.988668 | 19.788170 |
+
+The statevector off-diagonal variance is 0.0186558. Hardware off-diagonal variances are 0.0053865 (`H0`), 0.0052842 (`H1`), and 0.0097585 (`H2`). The statevector effective rank is 17.971892. The statevector kernel-target alignment is 0.158511; hardware KTA values are 0.183308 (`H0`), 0.181463 (`H1`), and 0.171025 (`H2`). These label-alignment values are geometry diagnostics on the frozen subset only and are not classifier-performance claims.
+
+The distortion summary records that all required regimes are reported and that no failure reasons were recorded.
 
 ## Included materials
 
@@ -305,10 +336,10 @@ The kernel manifest confirms that all three matrices are present, each has shape
 ### Hardware analysis
 
 - `hardware_analysis/zz4_wave1_distortion_summary.json`  
-  Summary of Wave 1 statevector-to-hardware kernel distortion metrics.
+  Summary of Wave 1 statevector-to-hardware kernel distortion metrics, reporting all required regimes and no failure reasons.
 
 - `hardware_analysis/zz4_wave1_distortion_metrics.csv`  
-  Tabular Wave 1 distortion metrics.
+  Tabular Wave 1 geometry and distortion metrics.
 
 - `hardware_analysis/zz4_wave1_distortion_summary.md`  
   Human-readable Wave 1 distortion summary.
@@ -372,6 +403,8 @@ hardware_analysis/zz4_wave1_distortion_summary.json
 hardware_analysis/zz4_wave1_distortion_summary.md
 ```
 
+A successful reproduction should report all required regimes `H0`, `H1`, and `H2`, with no failure reasons in `hardware_analysis/zz4_wave1_distortion_summary.json`.
+
 ## Integrity verification
 
 Verify the package state with:
@@ -388,7 +421,7 @@ If repository files are intentionally updated, regenerate the checksum file from
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. The centered kernel-target alignment values in the distortion analysis are descriptive geometry diagnostics on the frozen subset and are not classifier-performance claims.
 
 ## License
 

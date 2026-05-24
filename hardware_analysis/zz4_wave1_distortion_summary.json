@@ -1,6 +1,6 @@
 {
   "artifact_type": "zz4_wave1_distortion_summary",
-  "created_utc": "2026-05-21T08:06:27Z",
+  "created_utc": "2026-05-24T22:09:46Z",
   "analysis_mode": "direct_npy_loader_budget_safe_1024_shots",
   "all_required_regimes_reported": true,
   "regimes_reported": [

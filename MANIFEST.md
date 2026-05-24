@@ -11,6 +11,7 @@ The package supports the manuscript Materials and Methods subsections:
 - **2.5. IBM Quantum hardware protocol**
 - **2.6. Execution configurations**
 - **2.7. Kernel reconstruction**
+- **2.8. Geometry and distortion metrics**
 
 ## Scope
 
@@ -25,8 +26,9 @@ The package supports the manuscript Materials and Methods subsections:
 | Frozen hardware split | 16 train windows + 8 test windows |
 | Statevector reference | Exact ZZ4 squared-fidelity kernel |
 | Pair inventory | 300 unordered upper-triangular pairs including diagonal entries |
-| Unique off-diagonal pairs | 276 |
+| Unique unordered off-diagonal pairs | 276 |
 | Diagonal entries | 24 |
+| Off-diagonal matrix entries used for distortion metrics | 552 directed entries with `i != j` |
 | IBM backend | `ibm_fez` |
 | IBM primitive | Qiskit Runtime `SamplerV2` |
 | Artifact hardware-regime labels | `H0`, `H1`, `H2` |
@@ -42,11 +44,12 @@ The package supports the manuscript Materials and Methods subsections:
 | Kernel-reconstruction diagonal policy | `measured_diagonal` |
 | Kernel-reconstruction symmetrization policy | `average_duplicate_entries_then_mirror` |
 | PSD policy | Diagnostic only; uncorrected minimum eigenvalue retained |
+| Geometry/distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, off-diagonal variance, effective rank, CKA, KTA |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
 | Claim scope | No quantum-advantage claim and no hardware classifier-superiority claim |
 
-The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This shot count affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the 300-row pair inventory, or the kernel-reconstruction rules.
+The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This shot count affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the 300-row pair inventory, the kernel-reconstruction rules, or the distortion-metric definitions.
 
 ## Frozen subset policy
 
@@ -78,7 +81,7 @@ Wave 2 execution is excluded from the current frozen-subset reproduction unless 
 
 | Path | Purpose |
 | --- | --- |
-| `frozen_subset/hardware_subset_event_onset_next_1h.csv` | Fixed `N = 24` subset of observation windows used for the Wave 1 ZZ4 hardware pilot. |
+| `frozen_subset/hardware_subset_event_onset_next_1h.csv` | Fixed `N = 24` subset of observation windows used for the Wave 1 ZZ4 hardware pilot. Contains `hardware_row_order` and `y_event_onset_next_1h`, which are used by the direct distortion-analysis script for label alignment. |
 | `metadata/zz_only_pilot_operational_plan.json` | Defines the ZZ-only hardware-pilot scope, frozen-subset policy, allowed claims, pair counts, and Wave 2 restrictions. |
 | `metadata/zz_only_step8_execution_manifest.json` | Records the authorized hardware execution scope: `F_quantum_4`, `ZZ4`, frozen `N = 24`, pair counts, planned shots, pair-inventory checksum, and the three allowed regimes. |
 | `metadata/v9_audit_freeze_manifest.json` | Records the audit/freeze state, allowed subset, allowed feature set, allowed kernel, threshold policy, and immutable scope constraints. |
@@ -129,7 +132,7 @@ The configured kernel-reconstruction symmetrization policy is `average_duplicate
 | Path | Purpose |
 | --- | --- |
 | `metadata/statevector_reference_metadata.json` | Defines the statevector reference metadata for the ZZ4 feature order and the exact squared-fidelity kernel. |
-| `statevector_reference/zz4_K_all_all.npy` | Full `24 x 24` ZZ4 statevector reference kernel for the frozen subset. |
+| `statevector_reference/zz4_K_all_all.npy` | Full `24 x 24` ZZ4 statevector reference kernel for the frozen subset; used as the reference matrix in the distortion analysis. |
 
 ## Feature-map and execution-scope configuration
 
@@ -193,9 +196,9 @@ All artifact filenames, JSON fields, CSV regime columns, raw-result files, kerne
 | --- | --- |
 | `hardware_kernels/zz4_wave1_kernel_entries_long.csv` | Long-form Wave 1 kernel-entry table recording regime, PUB order, circuit ID, pair ID, coordinates, all-zero bitstring, all-zero count, observed shots, and raw kernel value. |
 | `metadata/zz4_wave1_kernel_manifest.json` | Confirms that the reconstructed hardware kernels are `24 x 24`, have no missing entries, use a measured-diagonal policy, and retain diagnostic PSD metadata. |
-| `hardware_kernels/zz4_H0_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H0` / manuscript `M0`. |
-| `hardware_kernels/zz4_H1_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H1` / manuscript `M1`. |
-| `hardware_kernels/zz4_H2_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H2` / manuscript `M2`. |
+| `hardware_kernels/zz4_H0_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H0` / manuscript `M0`; input to distortion analysis. |
+| `hardware_kernels/zz4_H1_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H1` / manuscript `M1`; input to distortion analysis. |
+| `hardware_kernels/zz4_H2_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H2` / manuscript `M2`; input to distortion analysis. |
 | `hardware_kernels/zz4_H0_kernel.csv` | CSV representation of the `H0` / `M0` hardware-derived kernel. |
 | `hardware_kernels/zz4_H1_kernel.csv` | CSV representation of the `H1` / `M1` hardware-derived kernel. |
 | `hardware_kernels/zz4_H2_kernel.csv` | CSV representation of the `H2` / `M2` hardware-derived kernel. |
@@ -214,9 +217,27 @@ The PSD calculation is diagnostic only. The uncorrected kernels remain the repor
 
 | Path | Purpose |
 | --- | --- |
-| `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics; records that all required regimes `H0`, `H1`, and `H2` are reported. |
-| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 distortion metrics for comparing hardware kernels against the statevector reference across `H0`, `H1`, and `H2`. |
-| `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary. |
+| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. Contains one row per artifact regime (`H0`, `H1`, `H2`) and columns for Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, centered kernel-target alignment, and PSD diagnostics. |
+| `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. Records `analysis_mode = direct_npy_loader_budget_safe_1024_shots`, all required regimes reported, input/output paths, no failure reasons, and the interpretation policy. |
+| `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary with the primary metric table. |
+
+### Geometry-distortion metric summary
+
+| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Effective rank |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.741297 | 0.827253 | 0.049036 | 0.087770 | 0.026154 | 0.568666 | 0.933391 | 21.184209 |
+| `M1` | `H1` | 0.774951 | 0.842774 | 0.047290 | 0.086428 | 0.026143 | 0.563897 | 0.937373 | 21.217026 |
+| `M2` | `H2` | 0.943744 | 0.986203 | 0.025726 | 0.042727 | 0.016161 | 0.263978 | 0.988668 | 19.788170 |
+
+Additional persisted values:
+
+| Metric | Statevector | H0 / M0 | H1 / M1 | H2 / M2 |
+| --- | ---: | ---: | ---: | ---: |
+| Off-diagonal variance | 0.0186558 | 0.0053865 | 0.0052842 | 0.0097585 |
+| Effective rank | 17.971892 | 21.184209 | 21.217026 | 19.788170 |
+| Centered kernel-target alignment | 0.158511 | 0.183308 | 0.181463 | 0.171025 |
+
+The centered kernel-target alignment values are diagnostic label-geometry summaries only. They are not hardware classifier-performance metrics and do not support a hardware-superiority or quantum-advantage claim.
 
 ## Reproduction scripts
 
@@ -231,8 +252,8 @@ The PSD calculation is diagnostic only. The uncorrected kernels remain the repor
 | `scripts/06_submit_wave1_jobs.py` | Submits Wave 1 hardware jobs. Included for traceability only; reproduction should not re-submit jobs unless explicitly authorized. |
 | `scripts/07_retrieve_wave1_results.py` | Retrieves Wave 1 hardware results and writes regime-specific raw-result JSON artifacts. |
 | `scripts/08_build_hardware_kernels.py` | Builds hardware-derived kernels from retrieved Wave 1 results. |
-| `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion. |
-| `scripts/09b_analyze_wave1_distortion_direct.py` | Direct Wave 1 distortion-analysis script adapted for the curated reproduction layout. |
+| `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion in the source repository layout. |
+| `scripts/09b_analyze_wave1_distortion_direct.py` | Direct Wave 1 distortion-analysis script adapted for the curated reproduction layout. Reads the frozen subset, statevector kernel, and three hardware-kernel NumPy arrays, then writes the hardware-analysis artifacts. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts, including all-zero probability extraction, matrix CSV writing, and PSD diagnostic routines. |
 
@@ -251,7 +272,7 @@ The PSD calculation is diagnostic only. The uncorrected kernels remain the repor
 | `README.md` | Main reproduction-package description. |
 | `MANIFEST.md` | This artifact manifest. |
 | `CITATION.cff` | Citation metadata for the reproduction package. |
-| `LICENSE` | License file. |
+| `LICENSE` | License file. No update is required for the addition of Section 2.8 documentation. |
 | `.gitignore` | Local and sensitive-file exclusion rules. |
 
 ## Decision-record artifacts
@@ -274,4 +295,4 @@ The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virt
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. The centered kernel-target alignment values in the distortion analysis are descriptive geometry diagnostics on the frozen subset and are not classifier-performance claims.

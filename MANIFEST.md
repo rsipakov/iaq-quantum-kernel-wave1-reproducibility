@@ -220,6 +220,8 @@ The PSD calculation is diagnostic only. The uncorrected kernels remain the repor
 | `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. Contains one row per artifact regime (`H0`, `H1`, `H2`) and columns for Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, centered kernel-target alignment, and PSD diagnostics. |
 | `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. Records `analysis_mode = direct_npy_loader_budget_safe_1024_shots`, all required regimes reported, input/output paths, no failure reasons, and the interpretation policy. |
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary with the primary metric table. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Leave-one-window-out jackknife, paired contrasts (`M1-M0`, `M2-M1`, `M2-M0`), diagonal-robustness diagnostics, and directed-vs-unique off-diagonal equivalence checks for Section 2.8. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary recording the resampling unit, input paths, diagonal-sensitivity policy, and descriptive-only inferential policy. |
 
 ### Geometry-distortion metric summary
 
@@ -256,6 +258,7 @@ The centered kernel-target alignment values are diagnostic label-geometry summar
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct Wave 1 distortion-analysis script adapted for the curated reproduction layout. Reads the frozen subset, statevector kernel, and three hardware-kernel NumPy arrays, then writes the hardware-analysis artifacts. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts, including all-zero probability extraction, matrix CSV writing, and PSD diagnostic routines. |
+| `scripts/09c_wave1_distortion_uncertainty.py` | Computes Section 2.8 robustness diagnostics: leave-one-window-out jackknife SEs, paired contrasts, unit-diagonal sensitivity, and directed-vs-unique off-diagonal equivalence. |
 
 ## Environment and verification artifacts
 
@@ -296,3 +299,5 @@ The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virt
 This package supports kernel-geometry survival and distortion analysis only.
 
 It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. The centered kernel-target alignment values in the distortion analysis are descriptive geometry diagnostics on the frozen subset and are not classifier-performance claims.
+
+The leave-one-window-out jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests.

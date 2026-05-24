@@ -344,6 +344,12 @@ The distortion summary records that all required regimes are reported and that n
 - `hardware_analysis/zz4_wave1_distortion_summary.md`  
   Human-readable Wave 1 distortion summary.
 
+- `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`  
+  Leave-one-window-out jackknife, paired contrast, diagonal-robustness, and directed-vs-unique off-diagonal equivalence diagnostics for the Wave 1 geometry-distortion analysis.
+
+- `hardware_analysis/zz4_wave1_distortion_uncertainty.json`  
+  Machine-readable summary of the uncertainty/robustness analysis, including input paths, resampling unit, diagonal-sensitivity policy, and inferential limitation.
+
 ### Reproduction scripts
 
 - `scripts/00_artifact_lock.py`
@@ -359,6 +365,7 @@ The distortion summary records that all required regimes are reported and that n
 - `scripts/09b_analyze_wave1_distortion_direct.py`
 - `scripts/10_create_wave1_decision_record.py`
 - `scripts/common.py`
+- `scripts/09c_wave1_distortion_uncertainty.py`
 
 The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. Reproduction of the reported results should not re-submit IBM Quantum hardware jobs unless explicitly authorized by a new decision record.
 

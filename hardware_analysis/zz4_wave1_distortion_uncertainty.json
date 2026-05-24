@@ -1,0 +1,37 @@
+{
+  "artifact_type": "zz4_wave1_distortion_uncertainty",
+  "created_utc": "2026-05-24T22:38:50Z",
+  "method": "leave_one_window_out_jackknife_and_diagonal_robustness",
+  "resampling_unit": "frozen_subset_window",
+  "n_windows": 24,
+  "regimes": [
+    "H0",
+    "H1",
+    "H2"
+  ],
+  "alias": {
+    "H0": "M0",
+    "H1": "M1",
+    "H2": "M2"
+  },
+  "inputs": {
+    "statevector_kernel": "statevector_reference/zz4_K_all_all.npy",
+    "labels": "frozen_subset/hardware_subset_event_onset_next_1h.csv",
+    "hardware_kernels": [
+      "hardware_kernels/zz4_H0_kernel.npy",
+      "hardware_kernels/zz4_H1_kernel.npy",
+      "hardware_kernels/zz4_H2_kernel.npy"
+    ]
+  },
+  "outputs": {
+    "csv": "hardware_analysis/zz4_wave1_distortion_uncertainty.csv",
+    "json": "hardware_analysis/zz4_wave1_distortion_uncertainty.json"
+  },
+  "inferential_policy": "Descriptive robustness and window-level resampling only; not a formal significance test and not a classifier-performance claim.",
+  "diagonal_policy": "Reported kernels retain measured diagonal; unit-diagonal calculations are sensitivity checks only.",
+  "notes": [
+    "Scalar off-diagonal metrics use directed i != j entries.",
+    "Directed-vs-unique off-diagonal equivalence is checked for symmetric kernels.",
+    "Paired contrasts include M1-M0, M2-M1, and M2-M0."
+  ]
+}

@@ -45,9 +45,11 @@ def main(root: Path) -> int:
 
         coord_matches = 0
         pair_matches = 0
+        randomization_counts = set()
         for q, entry in enumerate(entries):
             idx_row = regime_index[q]
-            cm = entry["metadata"]["circuit_metadata"]
+            md = entry["metadata"]
+            cm = md["circuit_metadata"]
             ci_i, ci_j = int(idx_row["i"]), int(idx_row["j"])
             ci_pair = idx_row["pair_id"]
             md_i, md_j = int(cm["i"]), int(cm["j"])
@@ -56,6 +58,12 @@ def main(root: Path) -> int:
             pair_ok = ci_pair == md_pair
             coord_matches += int(coord_ok)
             pair_matches += int(pair_ok)
+            # Realized twirling-randomization count, when recorded by the primitive.
+            for source in (md, cm):
+                for key in ("num_randomizations", "randomizations_realized",
+                            "realized_randomizations", "randomizations"):
+                    if key in source and source[key] is not None:
+                        randomization_counts.add(int(source[key]))
             audit_rows.append({
                 "regime_id": regime,
                 "pub_order": q,
@@ -83,6 +91,7 @@ def main(root: Path) -> int:
             "measured_diagonal_min": round(float(diag.min()), 6),
             "measured_diagonal_max": round(float(diag.max()), 6),
             "hardware_min_eigenvalue": hw_min_eig,
+            "num_randomizations_unique": sorted(randomization_counts),
         })
 
     all_consistent = all(r["all_consistent"] for r in summary_regimes)
@@ -95,7 +104,7 @@ def main(root: Path) -> int:
 
     summary = {
         "artifact_type": "zz4_wave1_kernel_reconstruction_audit",
-        "schema_version": "v9.0.kernel_reconstruction_audit.1",
+        "schema_version": "v9.0.kernel_reconstruction_audit.2",
         "created_utc": utc_now(),
         "purpose": "Independent verification of the positional PUB-to-coordinate mapping and reconstruction QC summaries; no kernel value is modified.",
         "coordinate_mapping_consistent": all_consistent,

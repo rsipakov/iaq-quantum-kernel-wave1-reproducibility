@@ -281,11 +281,6 @@ The retrieval manifest records all three jobs as `DONE`, with 300 retrieved PUB 
 
 The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. Reproduction of the reported results should not re-submit IBM Quantum hardware jobs unless explicitly authorized by a new decision record.
 
-### Manuscript support
-
-- `manuscript/section_2_4_pair_inventory.md`
-- `manuscript/section_2_5_ibm_quantum_hardware_protocol.md`
-
 ### Environment, verification, and metadata
 
 - `environment/python_version.txt`

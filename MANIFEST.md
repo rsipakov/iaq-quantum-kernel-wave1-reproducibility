@@ -212,13 +212,6 @@ The configured kernel-reconstruction symmetrization policy is `average_duplicate
 | `environment/pip_freeze.txt` | Package-freeze record documenting the Python environment. |
 | `checksums/SHA256SUMS.txt` | SHA-256 checksum manifest for verifying the reproduction package state. |
 
-## Manuscript support artifacts
-
-| Path | Purpose |
-| --- | --- |
-| `manuscript/section_2_4_pair_inventory.md` | Manuscript-ready text for Section 2.4, Pair inventory. |
-| `manuscript/section_2_5_ibm_quantum_hardware_protocol.md` | Manuscript-ready text for Section 2.5, IBM Quantum hardware protocol. |
-
 ## Repository metadata
 
 | Path | Purpose |

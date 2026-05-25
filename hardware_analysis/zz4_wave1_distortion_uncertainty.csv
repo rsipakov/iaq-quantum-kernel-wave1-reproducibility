@@ -35,23 +35,29 @@ leave_one_window_out_jackknife,spearman,M0,H0,0.741297081842571,0.05166885705375
 leave_one_window_out_jackknife,pearson,M0,H0,0.8272527142734243,0.0859443262766636,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,mae,M0,H0,0.04903588514843187,0.007897398198223937,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,cka,M0,H0,0.9333906746578973,0.021873441808285838,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,kta_centered,M0,H0,0.18330845936020965,0.03622250597571744,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,spearman,M1,H1,0.7749509552911102,0.045891023259876346,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,pearson,M1,H1,0.8427741783413913,0.06277675376939496,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,mae,M1,H1,0.04728950462019737,0.00829447068845154,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,cka,M1,H1,0.9373725928446407,0.019000594525387143,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,kta_centered,M1,H1,0.18146337847595853,0.035045211846422564,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,spearman,M2,H2,0.9437436780691296,0.012376311673864831,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,pearson,M2,H2,0.9862028716378276,0.004459596499477841,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,mae,M2,H2,0.025725586521733776,0.003548693125357637,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,cka,M2,H2,0.9886681278100088,0.00256701968543053,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,kta_centered,M2,H2,0.17102484410377672,0.03596248412517803,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
 paired_jackknife_contrast,spearman,,,,,offdiagonal_only,M1-M0,0.03365387344853921,0.01714674138081033,1.962697908665184,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M1-M0,0.015521464067967061,0.026274419030863964,0.5907443300548092,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,mae,,,,,offdiagonal_only,M1-M0,-0.0017463805282345035,0.001754118141940409,-0.995588886791088,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M1-M0,0.003981918186743427,0.006352209634664499,0.6268556007682416,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M1-M0,-0.0018450808842511157,0.005620873382650389,-0.32825519428105526,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,spearman,,,,,offdiagonal_only,M2-M1,0.16879272277801938,0.04280048977562112,3.943710075816997,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M2-M1,0.14342869329643626,0.059756860352307074,2.4002046367701917,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,mae,,,,,offdiagonal_only,M2-M1,-0.021563918098463593,0.0050119937433453785,-4.302463092076852,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M2-M1,0.051295534965368095,0.016621093966445115,3.0861708061409314,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M2-M1,-0.010438534372181812,0.013435522037200411,-0.7769355253394317,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,spearman,,,,,offdiagonal_only,M2-M0,0.20244659622655858,0.04988991625448429,4.057866026350805,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M2-M0,0.15895015736440332,0.08293699972115345,1.9165168489192692,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,mae,,,,,offdiagonal_only,M2-M0,-0.023310298626698096,0.004719830045904061,-4.938800422893854,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M2-M0,0.05527745315211152,0.019542775411780795,2.828536478948078,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M2-M0,-0.012283615256432928,0.014087845055608015,-0.8719300367051618,Descriptive paired jackknife contrast; not a significance test.

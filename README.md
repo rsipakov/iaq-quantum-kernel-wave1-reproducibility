@@ -59,7 +59,7 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Section 2.10 robustness: KTA diagonal sensitivity plus leave-one-window-out centered-KTA jackknife and paired KTA contrasts
 - Section 2.11 focus: joint CKA/KTA tension analysis comparing statevector-geometry preservation with centered label alignment
 - Section 2.11 derived quantities: `CKA loss = 1 - CKA` and `Delta_KTA = KTA_hardware - KTA_statevector`
-- Section 2.11 result: `M2/H2` best preserves statevector geometry and has the smallest KTA uplift, while `M0/H0` has the largest raw hardware KTA
+- Section 2.11 result: `M2/H2` best preserves statevector geometry and has the smallest KTA uplift, while `M0/H0` has the largest absolute centered hardware KTA
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
@@ -381,7 +381,7 @@ KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, no
 
 ## Section 2.11: KTA/CKA tension analysis
 
-Section 2.11 combines the CKA and centered-KTA results without introducing new data artifacts. It compares the configuration that best preserves the intended statevector geometry with the configuration that maximizes raw centered hardware label alignment.
+Section 2.11 combines the CKA and centered-KTA results without introducing new data artifacts. It compares the configuration that best preserves the intended statevector geometry with the configuration that maximizes the absolute centered hardware label alignment.
 
 The derived quantities are:
 
@@ -398,7 +398,7 @@ The Section 2.11 point estimates are:
 | `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 |
 | `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 |
 
-The point-estimate ranks are in tension: `M2/H2` is best by CKA and has the smallest KTA uplift relative to the statevector, while `M0/H0` has the highest absolute hardware KTA. Thus, maximizing raw hardware KTA alone would select the most distorted configuration by CKA, whereas preserving the intended statevector geometry selects `M2/H2`.
+The point-estimate ranks are in tension: `M2/H2` is best by CKA and has the smallest KTA uplift relative to the statevector, while `M0/H0` has the highest absolute hardware KTA. Thus, maximizing absolute centered hardware KTA alone would select the most distorted configuration by CKA, whereas preserving the intended statevector geometry selects `M2/H2`.
 
 The paired leave-one-window-out robustness rows in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` support the geometry-preservation conclusion but do not resolve KTA configuration differences. CKA separates `M2` from `M0` and `M1` descriptively (`z ≈ 2.8–3.1`), whereas all centered-KTA paired contrast ratios have `|z| < 1`.
 

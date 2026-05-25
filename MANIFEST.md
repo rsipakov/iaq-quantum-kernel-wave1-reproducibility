@@ -55,7 +55,7 @@ The package supports the manuscript Materials and Methods subsections:
 | Section 2.10 centered KTA point estimates | `SV = 0.1585110924`, `M0/H0 = 0.1833084594`, `M1/H1 = 0.1814633785`, `M2/H2 = 0.1710248441` |
 | Section 2.10 KTA robustness | Unit-diagonal sensitivity plus leave-one-window-out centered-KTA jackknife and paired KTA contrasts |
 | Section 2.11 CKA/KTA tension quantities | `CKA loss = 1 - CKA`; `Delta_KTA = KTA_hardware - KTA_statevector` |
-| Section 2.11 CKA/KTA tension result | `M2/H2` has highest CKA and smallest KTA uplift; `M0/H0` has highest raw hardware KTA |
+| Section 2.11 CKA/KTA tension result | `M2/H2` has highest CKA and smallest KTA uplift; `M0/H0` has highest absolute centered hardware KTA |
 | Section 2.11 robustness | Paired CKA/KTA jackknife contrast synthesis and unit-diagonal rank-stability statement |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |

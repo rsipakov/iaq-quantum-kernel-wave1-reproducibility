@@ -12,6 +12,7 @@ This repository is a curated reproducibility package for the manuscript Material
 - **2.8. Geometry and distortion metrics**
 - **2.9. CKA — centered kernel alignment**
 - **2.10. KTA — kernel-target alignment**
+- **2.11. KTA/CKA tension analysis**
 
 The package preserves the non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis. It is derived from the working repository:
 
@@ -56,6 +57,9 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Section 2.9 robustness: CKA diagonal sensitivity plus leave-one-window-out CKA jackknife and paired CKA contrasts
 - Section 2.10 focus: centered kernel-target alignment between each kernel and the signed label Gram matrix
 - Section 2.10 robustness: KTA diagonal sensitivity plus leave-one-window-out centered-KTA jackknife and paired KTA contrasts
+- Section 2.11 focus: joint CKA/KTA tension analysis comparing statevector-geometry preservation with centered label alignment
+- Section 2.11 derived quantities: `CKA loss = 1 - CKA` and `Delta_KTA = KTA_hardware - KTA_statevector`
+- Section 2.11 result: `M2/H2` best preserves statevector geometry and has the smallest KTA uplift, while `M0/H0` has the largest raw hardware KTA
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
@@ -375,6 +379,43 @@ A leave-one-window-out jackknife for centered KTA is stored in `hardware_analysi
 
 KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, not a proof of prediction performance, and not evidence of quantum advantage or hardware classifier superiority.
 
+## Section 2.11: KTA/CKA tension analysis
+
+Section 2.11 combines the CKA and centered-KTA results without introducing new data artifacts. It compares the configuration that best preserves the intended statevector geometry with the configuration that maximizes raw centered hardware label alignment.
+
+The derived quantities are:
+
+```text
+CKA loss = 1 - CKA_hardware_vs_statevector
+Delta_KTA = KTA_hardware - KTA_statevector
+```
+
+The Section 2.11 point estimates are:
+
+| Manuscript label | Artifact regime | CKA | CKA loss | Centered hardware KTA | Statevector KTA | Delta_KTA |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.9333906747 | 0.0666093253 | 0.1833084594 | 0.1585110924 | +0.0247973670 |
+| `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 |
+| `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 |
+
+The point-estimate ranks are in tension: `M2/H2` is best by CKA and has the smallest KTA uplift relative to the statevector, while `M0/H0` has the highest absolute hardware KTA. Thus, maximizing raw hardware KTA alone would select the most distorted configuration by CKA, whereas preserving the intended statevector geometry selects `M2/H2`.
+
+The paired leave-one-window-out robustness rows in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` support the geometry-preservation conclusion but do not resolve KTA configuration differences. CKA separates `M2` from `M0` and `M1` descriptively (`z ≈ 2.8–3.1`), whereas all centered-KTA paired contrast ratios have `|z| < 1`.
+
+The same qualitative rank reversal is retained under the unit-diagonal sensitivity check: unit-diagonal CKA remains ordered `M2 > M1 > M0`, while unit-diagonal KTA remains ordered `M0 > M1 > M2`. The KTA/CKA tension is therefore not produced by the measured-diagonal convention.
+
+Section 2.11 is a derived synthesis of already included artifacts. No new source-to-reproducibility data copy is required for the section beyond the files already supporting Sections 2.8--2.10.
+
+Relevant artifacts:
+
+```text
+scripts/09b_analyze_wave1_distortion_direct.py
+scripts/09c_wave1_distortion_uncertainty.py
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.json
+```
+
 ## Included materials
 
 ### Dataset and preprocessing
@@ -468,15 +509,16 @@ KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, no
 
 The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. Reproduction of the reported results should not re-submit IBM Quantum hardware jobs unless explicitly authorized by a new decision record.
 
-## Reproducing the distortion, CKA, and KTA analysis
+## Reproducing the distortion, CKA, KTA, and KTA/CKA tension analysis
 
 From the repository root:
 
 ```bash
 python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 ```
 
-This reads:
+The direct analysis reads:
 
 ```text
 frozen_subset/hardware_subset_event_onset_next_1h.csv
@@ -492,20 +534,11 @@ and writes or updates:
 hardware_analysis/zz4_wave1_distortion_metrics.csv
 hardware_analysis/zz4_wave1_distortion_summary.json
 hardware_analysis/zz4_wave1_distortion_summary.md
-```
-
-For robustness diagnostics, including the Section 2.9 CKA diagonal-sensitivity check, leave-one-window-out CKA jackknife, Section 2.10 KTA diagonal-sensitivity check, and leave-one-window-out centered-KTA jackknife, run:
-
-```bash
-python scripts/09c_wave1_distortion_uncertainty.py --project-root .
-```
-
-This writes or updates:
-
-```text
 hardware_analysis/zz4_wave1_distortion_uncertainty.csv
 hardware_analysis/zz4_wave1_distortion_uncertainty.json
 ```
+
+Section 2.11 does not require a separate persisted tension-analysis script. It is obtained by reading `CKA_hardware_vs_statevector`, `CKA_drop_relative_to_statevector`, `KTA_hardware`, `KTA_statevector`, and `KTA_drop_relative_to_statevector` from `hardware_analysis/zz4_wave1_distortion_metrics.csv` and reversing the sign of `KTA_drop_relative_to_statevector` to report `Delta_KTA = KTA_hardware - KTA_statevector`. The paired CKA/KTA contrast statements come from `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`.
 
 A successful reproduction should report all required regimes `H0`, `H1`, and `H2`, with no failure reasons in `hardware_analysis/zz4_wave1_distortion_summary.json`.
 
@@ -525,10 +558,10 @@ If repository files are intentionally updated, regenerate the checksum file from
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics, not classifier-performance metrics.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics, not classifier-performance metrics. The KTA/CKA tension analysis treats KTA uplift as hardware-induced class-structured distortion, not as prediction-performance improvement.
 
 The leave-one-window-out CKA and centered-KTA jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests.
 
 ## License
 
-See `LICENSE`. No license update is required for the Section 2.10 KTA documentation update.
+See `LICENSE`. No license update is required for the Section 2.11 KTA/CKA tension-analysis documentation update.

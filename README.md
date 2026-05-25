@@ -11,6 +11,7 @@ This repository is a curated reproducibility package for the manuscript Material
 - **2.7. Kernel reconstruction**
 - **2.8. Geometry and distortion metrics**
 - **2.9. CKA — centered kernel alignment**
+- **2.10. KTA — kernel-target alignment**
 
 The package preserves the non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis. It is derived from the working repository:
 
@@ -29,12 +30,14 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Input dimension: 4 train-scaled pollutant features
 - Frozen subset: `N = 24` fixed observation windows
 - Frozen hardware split: 16 train windows + 8 test windows
+- Frozen labels for KTA: `0 -> -1` and `1 -> +1`, ordered by `hardware_row_order`
+- Frozen signed-label balance: 12 negative labels and 12 positive labels
 - Statevector reference: exact ZZ4 squared-fidelity kernel
 - Pair inventory: 300 unordered upper-triangular pairs including diagonal entries
 - Unique unordered off-diagonal pairs: 276
 - Diagonal entries: 24
 - Off-diagonal matrix entries used for entrywise distortion metrics: 552 directed entries with `i != j`
-- Full-matrix entries used for CKA: complete `24 x 24` centered matrices, including the measured hardware diagonal
+- Full-matrix entries used for CKA and centered KTA: complete `24 x 24` centered matrices, including the measured hardware diagonal
 - Hardware backend: `ibm_fez`
 - Primitive: Qiskit Runtime `SamplerV2`
 - Artifact hardware-regime labels: `H0`, `H1`, `H2`
@@ -50,7 +53,7 @@ Only non-sensitive files required to support the manuscript claims are included.
 - PSD policy: diagnostic only; the uncorrected minimum eigenvalue is retained
 - Geometry metrics: Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, and centered kernel-target alignment
 - Section 2.9 focus: centered kernel alignment between each hardware kernel and the statevector reference
-- Section 2.9 robustness: CKA diagonal-sensitivity diagnostics and leave-one-window-out CKA jackknife diagnostics
+- Section 2.10 focus: centered kernel-target alignment between each kernel and the signed label Gram matrix
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
@@ -97,19 +100,19 @@ The kernel manifest confirms that all three matrices are present, each has shape
 
 ## Geometry and distortion metrics
 
-The Wave 1 distortion analysis compares each reconstructed hardware kernel with the statevector reference kernel. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including centered kernel alignment (CKA), effective rank, and centered kernel-target alignment, are evaluated on the complete symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
+The Wave 1 distortion analysis compares each reconstructed hardware kernel with the statevector reference kernel. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including centered kernel alignment (CKA), effective rank, and centered kernel-target alignment (KTA), are evaluated on the complete symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
 
 The direct reproduction script computes Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, hardware and statevector off-diagonal variances, effective rank, CKA, centered KTA, and PSD diagnostics.
 
 The persisted Wave 1 distortion metrics are:
 
-| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Effective rank |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` | `H0` | 0.741297 | 0.827253 | 0.049036 | 0.087770 | 0.026154 | 0.568666 | 0.933391 | 21.184209 |
-| `M1` | `H1` | 0.774951 | 0.842774 | 0.047290 | 0.086428 | 0.026143 | 0.563897 | 0.937373 | 21.217026 |
-| `M2` | `H2` | 0.943744 | 0.986203 | 0.025726 | 0.042727 | 0.016161 | 0.263978 | 0.988668 | 19.788170 |
+| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Effective rank | Centered KTA |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.741297 | 0.827253 | 0.049036 | 0.087770 | 0.026154 | 0.568666 | 0.933391 | 21.184209 | 0.183308 |
+| `M1` | `H1` | 0.774951 | 0.842774 | 0.047290 | 0.086428 | 0.026143 | 0.563897 | 0.937373 | 21.217026 | 0.181463 |
+| `M2` | `H2` | 0.943744 | 0.986203 | 0.025726 | 0.042727 | 0.016161 | 0.263978 | 0.988668 | 19.788170 | 0.171025 |
 
-The statevector off-diagonal variance is 0.0186558. Hardware off-diagonal variances are 0.0053865 (`H0`), 0.0052842 (`H1`), and 0.0097585 (`H2`). The statevector effective rank is 17.971892. The statevector centered kernel-target alignment is 0.158511; hardware centered KTA values are 0.183308 (`H0`), 0.181463 (`H1`), and 0.171025 (`H2`). These label-alignment values are geometry diagnostics on the frozen subset only and are not classifier-performance claims.
+The statevector off-diagonal variance is 0.0186558. Hardware off-diagonal variances are 0.0053865 (`H0`), 0.0052842 (`H1`), and 0.0097585 (`H2`). The statevector effective rank is 17.971892. The statevector centered KTA is 0.158511. The hardware centered KTA values are 0.183308 (`H0`), 0.181463 (`H1`), and 0.171025 (`H2`). These label-alignment values are geometry diagnostics on the frozen subset only and are not classifier-performance claims.
 
 ## Section 2.9: centered kernel alignment
 
@@ -137,23 +140,50 @@ The CKA point estimates are:
 | `M1` | `H1` | 0.9373725928 | 0.0626274072 |
 | `M2` | `H2` | 0.9886681278 | 0.0113318722 |
 
-The diagonal-sensitivity output is stored in:
+The diagonal-sensitivity output is stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` under the `diagonal_robustness` analysis block. When hardware diagonals are forced to one as a sensitivity check only, CKA values are 0.9299004014 (`M0`/`H0`), 0.9335071225 (`M1`/`H1`), and 0.9853398979 (`M2`/`H2`), preserving the ordering `M2 > M1 > M0`. Reported kernels retain the measured diagonal.
 
-```text
-hardware_analysis/zz4_wave1_distortion_uncertainty.csv
-```
-
-under the `diagonal_robustness` analysis block. When hardware diagonals are forced to one as a sensitivity check only, CKA values are 0.9299004014 (`M0`/`H0`), 0.9335071225 (`M1`/`H1`), and 0.9853398979 (`M2`/`H2`), preserving the ordering `M2 > M1 > M0`. Reported kernels retain the measured diagonal.
-
-A leave-one-window-out jackknife for CKA is stored in:
-
-```text
-hardware_analysis/zz4_wave1_distortion_uncertainty.csv
-```
-
-under the `leave_one_window_out_jackknife` and `paired_jackknife_contrast` analysis blocks. These CKA rows use `diagonal_policy = measured_diagonal_full_matrix`, because CKA is evaluated on the full centered kernel matrix while retaining the measured hardware diagonal. The `M1 - M0` CKA contrast is unresolved at the frozen-window resampling scale (`z ≈ 0.6`), whereas `M2` is separated from both `M0` and `M1` (`z ≈ 2.8–3.1`). These values are descriptive window-level robustness diagnostics, not inferential significance tests.
+A leave-one-window-out jackknife for CKA is stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` under the `leave_one_window_out_jackknife` and `paired_jackknife_contrast` analysis blocks. These CKA rows use `diagonal_policy = measured_diagonal_full_matrix`, because CKA is evaluated on the full centered kernel matrix while retaining the measured hardware diagonal. The `M1 - M0` CKA contrast is unresolved at the frozen-window resampling scale (`z ≈ 0.6`), whereas `M2` is separated from both `M0` and `M1` (`z ≈ 2.8–3.1`). These values are descriptive window-level robustness diagnostics, not inferential significance tests.
 
 CKA is a centered global geometry-survival diagnostic. It is not a classifier-performance metric, does not use labels, and does not support a hardware-superiority or quantum-advantage claim.
+
+## Section 2.10: centered kernel-target alignment
+
+Section 2.10 isolates the centered KTA diagnostic. The frozen binary label column `y_event_onset_next_1h` is ordered by `hardware_row_order` and mapped as `0 -> -1` and `1 -> +1`. The target kernel is `Y = y y^T`. The reported quantity is the centered alignment
+
+```text
+<K_c, Y_c>_F / (||K_c||_F ||Y_c||_F), where K_c = H K H and Y_c = H Y H.
+```
+
+The uncentered KTA functional is not used. Because the frozen label vector is balanced, `H y = y`; nevertheless the kernel matrix is still double-centered before alignment with the target.
+
+The KTA columns are stored in:
+
+```text
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+```
+
+with columns:
+
+```text
+KTA_hardware
+KTA_statevector
+KTA_drop_relative_to_statevector
+```
+
+The centered KTA point estimates are:
+
+| Kernel / manuscript label | Artifact regime | Centered KTA | Hardware minus statevector |
+| --- | ---: | ---: | ---: |
+| Statevector reference | `SV` | 0.1585110924 | 0 |
+| `M0` | `H0` | 0.1833084594 | +0.0247973670 |
+| `M1` | `H1` | 0.1814633785 | +0.0229522861 |
+| `M2` | `H2` | 0.1710248441 | +0.0125137518 |
+
+The hardware-centered KTA values are higher than the statevector-centered KTA. This is interpreted as class-structured kernel distortion on the frozen subset, not as improved classifier performance. `M2` is closest to the statevector KTA among the three executed configurations.
+
+The KTA diagonal-sensitivity output is stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` under `analysis_block = diagonal_robustness` and `metric = kta_centered`. The unit-diagonal sensitivity values are 0.1856507720 (`M0`/`H0`), 0.1839754900 (`M1`/`H1`), and 0.1741450073 (`M2`/`H2`). These sensitivity calculations do not replace the measured-diagonal kernels. The persisted robustness artifact does not include a leave-one-window-out KTA jackknife, so no KTA jackknife interval or paired KTA `z` contrast is reported.
+
+KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, not a proof of prediction performance, and not evidence of quantum advantage or hardware classifier superiority.
 
 ## Included materials
 
@@ -245,7 +275,7 @@ CKA is a centered global geometry-survival diagnostic. It is not a classifier-pe
 
 The script `scripts/06_submit_wave1_jobs.py` is included for traceability only. Reproduction of the reported results should not re-submit IBM Quantum hardware jobs unless explicitly authorized by a new decision record.
 
-## Reproducing the distortion and CKA analysis
+## Reproducing the distortion, CKA, and KTA analysis
 
 From the repository root:
 
@@ -271,7 +301,7 @@ hardware_analysis/zz4_wave1_distortion_summary.json
 hardware_analysis/zz4_wave1_distortion_summary.md
 ```
 
-For robustness diagnostics, including the Section 2.9 diagonal-sensitivity check and leave-one-window-out CKA jackknife, run:
+The script computes both CKA and centered KTA. For robustness diagnostics, including the Section 2.9 CKA diagonal-sensitivity and leave-one-window-out jackknife checks and the Section 2.10 KTA diagonal-sensitivity check, run:
 
 ```bash
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .
@@ -302,10 +332,10 @@ If repository files are intentionally updated, regenerate the checksum file from
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered kernel-target alignment are descriptive geometry diagnostics on the frozen subset and are not classifier-performance claims.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics on the frozen subset and are not classifier-performance claims.
 
-The leave-one-window-out jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests.
+The leave-one-window-out jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests. No KTA-specific leave-one-window-out jackknife contrast is persisted in the current package.
 
 ## License
 
-See `LICENSE`. No license update is required for the Section 2.9 CKA documentation update.
+See `LICENSE`. No license update is required for the Section 2.10 KTA documentation update.

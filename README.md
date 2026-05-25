@@ -33,6 +33,8 @@ Only non-sensitive files required to support the manuscript claims are included.
 - Pair inventory: 300 unordered upper-triangular pairs including diagonal entries
 - Unique unordered off-diagonal pairs: 276
 - Diagonal entries: 24
+- Off-diagonal matrix entries used for entrywise distortion metrics: 552 directed entries with `i != j`
+- Full-matrix entries used for CKA: complete `24 x 24` centered matrices, including the measured hardware diagonal
 - Hardware backend: `ibm_fez`
 - Primitive: Qiskit Runtime `SamplerV2`
 - Artifact hardware-regime labels: `H0`, `H1`, `H2`
@@ -48,6 +50,7 @@ Only non-sensitive files required to support the manuscript claims are included.
 - PSD policy: diagnostic only; the uncorrected minimum eigenvalue is retained
 - Geometry metrics: Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, and centered kernel-target alignment
 - Section 2.9 focus: centered kernel alignment between each hardware kernel and the statevector reference
+- Section 2.9 robustness: CKA diagonal-sensitivity diagnostics and leave-one-window-out CKA jackknife diagnostics
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
@@ -141,6 +144,14 @@ hardware_analysis/zz4_wave1_distortion_uncertainty.csv
 ```
 
 under the `diagonal_robustness` analysis block. When hardware diagonals are forced to one as a sensitivity check only, CKA values are 0.9299004014 (`M0`/`H0`), 0.9335071225 (`M1`/`H1`), and 0.9853398979 (`M2`/`H2`), preserving the ordering `M2 > M1 > M0`. Reported kernels retain the measured diagonal.
+
+A leave-one-window-out jackknife for CKA is stored in:
+
+```text
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+```
+
+under the `leave_one_window_out_jackknife` and `paired_jackknife_contrast` analysis blocks. These CKA rows use `diagonal_policy = measured_diagonal_full_matrix`, because CKA is evaluated on the full centered kernel matrix while retaining the measured hardware diagonal. The `M1 - M0` CKA contrast is unresolved at the frozen-window resampling scale (`z ≈ 0.6`), whereas `M2` is separated from both `M0` and `M1` (`z ≈ 2.8–3.1`). These values are descriptive window-level robustness diagnostics, not inferential significance tests.
 
 CKA is a centered global geometry-survival diagnostic. It is not a classifier-performance metric, does not use labels, and does not support a hardware-superiority or quantum-advantage claim.
 
@@ -260,7 +271,7 @@ hardware_analysis/zz4_wave1_distortion_summary.json
 hardware_analysis/zz4_wave1_distortion_summary.md
 ```
 
-For robustness diagnostics, including the Section 2.9 diagonal-sensitivity check for CKA, run:
+For robustness diagnostics, including the Section 2.9 diagonal-sensitivity check and leave-one-window-out CKA jackknife, run:
 
 ```bash
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .

@@ -46,7 +46,8 @@ The package supports the manuscript Materials and Methods subsections:
 | Kernel-reconstruction symmetrization policy | `average_duplicate_entries_then_mirror` |
 | PSD policy | Diagnostic only; uncorrected minimum eigenvalue retained |
 | Geometry/distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, off-diagonal variance, effective rank, CKA, centered KTA |
-| Section 2.9 CKA result | `M0/H0 = 0.9333906747`, `M1/H1 = 0.9373725928`, `M2/H2 = 0.9886681278` |
+| Section 2.9 CKA point estimates | `M0/H0 = 0.9333906747`, `M1/H1 = 0.9373725928`, `M2/H2 = 0.9886681278` |
+| Section 2.9 CKA robustness | Diagonal sensitivity plus leave-one-window-out CKA jackknife and paired CKA contrasts |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
 | Claim scope | No quantum-advantage claim and no hardware classifier-superiority claim |
@@ -162,10 +163,10 @@ This label map is a reporting convention only; it does not create additional cir
 | `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. For Section 2.9 it contains `CKA_hardware_vs_statevector`, `CKA_statevector_self`, and `CKA_drop_relative_to_statevector`. |
 | `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. Records `analysis_mode = direct_npy_loader_budget_safe_1024_shots`, all required regimes reported, input/output paths, no failure reasons, and the interpretation policy. |
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary with the primary metric table. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics. For Section 2.9 it contains the `diagonal_robustness` rows for CKA under a unit-diagonal sensitivity policy. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary recording the resampling unit, input paths, diagonal-sensitivity policy, and descriptive-only inferential policy. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics. For Section 2.9 it contains the `diagonal_robustness` rows for CKA under a unit-diagonal sensitivity policy, plus the leave-one-window-out CKA jackknife rows and paired CKA contrasts under `leave_one_window_out_jackknife` and `paired_jackknife_contrast`, with `diagonal_policy = measured_diagonal_full_matrix`. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary recording the resampling unit, input paths, diagonal-sensitivity policy, CKA jackknife diagnostics, and descriptive-only inferential policy. |
 
-### Section 2.9 CKA metric summary
+### Section 2.9 CKA point estimates and robustness summary
 
 | Manuscript label | Artifact regime | CKA | CKA loss = `1 - CKA` | Unit-diagonal CKA sensitivity |
 | --- | ---: | ---: | ---: | ---: |
@@ -174,6 +175,8 @@ This label map is a reporting convention only; it does not create additional cir
 | `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.9853398979 |
 
 The unit-diagonal CKA values are sensitivity checks only. Reported kernels retain the measured diagonal.
+
+The CKA leave-one-window-out jackknife rows are stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` with `diagonal_policy = measured_diagonal_full_matrix`. The persisted paired CKA contrasts are `M1-M0`, `M2-M1`, and `M2-M0`; they are descriptive robustness diagnostics, not inferential significance tests.
 
 ## Reproduction scripts
 
@@ -190,7 +193,7 @@ The unit-diagonal CKA values are sensitivity checks only. Reported kernels retai
 | `scripts/08_build_hardware_kernels.py` | Builds hardware-derived kernels from retrieved Wave 1 results. |
 | `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion in the source repository layout. |
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script. Implements `center_kernel` and `cka`, reads the frozen subset, statevector kernel, and three hardware-kernel NumPy arrays, then writes the hardware-analysis artifacts. |
-| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including CKA diagonal sensitivity for Section 2.9. |
+| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including CKA diagonal sensitivity and the leave-one-window-out CKA jackknife for Section 2.9. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
 
@@ -206,8 +209,8 @@ The unit-diagonal CKA values are sensitivity checks only. Reported kernels retai
 
 | Path | Purpose |
 | --- | --- |
-| `README.md` | Main reproduction-package description, updated to include Section 2.9. |
-| `MANIFEST.md` | This artifact manifest, updated to include Section 2.9. |
+| `README.md` | Main reproduction-package description, updated to include Section 2.9 and CKA jackknife diagnostics. |
+| `MANIFEST.md` | This artifact manifest, updated to include Section 2.9 and CKA jackknife diagnostics. |
 | `CITATION.cff` | Citation metadata for the reproduction package. |
 | `LICENSE` | License file. No update is required for the addition of Section 2.9 documentation. |
 | `.gitignore` | Local and sensitive-file exclusion rules. |

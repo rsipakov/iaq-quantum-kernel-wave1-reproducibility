@@ -61,9 +61,36 @@ Only non-sensitive files required to support the manuscript claims are included.
 
 The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the pair inventory, the reconstruction rules, or the distortion-metric definitions.
 
-## Frozen subset policy
+## Section 2.1: dataset and prediction context
 
-This reproduction package uses a fixed `N = 24` subset of observation windows from the duplicate-sensor indoor air-quality monitoring dataset.
+The study uses real duplicate-sensor indoor air-quality data organized as a forecasting dataset with a 30-minute window stride and a one-hour prediction horizon. The prediction task is binary event-onset forecasting: for each eligible time window, the target records whether a new air-quality event onset occurs within the next hour. In the source workflow this target is `event_onset_next_1h`; in the frozen hardware subset it is stored as `y_event_onset_next_1h`.
+
+The hardware pilot uses the compact quantum feature set `F_quantum_4`, comprising four one-hour pollutant summary features:
+
+```text
+pm25_mean_last_1h
+pm10_mean_last_1h
+hcho_mean_last_1h
+tvoc_mean_last_1h
+```
+
+The preprocessing policy is train-only: missing values are imputed from the training data, features are min-max scaled to `[0, pi]`, and values outside the training range in later splits are clipped. The full event-onset dataset provides the prediction context, but the quantum-hardware analysis is restricted to the pre-authorized frozen `N = 24` subset.
+
+The statevector reference metadata records the frozen subset as 16 training observation windows and 8 test observation windows. For this subset, the ZZ4 kernel scope contains 300 unordered upper-triangular kernel evaluations, including 24 diagonal entries and 276 unique off-diagonal pairs. The experiment is therefore a statevector-to-hardware kernel-geometry survival and distortion analysis, not a quantum-advantage or hardware classifier-superiority test.
+
+Relevant artifacts:
+
+```text
+config/config.py
+preprocessing/data.py
+metadata/qiskit_stage_v5_scaling_report.csv
+frozen_subset/hardware_subset_event_onset_next_1h.csv
+metadata/statevector_reference_metadata.json
+```
+
+## Section 2.2: frozen subset
+
+The package uses a fixed `N = 24` subset of observation windows from the duplicate-sensor indoor air-quality monitoring dataset. The subset, inclusion criteria, and acceptance thresholds used for compile-gate and stability checks were fixed before IBM hardware execution authorization and were not modified after hardware results were obtained.
 
 ```text
 N = 24
@@ -72,23 +99,147 @@ No threshold relaxation
 No Wave 2 execution without a new decision record
 ```
 
-The frozen subset was fixed before IBM hardware execution authorization and is treated as part of the study design, not as an adjustable analysis input. Within the current Wave 1 / v9 scope, no observation window may be added, removed, replaced, reordered, or reweighted after hardware execution authorization. Wave 2 execution is excluded from the current reproduction unless explicitly authorized by a new decision record.
+Within the current Wave 1 / v9 scope, the frozen subset is not an adjustable analysis input. No observation window may be added, removed, replaced, reordered, or reweighted after hardware execution authorization. This restriction applies regardless of missingness, intermediate model behavior, hardware results, kernel distortion, diagnostic outcomes, reviewer preference, or downstream performance.
 
-## Execution configuration label policy
+The current Wave 1 decision record reports `STOP_AFTER_WAVE1_REPORT_RESULTS`. It records the allowed subset as frozen `N = 24` only, blocks subset change and threshold relaxation within the v9 scope, and does not authorize Wave 2 execution without a new decision record.
 
-The source artifacts retain the hardware-regime labels `H0`, `H1`, and `H2`. The manuscript uses manuscript-level labels `M0`, `M1`, and `M2` to avoid confusion between the artifact label `H0` and the conventional null-hypothesis notation $H_0$.
+Relevant artifacts:
 
-| Manuscript label | Artifact label | Configuration | Runtime distinction |
-| --- | ---: | --- | --- |
-| `M0` | `H0` | Sampler baseline | Dynamical decoupling off; gate twirling off; measurement twirling off. |
-| `M1` | `H1` | Sampler + dynamical decoupling | Dynamical decoupling on with `XX`, `alap`, middle slack; twirling off. |
-| `M2` | `H2` | Sampler + gate/Pauli twirling | Gate twirling on with `active-accum` and automatic randomization; dynamical decoupling and measurement twirling off. |
+```text
+frozen_subset/hardware_subset_event_onset_next_1h.csv
+metadata/zz_only_pilot_operational_plan.json
+metadata/zz_only_step8_execution_manifest.json
+metadata/v9_audit_freeze_manifest.json
+metadata/zz4_subset_seed_stability_summary.json
+decision_records/zz4_wave1_decision_record.json
+```
 
-This relabeling is a reporting convention only. It does not create new circuits, jobs, kernels, or analysis outputs. All persisted artifacts remain keyed by `H0`, `H1`, and `H2`.
+## Section 2.3: ZZ4 quantum feature map
 
-## Kernel reconstruction
+The Wave 1 hardware pilot uses a fixed four-dimensional ZZ feature map, denoted `ZZ4`, applied to the train-scaled `F_quantum_4` pollutant feature vector. The four input dimensions correspond to PM2.5, PM10, HCHO, and TVOC one-hour summary features.
 
-Kernel reconstruction starts from the retrieved SamplerV2 result payloads and does not re-submit hardware jobs. The reconstruction workflow maps each PUB order back to the circuit-index ledger, reads the pair coordinates, computes the all-zero probability, writes the long-form kernel-entry table, and assembles one hardware kernel matrix per regime.
+ZZ4 is implemented as a four-qubit ZZFeatureMap with one qubit per feature. The same feature-map configuration defines both the statevector reference and the hardware fidelity circuits. The statevector kernel is the exact squared-fidelity kernel,
+
+```text
+K_sv(i,j) = |<phi(x_i)|phi(x_j)>|^2
+```
+
+on the frozen `N = 24` subset.
+
+Each hardware kernel entry is estimated by a compute-uncompute fidelity circuit. For a pair `(i,j)`, the hardware circuit estimates the all-zero probability after applying the feature-map inverse/product circuit. In the noiseless limit, this all-zero probability equals the squared state overlap. In the hardware execution it is estimated from SamplerV2 counts as:
+
+```text
+K_hat_r(i,j) = n_0000,r(i,j) / N_r(i,j)
+```
+
+where `r` is one of `H0`, `H1`, or `H2`. The reported Wave 1 artifacts use 1024 submitted shots per circuit rather than the originally planned 4096.
+
+The frozen subset contains `N = 24` windows, so the upper-triangular pair inventory contains `N(N+1)/2 = 300` kernel evaluations. Wave 1 evaluates these 300 pairs under each of three regimes, producing 900 circuit-regime configurations. The hardware diagonal is retained as measured rather than forced to one. Positive-semidefinite projection is diagnostic only and does not replace the reported hardware kernels.
+
+Relevant artifacts:
+
+```text
+preprocessing/feature_maps.py
+config/wave1_scope.json
+metadata/zz4_wave1_feature_map_spec.json
+metadata/statevector_reference_metadata.json
+statevector_reference/zz4_K_all_all.npy
+circuits/zz4_wave1_circuit_index.csv
+circuits/zz4_wave1_circuits.qpy
+```
+
+## Section 2.4: pair inventory
+
+The pair inventory is the fixed coordinate ledger that determines which entries of the frozen-subset kernel were evaluated and how each entry is traced back to its circuit and samples. It is a deterministic complete upper-triangular enumeration:
+
+```text
+P = {(i,j): 0 <= i <= j < 24}
+276 off-diagonal pairs + 24 diagonal entries = 300 pair entries
+```
+
+The inventory is not a random sample, not a class-balanced sample, and not an adaptive subset selected after hardware execution. Each row carries a stable pair identifier, a pair order, kernel coordinates, frozen-subset sample identifiers, a diagonal/off-diagonal type label, a symmetry-mirror flag, a Wave 1 full-kernel inclusion flag, and a sentinel-pair flag.
+
+For Wave 1, all 300 rows are included in the full kernel and no sentinel pairs are designated. The inventory carries no active split membership or class-label information used to determine pair inclusion. Pair inclusion is therefore label-blind by construction.
+
+The companion circuit inventory crosses the same 300 pair entries with regimes `H0`, `H1`, and `H2`, producing 900 circuit-regime records. In Wave 1 each unordered pair was measured once per regime, so the configured reconstruction policy `average_duplicate_entries_then_mirror` reduced to mirroring the measured upper triangle.
+
+Relevant artifacts:
+
+```text
+metadata/zz_only_step8_pair_inventory.csv
+metadata/zz_only_step8_circuit_inventory.csv
+metadata/zz4_wave1_circuit_build_manifest.json
+circuits/zz4_wave1_circuit_index.csv
+```
+
+## Section 2.5: IBM Quantum hardware protocol
+
+Wave 1 was executed on the IBM Quantum backend `ibm_fez` using Qiskit Runtime `SamplerV2`. A live backend snapshot was recorded before submission and passed the metadata gate with no detected scope drift. The compile-confirmation artifact records a successful resource gate, with maximum compiled depth 102, maximum two-qubit-gate count 22, and at most four active data qubits.
+
+Three Sampler-level regimes were defined:
+
+| Artifact regime | Manuscript label | Runtime distinction |
+| --- | ---: | --- |
+| `H0` | `M0` | Baseline Sampler configuration; dynamical decoupling, gate twirling, and measurement twirling off. |
+| `H1` | `M1` | Dynamical decoupling only; `XX` sequence, `alap` scheduling, middle extra-slack distribution; twirling off. |
+| `H2` | `M2` | Gate/Pauli twirling only; dynamical decoupling and measurement twirling off; `active-accum` accumulation strategy. |
+
+Dynamical decoupling and gate twirling were intentionally not combined in Wave 1. The actual reported hardware execution used one IBM Quantum job per regime:
+
+| Regime | Job ID | Submitted shots per circuit | Circuits | Pairs |
+| --- | --- | ---: | ---: | ---: |
+| `H0` | `d7vf6n3ack5s73bfc0eg` | 1024 | 300 | 300 |
+| `H1` | `d7vf8ocinasc738u1bhg` | 1024 | 300 | 300 |
+| `H2` | `d7vfbsfmrars73d84u20` | 1024 | 300 | 300 |
+
+The retrieval manifest records all three jobs as `DONE`, with 300 retrieved PUB results per regime. The raw-result artifacts store per-PUB count dictionaries and circuit metadata. The long-form kernel-entry table stores all-zero counts, observed shot counts, and raw finite-shot kernel values.
+
+Relevant artifacts:
+
+```text
+metadata/zz4_wave1_runtime_options.json
+metadata/zz4_wave1_runtime_options_sha256.txt
+metadata/zz_only_step9_live_backend_metadata.json
+hardware_compile/zz4_step9_backend_compile_confirmation_ibm_fez.json
+hardware_compile/zz4_step9_backend_compile_confirmation_ibm_fez.csv
+job_metadata/zz4_wave1_job_manifest.json
+job_metadata/zz4_wave1_job_manifest.csv
+job_metadata/zz4_wave1_job_manifest_H0_1024.json
+job_metadata/zz4_wave1_job_manifest_H1_1024.json
+job_metadata/zz4_wave1_job_manifest_H2_1024.json
+job_metadata/zz4_wave1_retrieval_manifest.json
+logs/zz4_wave1_submission_log.md
+logs/zz4_wave1_retrieval_log.md
+hardware_results/zz4_H0_raw_results.json
+hardware_results/zz4_H1_raw_results.json
+hardware_results/zz4_H2_raw_results.json
+```
+
+## Section 2.6: execution configurations
+
+The persisted artifacts use hardware-regime labels `H0`, `H1`, and `H2`. The manuscript uses `M0`, `M1`, and `M2` to avoid confusion between the artifact label `H0` and the conventional null-hypothesis notation `H_0`.
+
+| Manuscript label | Artifact label | Configuration |
+| --- | ---: | --- |
+| `M0` | `H0` | Baseline Sampler configuration |
+| `M1` | `H1` | Dynamical-decoupling configuration |
+| `M2` | `H2` | Gate-twirling configuration |
+
+This alias is a reporting convention only. It does not create additional circuits, jobs, kernels, or analysis outputs. All persisted reconstruction and analysis artifacts remain keyed by `H0`, `H1`, and `H2`.
+
+Relevant artifacts:
+
+```text
+metadata/zz4_wave1_runtime_options.json
+job_metadata/zz4_wave1_job_manifest.json
+hardware_kernels/zz4_H0_kernel.npy
+hardware_kernels/zz4_H1_kernel.npy
+hardware_kernels/zz4_H2_kernel.npy
+```
+
+## Section 2.7: kernel reconstruction
+
+Kernel reconstruction was performed after IBM Quantum job retrieval and did not modify the frozen subset, the pair inventory, the execution configurations, or the circuit definitions. Retrieved SamplerV2 payloads are mapped back to the preserved circuit-index ledger, converted into all-zero probabilities, and assembled into one `24 x 24` matrix per regime.
 
 The reconstructed matrices are persisted in both CSV and NumPy formats:
 
@@ -98,13 +249,32 @@ The reconstructed matrices are persisted in both CSV and NumPy formats:
 | `H1` | `M1` | `hardware_kernels/zz4_H1_kernel.csv` | `hardware_kernels/zz4_H1_kernel.npy` |
 | `H2` | `M2` | `hardware_kernels/zz4_H2_kernel.csv` | `hardware_kernels/zz4_H2_kernel.npy` |
 
-The kernel manifest confirms that all three matrices are present, each has shape `24 x 24`, each has 576 finite entries, and each has zero missing entries. The diagonal is retained as measured rather than overwritten by unity. PSD projection is diagnostic only.
+The long-form table `hardware_kernels/zz4_wave1_kernel_entries_long.csv` records one row per retrieved circuit-regime configuration, including regime, PUB order, circuit identifier, pair identifier, kernel coordinates, all-zero key, all-zero count, observed shots, and raw kernel value.
 
-## Geometry and distortion metrics
+The kernel manifest confirms that all three matrices are present, each has shape `24 x 24`, each has 576 finite entries, and each has zero missing entries. The diagonal is retained as measured rather than overwritten by unity. Positive-semidefinite projection is diagnostic only. The uncorrected minimum eigenvalues of the hardware kernels are positive, and the PSD correction magnitude is at float64 roundoff scale.
 
-The Wave 1 distortion analysis compares each reconstructed hardware kernel with the statevector reference kernel. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including centered kernel alignment (CKA), effective rank, and centered kernel-target alignment (KTA), are evaluated on the complete symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
+Relevant artifacts:
 
-The direct reproduction script computes Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, hardware and statevector off-diagonal variances, effective rank, CKA, centered KTA, and PSD diagnostics.
+```text
+scripts/08_build_hardware_kernels.py
+scripts/08b_audit_kernel_reconstruction.py
+metadata/zz4_wave1_kernel_manifest.json
+metadata/zz4_wave1_kernel_reconstruction_audit.json
+hardware_kernels/zz4_wave1_kernel_entries_long.csv
+hardware_kernels/zz4_wave1_kernel_reconstruction_audit.csv
+hardware_kernels/zz4_H0_kernel.npy
+hardware_kernels/zz4_H1_kernel.npy
+hardware_kernels/zz4_H2_kernel.npy
+hardware_kernels/zz4_H0_kernel.csv
+hardware_kernels/zz4_H1_kernel.csv
+hardware_kernels/zz4_H2_kernel.csv
+```
+
+## Section 2.8: geometry and distortion metrics
+
+The Wave 1 distortion analysis compares each reconstructed hardware kernel with the fixed ZZ4 statevector reference kernel. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including centered kernel alignment (CKA), effective rank, and centered kernel-target alignment (KTA), are evaluated on the full symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
+
+The direct reproduction script computes Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, CKA, centered KTA, and PSD diagnostics.
 
 The persisted Wave 1 distortion metrics are:
 
@@ -114,7 +284,23 @@ The persisted Wave 1 distortion metrics are:
 | `M1` | `H1` | 0.774951 | 0.842774 | 0.047290 | 0.086428 | 0.026143 | 0.563897 | 0.937373 | 21.217026 | 0.181463 |
 | `M2` | `H2` | 0.943744 | 0.986203 | 0.025726 | 0.042727 | 0.016161 | 0.263978 | 0.988668 | 19.788170 | 0.171025 |
 
-The statevector off-diagonal variance is 0.0186558. Hardware off-diagonal variances are 0.0053865 (`H0`), 0.0052842 (`H1`), and 0.0097585 (`H2`). The statevector effective rank is 17.971892. The statevector centered KTA is 0.158511. The hardware centered KTA values are 0.183308 (`H0`), 0.181463 (`H1`), and 0.171025 (`H2`). These label-alignment values are geometry diagnostics on the frozen subset only and are not classifier-performance claims.
+The gate-twirling configuration `M2` retains the statevector geometry most strongly across the reported agreement and error metrics: it has the largest Spearman, Pearson, and CKA values and the smallest MAE, RMSE, median absolute error, and maximum absolute error.
+
+Effective rank and KTA are interpreted as diagnostic geometry summaries rather than agreement metrics. Both are inflated on hardware relative to the statevector reference, and the inflation is smallest under `M2`. This pattern is read as hardware-induced geometric distortion, not as evidence of improved prediction.
+
+The robustness script records directed-versus-unique off-diagonal equivalence checks, unit-diagonal sensitivity checks, and leave-one-window-out jackknife summaries. CKA and centered KTA are full-matrix centered diagnostics; Spearman, Pearson, and entrywise errors are off-diagonal diagnostics.
+
+Relevant artifacts:
+
+```text
+scripts/09b_analyze_wave1_distortion_direct.py
+scripts/09c_wave1_distortion_uncertainty.py
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+hardware_analysis/zz4_wave1_distortion_summary.json
+hardware_analysis/zz4_wave1_distortion_summary.md
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.json
+```
 
 ## Section 2.9: centered kernel alignment
 
@@ -244,6 +430,7 @@ KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, no
 - `hardware_results/zz4_H1_raw_results.json`
 - `hardware_results/zz4_H2_raw_results.json`
 - `metadata/zz4_wave1_kernel_manifest.json`
+- `metadata/zz4_wave1_kernel_reconstruction_audit.json`
 - `hardware_kernels/zz4_H0_kernel.npy`
 - `hardware_kernels/zz4_H1_kernel.npy`
 - `hardware_kernels/zz4_H2_kernel.npy`
@@ -251,6 +438,7 @@ KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, no
 - `hardware_kernels/zz4_H1_kernel.csv`
 - `hardware_kernels/zz4_H2_kernel.csv`
 - `hardware_kernels/zz4_wave1_kernel_entries_long.csv`
+- `hardware_kernels/zz4_wave1_kernel_reconstruction_audit.csv`
 
 ### Hardware analysis
 
@@ -271,6 +459,7 @@ KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, no
 - `scripts/06_submit_wave1_jobs.py`
 - `scripts/07_retrieve_wave1_results.py`
 - `scripts/08_build_hardware_kernels.py`
+- `scripts/08b_audit_kernel_reconstruction.py`
 - `scripts/09_analyze_wave1_distortion.py`
 - `scripts/09b_analyze_wave1_distortion_direct.py`
 - `scripts/09c_wave1_distortion_uncertainty.py`

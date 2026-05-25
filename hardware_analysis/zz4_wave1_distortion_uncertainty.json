@@ -1,6 +1,6 @@
 {
   "artifact_type": "zz4_wave1_distortion_uncertainty",
-  "created_utc": "2026-05-25T04:27:17Z",
+  "created_utc": "2026-05-25T05:49:29Z",
   "method": "leave_one_window_out_jackknife_and_diagonal_robustness",
   "resampling_unit": "frozen_subset_window",
   "n_windows": 24,
@@ -32,6 +32,7 @@
   "notes": [
     "Scalar off-diagonal metrics use directed i != j entries.",
     "Directed-vs-unique off-diagonal equivalence is checked for symmetric kernels.",
-    "Paired contrasts include M1-M0, M2-M1, and M2-M0."
+    "Paired contrasts include M1-M0, M2-M1, and M2-M0.",
+    "Leave-one-window-out jackknife rows include spearman, pearson, mae, cka, and kta_centered."
   ]
 }

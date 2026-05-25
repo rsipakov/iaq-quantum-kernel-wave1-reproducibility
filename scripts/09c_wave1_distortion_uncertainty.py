@@ -104,9 +104,9 @@ def jackknife_se(values: np.ndarray) -> float:
 
 
 def jackknife_diagonal_policy(metric: str) -> str:
-    # CKA is a full-matrix metric evaluated with the measured hardware diagonal;
+    # CKA and centered KTA are full-matrix metrics evaluated with the measured hardware diagonal;
     # spearman/pearson/mae are evaluated on the off-diagonal set only.
-    if metric == "cka":
+    if metric in {"cka", "kta_centered"}:
         return "measured_diagonal_full_matrix"
     return "offdiagonal_only"
 
@@ -238,7 +238,7 @@ def main() -> int:
             })
 
     # Leave-one-window-out jackknife for selected manuscript Table 4 metrics.
-    jk_metrics = ["spearman", "pearson", "mae", "cka"]
+    jk_metrics = ["spearman", "pearson", "mae", "cka", "kta_centered"]
     jk_values = {r: {m: [] for m in jk_metrics} for r in REGIMES}
 
     n = K_sv.shape[0]
@@ -330,7 +330,8 @@ def main() -> int:
         "notes": [
             "Scalar off-diagonal metrics use directed i != j entries.",
             "Directed-vs-unique off-diagonal equivalence is checked for symmetric kernels.",
-            "Paired contrasts include M1-M0, M2-M1, and M2-M0."
+            "Paired contrasts include M1-M0, M2-M1, and M2-M0.",
+            "Leave-one-window-out jackknife rows include spearman, pearson, mae, cka, and kta_centered."
         ],
     }
 

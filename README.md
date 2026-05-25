@@ -53,7 +53,9 @@ Only non-sensitive files required to support the manuscript claims are included.
 - PSD policy: diagnostic only; the uncorrected minimum eigenvalue is retained
 - Geometry metrics: Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, and centered kernel-target alignment
 - Section 2.9 focus: centered kernel alignment between each hardware kernel and the statevector reference
+- Section 2.9 robustness: CKA diagonal sensitivity plus leave-one-window-out CKA jackknife and paired CKA contrasts
 - Section 2.10 focus: centered kernel-target alignment between each kernel and the signed label Gram matrix
+- Section 2.10 robustness: KTA diagonal sensitivity plus leave-one-window-out centered-KTA jackknife and paired KTA contrasts
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
@@ -181,7 +183,9 @@ The centered KTA point estimates are:
 
 The hardware-centered KTA values are higher than the statevector-centered KTA. This is interpreted as class-structured kernel distortion on the frozen subset, not as improved classifier performance. `M2` is closest to the statevector KTA among the three executed configurations.
 
-The KTA diagonal-sensitivity output is stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` under `analysis_block = diagonal_robustness` and `metric = kta_centered`. The unit-diagonal sensitivity values are 0.1856507720 (`M0`/`H0`), 0.1839754900 (`M1`/`H1`), and 0.1741450073 (`M2`/`H2`). These sensitivity calculations do not replace the measured-diagonal kernels. The persisted robustness artifact does not include a leave-one-window-out KTA jackknife, so no KTA jackknife interval or paired KTA `z` contrast is reported.
+The KTA diagonal-sensitivity output is stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` under `analysis_block = diagonal_robustness` and `metric = kta_centered`. The unit-diagonal sensitivity values are 0.1856507720 (`M0`/`H0`), 0.1839754900 (`M1`/`H1`), and 0.1741450073 (`M2`/`H2`). These sensitivity calculations do not replace the measured-diagonal kernels.
+
+A leave-one-window-out jackknife for centered KTA is stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` under `analysis_block = leave_one_window_out_jackknife` and `metric = kta_centered`; paired KTA contrasts are stored under `analysis_block = paired_jackknife_contrast`. The centered-KTA jackknife values are 0.1833084594 ± 0.036223 (`M0`/`H0`), 0.1814633785 ± 0.035045 (`M1`/`H1`), and 0.1710248441 ± 0.035962 (`M2`/`H2`). The paired KTA contrast ratios are unresolved at the window scale: `M1-M0 = -0.001845` (`z = -0.328255`), `M2-M1 = -0.010439` (`z = -0.776936`), and `M2-M0 = -0.012284` (`z = -0.871930`). These are descriptive robustness diagnostics, not inferential significance tests.
 
 KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, not a proof of prediction performance, and not evidence of quantum advantage or hardware classifier superiority.
 
@@ -301,7 +305,7 @@ hardware_analysis/zz4_wave1_distortion_summary.json
 hardware_analysis/zz4_wave1_distortion_summary.md
 ```
 
-The script computes both CKA and centered KTA. For robustness diagnostics, including the Section 2.9 CKA diagonal-sensitivity and leave-one-window-out jackknife checks and the Section 2.10 KTA diagonal-sensitivity check, run:
+For robustness diagnostics, including the Section 2.9 CKA diagonal-sensitivity check, leave-one-window-out CKA jackknife, Section 2.10 KTA diagonal-sensitivity check, and leave-one-window-out centered-KTA jackknife, run:
 
 ```bash
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .
@@ -332,9 +336,9 @@ If repository files are intentionally updated, regenerate the checksum file from
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics on the frozen subset and are not classifier-performance claims.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics, not classifier-performance metrics.
 
-The leave-one-window-out jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests. No KTA-specific leave-one-window-out jackknife contrast is persisted in the current package.
+The leave-one-window-out CKA and centered-KTA jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests.
 
 ## License
 

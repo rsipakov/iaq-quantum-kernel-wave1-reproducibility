@@ -52,7 +52,7 @@ The package supports the manuscript Materials and Methods subsections:
 | Section 2.9 CKA point estimates | `M0/H0 = 0.9333906747`, `M1/H1 = 0.9373725928`, `M2/H2 = 0.9886681278` |
 | Section 2.9 CKA robustness | Diagonal sensitivity plus leave-one-window-out CKA jackknife and paired CKA contrasts |
 | Section 2.10 centered KTA point estimates | `SV = 0.1585110924`, `M0/H0 = 0.1833084594`, `M1/H1 = 0.1814633785`, `M2/H2 = 0.1710248441` |
-| Section 2.10 KTA robustness | Unit-diagonal sensitivity only; no persisted leave-one-window-out KTA jackknife contrast |
+| Section 2.10 KTA robustness | Unit-diagonal sensitivity plus leave-one-window-out centered-KTA jackknife and paired KTA contrasts |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
 | Claim scope | No quantum-advantage claim and no hardware classifier-superiority claim |
@@ -168,8 +168,8 @@ This label map is a reporting convention only; it does not create additional cir
 | `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. For Section 2.9 it contains `CKA_hardware_vs_statevector`, `CKA_statevector_self`, and `CKA_drop_relative_to_statevector`. For Section 2.10 it contains `KTA_hardware`, `KTA_statevector`, and `KTA_drop_relative_to_statevector`. |
 | `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. Records `analysis_mode = direct_npy_loader_budget_safe_1024_shots`, all required regimes reported, input/output paths, no failure reasons, and the interpretation policy. |
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary with the primary metric table, including KTA. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics. For Section 2.9 it contains CKA diagonal-sensitivity and leave-one-window-out CKA jackknife rows. For Section 2.10 it contains `diagonal_robustness` rows with `metric = kta_centered`; no KTA jackknife rows are persisted. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary recording the resampling unit, input paths, diagonal-sensitivity policy, CKA jackknife diagnostics, and descriptive-only inferential policy. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics. For Section 2.9 it contains CKA diagonal-sensitivity and leave-one-window-out CKA jackknife rows. For Section 2.10 it contains `diagonal_robustness`, `leave_one_window_out_jackknife`, and `paired_jackknife_contrast` rows with `metric = kta_centered`. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary recording the resampling unit, input paths, diagonal-sensitivity policy, CKA jackknife diagnostics, KTA jackknife diagnostics, and descriptive-only inferential policy. |
 
 ### Section 2.9 CKA point estimates and robustness summary
 
@@ -181,6 +181,8 @@ This label map is a reporting convention only; it does not create additional cir
 
 The unit-diagonal CKA values are sensitivity checks only. Reported kernels retain the measured diagonal.
 
+The CKA leave-one-window-out jackknife rows are stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` with `diagonal_policy = measured_diagonal_full_matrix`. The persisted paired CKA contrasts are `M1-M0`, `M2-M1`, and `M2-M0`; they are descriptive robustness diagnostics, not inferential significance tests.
+
 ### Section 2.10 centered KTA point estimates and robustness summary
 
 | Kernel / manuscript label | Artifact regime | Centered KTA | Hardware minus statevector | Unit-diagonal KTA sensitivity |
@@ -190,7 +192,19 @@ The unit-diagonal CKA values are sensitivity checks only. Reported kernels retai
 | `M1` | `H1` | 0.1814633785 | +0.0229522861 | 0.1839754900 |
 | `M2` | `H2` | 0.1710248441 | +0.0125137518 | 0.1741450073 |
 
-The unit-diagonal KTA values are sensitivity checks only. Reported kernels retain the measured diagonal. Centered KTA is not classifier accuracy and is not a prediction-performance claim.
+The unit-diagonal KTA values are sensitivity checks only. Reported kernels retain the measured diagonal.
+
+| Centered KTA jackknife | `M0` / `H0` | `M1` / `H1` | `M2` / `H2` |
+| --- | ---: | ---: | ---: |
+| Point estimate ± jackknife SE | 0.1833084594 ± 0.036223 | 0.1814633785 ± 0.035045 | 0.1710248441 ± 0.035962 |
+
+| Paired centered-KTA contrast | Delta | Jackknife SE of delta | Descriptive z |
+| --- | ---: | ---: | ---: |
+| `M1-M0` | -0.001845 | 0.005621 | -0.328255 |
+| `M2-M1` | -0.010439 | 0.013436 | -0.776936 |
+| `M2-M0` | -0.012284 | 0.014088 | -0.871930 |
+
+Centered KTA is not classifier accuracy and is not a prediction-performance claim. The KTA paired contrasts are descriptive window-level robustness diagnostics, not inferential significance tests.
 
 ## Reproduction scripts
 
@@ -207,7 +221,7 @@ The unit-diagonal KTA values are sensitivity checks only. Reported kernels retai
 | `scripts/08_build_hardware_kernels.py` | Builds hardware-derived kernels from retrieved Wave 1 results. |
 | `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion in the source repository layout. |
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script. Implements `center_kernel`, `cka`, and centered KTA; reads the frozen subset, statevector kernel, and three hardware-kernel NumPy arrays, then writes the hardware-analysis artifacts. |
-| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including CKA diagonal sensitivity, the leave-one-window-out CKA jackknife for Section 2.9, and KTA diagonal sensitivity for Section 2.10. |
+| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including CKA diagonal sensitivity, leave-one-window-out CKA jackknife, KTA diagonal sensitivity, and leave-one-window-out centered-KTA jackknife with paired KTA contrasts. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
 
@@ -223,8 +237,8 @@ The unit-diagonal KTA values are sensitivity checks only. Reported kernels retai
 
 | Path | Purpose |
 | --- | --- |
-| `README.md` | Main reproduction-package description, updated to include Section 2.10 and centered KTA diagnostics. |
-| `MANIFEST.md` | This artifact manifest, updated to include Section 2.10 and centered KTA diagnostics. |
+| `README.md` | Main reproduction-package description, updated to include Section 2.10 and centered-KTA jackknife diagnostics. |
+| `MANIFEST.md` | This artifact manifest, updated to include Section 2.10 and centered-KTA jackknife diagnostics. |
 | `CITATION.cff` | Citation metadata for the reproduction package. |
 | `LICENSE` | License file. No update is required for the addition of Section 2.10 documentation. |
 | `.gitignore` | Local and sensitive-file exclusion rules. |
@@ -251,4 +265,4 @@ This package supports kernel-geometry survival and distortion analysis only.
 
 It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics, not classifier-performance metrics.
 
-The leave-one-window-out jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests. No KTA-specific leave-one-window-out jackknife contrast is persisted in the current package.
+The leave-one-window-out CKA and centered-KTA jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests.

@@ -103,6 +103,14 @@ def jackknife_se(values: np.ndarray) -> float:
     return float(np.sqrt(((n - 1) / n) * np.sum((values - mean) ** 2)))
 
 
+def jackknife_diagonal_policy(metric: str) -> str:
+    # CKA is a full-matrix metric evaluated with the measured hardware diagonal;
+    # spearman/pearson/mae are evaluated on the off-diagonal set only.
+    if metric == "cka":
+        return "measured_diagonal_full_matrix"
+    return "offdiagonal_only"
+
+
 def submatrix(K: np.ndarray, keep: np.ndarray) -> np.ndarray:
     return K[np.ix_(keep, keep)]
 
@@ -230,7 +238,7 @@ def main() -> int:
             })
 
     # Leave-one-window-out jackknife for selected manuscript Table 4 metrics.
-    jk_metrics = ["spearman", "pearson", "mae"]
+    jk_metrics = ["spearman", "pearson", "mae", "cka"]
     jk_values = {r: {m: [] for m in jk_metrics} for r in REGIMES}
 
     n = K_sv.shape[0]
@@ -256,7 +264,7 @@ def main() -> int:
                 "artifact_regime": r,
                 "point_estimate": point_metrics[r][metric],
                 "jackknife_se": jackknife_se(vals),
-                "diagonal_policy": "offdiagonal_only",
+                "diagonal_policy": jackknife_diagonal_policy(metric),
                 "contrast": "",
                 "delta": np.nan,
                 "jackknife_se_delta": np.nan,
@@ -279,7 +287,7 @@ def main() -> int:
                 "artifact_regime": "",
                 "point_estimate": np.nan,
                 "jackknife_se": np.nan,
-                "diagonal_policy": "offdiagonal_only",
+                "diagonal_policy": jackknife_diagonal_policy(metric),
                 "contrast": label,
                 "delta": point_delta,
                 "jackknife_se_delta": se_delta,

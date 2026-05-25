@@ -160,6 +160,8 @@ This label map is a reporting convention only; it does not create additional cir
 | `hardware_kernels/zz4_H0_kernel.csv` | CSV representation of the `H0` / `M0` hardware-derived kernel. |
 | `hardware_kernels/zz4_H1_kernel.csv` | CSV representation of the `H1` / `M1` hardware-derived kernel. |
 | `hardware_kernels/zz4_H2_kernel.csv` | CSV representation of the `H2` / `M2` hardware-derived kernel. |
+| `hardware_kernels/zz4_wave1_kernel_reconstruction_audit.csv` | Per-PUB reconstruction-audit table comparing redundant coordinate/pair identifiers against the circuit-index ledger across all 900 retrieved circuit-regime configurations. |
+| `metadata/zz4_wave1_kernel_reconstruction_audit.json` | Reconstruction-audit summary; records no coordinate or pair-identifier mismatch across the 900 configurations. |
 
 ## Hardware analysis artifacts
 
@@ -224,6 +226,7 @@ Centered KTA is not classifier accuracy and is not a prediction-performance clai
 | `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including CKA diagonal sensitivity, leave-one-window-out CKA jackknife, KTA diagonal sensitivity, and leave-one-window-out centered-KTA jackknife with paired KTA contrasts. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
+| `scripts/08b_audit_kernel_reconstruction.py` | Independent reconstruction audit; verifies coordinate/pair-identifier consistency between retrieved PUBs and the circuit-index ledger. |
 
 ## Environment and verification artifacts
 

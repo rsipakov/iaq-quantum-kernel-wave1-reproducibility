@@ -23,6 +23,47 @@ rsipakov/QuantumKernel
 
 Only non-sensitive files required to support the manuscript claims are included. IBM Quantum tokens, local credentials, IDE state, local virtual environments, and machine-specific artifacts are excluded.
 
+## Reproducibility scope
+
+This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 IBM Quantum hardware analysis. It supports reproduction of the reported kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, and shot-noise reference-scale decomposition from persisted frozen artifacts.
+
+This repository is not intended to reproduce the full upstream IAQ dataset construction, preprocessing, feature engineering, IBM Quantum job submission, or original execution environment end-to-end. The original numbered execution scripts are retained only as archival provenance.
+
+The supported reproduction path is:
+
+1. `scripts/08b_audit_kernel_reconstruction.py`
+2. `scripts/09b_analyze_wave1_distortion_direct.py`
+3. `scripts/09c_wave1_distortion_uncertainty.py`
+4. `scripts/09d_shot_noise_reference_scale_decomposition.py --check`
+
+## Supported reproduction commands
+
+From the repository root:
+
+```bash
+python scripts/08b_audit_kernel_reconstruction.py --project-root .
+python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
+```
+
+Expected high-level checks:
+
+- kernel reconstruction audit reports coordinate and pair-identifier consistency;
+- distortion metrics are regenerated for H0, H1, and H2;
+- uncertainty diagnostics are regenerated;
+- shot-noise decomposition check passes against the persisted output table.
+
+These commands verify numerical reproduction, not byte-for-byte identity of regenerated files. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines. Do not use SHA-256 hashes of regenerated timestamped outputs as the numerical-reproduction criterion.
+
+The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_analysis/zz4_wave1_distortion_metrics.csv` are retained for schema compatibility and intentionally left blank/NaN in the supported minimal workflow. They are not used for any manuscript claim because kernel entries are dependent observations.
+
+## Archival code
+
+The original numbered scripts `scripts/00_*` through `scripts/10_*` are archival records from the source execution environment and have been moved to `scripts/archive_original_execution_pipeline/`. They are not the supported reproduction path for this flat public package unless explicitly restored and documented.
+
+The historical preprocessing code has been moved to `archive_legacy_preprocessing/`. It is retained only as source-context provenance; the supported Wave 1 analysis consumes the frozen prepared artifacts already included in this repository.
+
 ## Scope
 
 - Domain: real indoor air-quality duplicate-sensor monitoring data
@@ -79,8 +120,8 @@ Relevant artifacts:
 
 ```text
 config/config.py
-preprocessing/data.py
-preprocessing/feature_maps.py
+archive_legacy_preprocessing/preprocessing/data.py
+archive_legacy_preprocessing/preprocessing/feature_maps.py
 metadata/qiskit_stage_v5_scaling_report.csv
 frozen_subset/hardware_subset_event_onset_next_1h.csv
 metadata/statevector_reference_metadata.json
@@ -121,7 +162,7 @@ on the frozen `N = 24` subset. Each hardware kernel entry is estimated by a comp
 Relevant artifacts:
 
 ```text
-preprocessing/feature_maps.py
+archive_legacy_preprocessing/preprocessing/feature_maps.py
 config/wave1_scope.json
 metadata/zz4_wave1_feature_map_spec.json
 metadata/statevector_reference_metadata.json
@@ -208,7 +249,6 @@ Kernel reconstruction maps retrieved SamplerV2 count dictionaries back to the pr
 Relevant artifacts:
 
 ```text
-scripts/08_build_hardware_kernels.py
 scripts/08b_audit_kernel_reconstruction.py
 metadata/zz4_wave1_kernel_manifest.json
 metadata/zz4_wave1_kernel_reconstruction_audit.json
@@ -334,8 +374,8 @@ hardware_kernels/zz4_H2_kernel.csv
 ### Dataset and preprocessing
 
 - `config/config.py`
-- `preprocessing/data.py`
-- `preprocessing/feature_maps.py`
+- `archive_legacy_preprocessing/preprocessing/data.py`
+- `archive_legacy_preprocessing/preprocessing/feature_maps.py`
 - `metadata/qiskit_stage_v5_scaling_report.csv`
 
 ### Frozen subset and pair/circuit inventories
@@ -405,29 +445,33 @@ hardware_kernels/zz4_H2_kernel.csv
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md`
 
-### Reproduction scripts
+### Supported reproduction scripts
 
-- `scripts/00_artifact_lock.py`
-- `scripts/01_capture_live_backend_metadata.py`
-- `scripts/02_lock_runtime_options.py`
-- `scripts/03_optional_backend_compile_confirmation.py`
-- `scripts/04_validate_wave1_preflight.py`
-- `scripts/05_build_zz4_wave1_circuits.py`
-- `scripts/06_submit_wave1_jobs.py`
-- `scripts/07_retrieve_wave1_results.py`
-- `scripts/08_build_hardware_kernels.py`
 - `scripts/08b_audit_kernel_reconstruction.py`
-- `scripts/09_analyze_wave1_distortion.py`
 - `scripts/09b_analyze_wave1_distortion_direct.py`
 - `scripts/09c_wave1_distortion_uncertainty.py`
 - `scripts/09d_shot_noise_reference_scale_decomposition.py`
-- `scripts/10_create_wave1_decision_record.py`
-- `scripts/common.py`
+- `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, and `09d` are self-contained and do not require the legacy path/runtime configuration files.
+
+### Archival original execution scripts
+
+- `scripts/archive_original_execution_pipeline/00_artifact_lock.py`
+- `scripts/archive_original_execution_pipeline/01_capture_live_backend_metadata.py`
+- `scripts/archive_original_execution_pipeline/02_lock_runtime_options.py`
+- `scripts/archive_original_execution_pipeline/03_optional_backend_compile_confirmation.py`
+- `scripts/archive_original_execution_pipeline/04_validate_wave1_preflight.py`
+- `scripts/archive_original_execution_pipeline/05_build_zz4_wave1_circuits.py`
+- `scripts/archive_original_execution_pipeline/06_submit_wave1_jobs.py`
+- `scripts/archive_original_execution_pipeline/07_retrieve_wave1_results.py`
+- `scripts/archive_original_execution_pipeline/08_build_hardware_kernels.py`
+- `scripts/archive_original_execution_pipeline/09_analyze_wave1_distortion.py`
+- `scripts/archive_original_execution_pipeline/10_create_wave1_decision_record.py`
 
 ### Environment, checksums, and repository metadata
 
 - `environment/python_version.txt`
 - `environment/pip_freeze.txt`
+- `requirements.txt`
 - `checksums/SHA256SUMS.txt`
 - `README.md`
 - `MANIFEST.md`
@@ -446,13 +490,28 @@ python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . 
 
 The first command writes the Section 2.12 CSV/JSON/Markdown artifacts. The second command recomputes the same quantities and verifies that the persisted CSV is unchanged up to numerical tolerance.
 
-## Integrity verification
+## Numerical Reproduction Verification
 
-Verify the package state with:
+Run:
+
+```bash
+python scripts/08b_audit_kernel_reconstruction.py --project-root .
+python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
+```
+
+The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
+
+## Integrity Verification
+
+Before regenerating outputs, verify the curated package state with:
 
 ```bash
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
+
+This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for regenerated analysis outputs. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines.
 
 The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
 

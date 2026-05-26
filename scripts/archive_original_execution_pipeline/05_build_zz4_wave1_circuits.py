@@ -2,6 +2,12 @@
 """
 Step 9.2/9.5 support: build or validate ZZ4 Wave 1 fidelity circuits.
 
+ARCHIVAL NOTE:
+This script is retained only as provenance from the original Wave 1 execution
+environment. It is not part of the supported artifact-level reproduction path
+for this public package and is not expected to run from this archived location
+without restoring the original source-environment layout.
+
 Inputs:
 - frozen N=24 feature CSV;
 - frozen pair inventory CSV with 300 rows;

@@ -8,7 +8,6 @@ from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
-from scipy.stats import spearmanr, pearsonr
 
 
 def utc_now() -> str:
@@ -71,13 +70,32 @@ def effective_rank(K: np.ndarray) -> float:
     return float(np.exp(entropy))
 
 
+def pearson_statistic(x: np.ndarray, y: np.ndarray) -> float:
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    mask = np.isfinite(x) & np.isfinite(y)
+    if int(mask.sum()) < 2:
+        return float("nan")
+    x = x[mask]
+    y = y[mask]
+    if float(np.std(x)) == 0.0 or float(np.std(y)) == 0.0:
+        return float("nan")
+    return float(np.corrcoef(x, y)[0, 1])
+
+
+def spearman_statistic(x: np.ndarray, y: np.ndarray) -> float:
+    x_rank = pd.Series(np.asarray(x, dtype=float)).rank(method="average").to_numpy()
+    y_rank = pd.Series(np.asarray(y, dtype=float)).rank(method="average").to_numpy()
+    return pearson_statistic(x_rank, y_rank)
+
+
 def regime_metrics(regime: str, K_hw: np.ndarray, K_sv: np.ndarray, y: np.ndarray) -> dict:
     hw_off = offdiag_values(K_hw)
     sv_off = offdiag_values(K_sv)
     diff = hw_off - sv_off
 
-    sp = spearmanr(sv_off, hw_off, nan_policy="omit")
-    pr = pearsonr(sv_off, hw_off)
+    sp = spearman_statistic(sv_off, hw_off)
+    pr = pearson_statistic(sv_off, hw_off)
 
     psd = psd_correction_diagnostics(K_hw)
 
@@ -92,10 +110,10 @@ def regime_metrics(regime: str, K_hw: np.ndarray, K_sv: np.ndarray, y: np.ndarra
         "n": int(K_hw.shape[0]),
         "shots_submitted_per_circuit": 1024,
 
-        "offdiag_spearman_vs_statevector": float(sp.statistic),
-        "offdiag_spearman_pvalue": float(sp.pvalue),
-        "offdiag_pearson_vs_statevector": float(pr.statistic),
-        "offdiag_pearson_pvalue": float(pr.pvalue),
+        "offdiag_spearman_vs_statevector": sp,
+        "offdiag_spearman_pvalue": float("nan"),
+        "offdiag_pearson_vs_statevector": pr,
+        "offdiag_pearson_pvalue": float("nan"),
 
         "kernel_mae": float(np.mean(np.abs(diff))),
         "kernel_rmse": float(np.sqrt(np.mean(diff ** 2))),

@@ -6,6 +6,8 @@ They are not the supported reproduction path for this flat public artifact-level
 
 Scripts in this archive are not expected to run from their archived location without restoring the original source-environment layout.
 
+Individual archived scripts may not resolve imports or paths from their archived location without restoring the original source-environment layout.
+
 The supported reproduction path is:
 
 - `scripts/08b_audit_kernel_reconstruction.py`

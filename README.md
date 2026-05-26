@@ -285,11 +285,13 @@ Section 2.11 combines the CKA and centered-KTA results without introducing new d
 
 Section 2.12 decomposes the off-diagonal hardware--statevector RMSE using a finite-shot diagnostic reference scale. It uses the same off-diagonal domain as the RMSE calculation, with `|Omega| = 552` directed entries.
 
-For `S = 1024` shots, the global reference scale is:
+For `S = 1024` shots, the conservative global reference scale is:
 
 ```text
 sigma_shot = 1 / sqrt(2*S) = 0.0220970869121
 ```
+
+This is a conservative upper reference: it exceeds the maximum per-entry binomial standard error `1/(2*sqrt(S))` by `sqrt(2)` and is not the sampling standard error of an individual kernel entry.
 
 The global quadrature decomposition is:
 

@@ -1,12 +1,13 @@
 {
   "artifact_type": "zz4_wave1_shot_noise_reference_scale_decomposition",
-  "created_utc": "2026-05-26T06:59:04Z",
+  "created_utc": "2026-05-26T07:39:01Z",
   "n": 24,
   "shots_observed_per_entry": 1024,
   "global_reference_scale": {
     "formula": "1/sqrt(2*S)",
     "sigma_shot_global": 0.022097086912079608,
-    "variance": 0.0004882812499999999
+    "variance": 0.0004882812499999999,
+    "interpretation": "conservative upper reference; exceeds max per-entry binomial SE 1/(2*sqrt(S)) by sqrt(2); not the sampling SE of an individual kernel entry"
   },
   "matrix_reference_scale": {
     "formula": "sqrt(mean_{(i,j) in Omega} p_ij*(1-p_ij)/S)",

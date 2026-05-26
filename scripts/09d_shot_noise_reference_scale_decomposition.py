@@ -92,6 +92,7 @@ def compute(root: Path) -> pd.DataFrame:
         raise ValueError(f"expected 300 entries per regime, observed {per_regime_counts}")
 
     S = infer_shots(metrics, entries)
+    # Conservative upper reference; exceeds max per-entry binomial SE by sqrt(2).
     sigma_global = 1.0 / math.sqrt(2.0 * S)
 
     rows: List[Dict[str, object]] = []
@@ -166,6 +167,10 @@ def write_outputs(root: Path, table: pd.DataFrame) -> None:
             "formula": "1/sqrt(2*S)",
             "sigma_shot_global": float(table["sigma_shot_global"].iloc[0]),
             "variance": float(table["sigma_shot_global_variance"].iloc[0]),
+            "interpretation": (
+                "conservative upper reference; exceeds max per-entry binomial SE "
+                "1/(2*sqrt(S)) by sqrt(2); not the sampling SE of an individual kernel entry"
+            ),
         },
         "matrix_reference_scale": {
             "formula": "sqrt(mean_{(i,j) in Omega} p_ij*(1-p_ij)/S)",
@@ -197,7 +202,7 @@ def write_outputs(root: Path, table: pd.DataFrame) -> None:
         "# ZZ4 Wave 1 shot-noise reference-scale decomposition",
         "",
         "- Shots per circuit: `1024`",
-        f"- Global reference scale: `1/sqrt(2*S) = {float(table['sigma_shot_global'].iloc[0]):.12f}`",
+        f"- Conservative global reference scale: `1/sqrt(2*S) = {float(table['sigma_shot_global'].iloc[0]):.12f}`",
         "- Matrix reference scale: `sqrt(mean(p_ij*(1-p_ij)/S))` over off-diagonal entries.",
         "- Interpretation: diagnostic quadrature bookkeeping only; not a physical noise-model decomposition.",
         "",
@@ -217,7 +222,7 @@ def write_outputs(root: Path, table: pd.DataFrame) -> None:
             "",
             "The matrix-aware scale is computed from reconstructed hardware all-zero probabilities. "
             "Under this plug-in calculation, finite-shot variance accounts for less than 1% of the "
-            "off-diagonal RMSE variance in `M0/H0` and `M1/H1`, and about 4% in `M2/H2`.",
+            "squared off-diagonal RMSE in `M0/H0` and `M1/H1`, and about 4% in `M2/H2`.",
             "",
         ]
     )

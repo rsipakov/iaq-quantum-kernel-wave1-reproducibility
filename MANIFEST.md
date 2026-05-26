@@ -54,7 +54,7 @@ The package supports the manuscript Materials and Methods subsections:
 | Section 2.9 CKA point estimates | `M0/H0 = 0.9333906747`, `M1/H1 = 0.9373725928`, `M2/H2 = 0.9886681278` |
 | Section 2.10 centered KTA point estimates | `SV = 0.1585110924`, `M0/H0 = 0.1833084594`, `M1/H1 = 0.1814633785`, `M2/H2 = 0.1710248441` |
 | Section 2.11 CKA/KTA tension quantities | `CKA loss = 1 - CKA`; `Delta_KTA = KTA_hardware - KTA_statevector` |
-| Section 2.12 global shot reference | `sigma_shot = 1/sqrt(2*1024) = 0.0220970869121` |
+| Section 2.12 conservative global shot reference | `sigma_shot = 1/sqrt(2*1024) = 0.0220970869121`; conservative upper reference, not an individual-entry sampling SE |
 | Section 2.12 matrix-aware shot reference | `sqrt(mean_{Omega} p_ij(1-p_ij)/1024)` using reconstructed off-diagonal hardware probabilities |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
@@ -227,6 +227,7 @@ The point-estimate ranks are in tension. `M2/H2` is the best statevector-geometr
 | `M2` | `H2` | 0.042727 | 0.022097 | 0.036570 | 26.75% | 0.008528 | 0.041868 | 3.98% |
 
 The matrix-aware scale is computed from reconstructed hardware all-zero probabilities on the off-diagonal domain. The decomposition is diagnostic, not a full physical noise-model decomposition.
+The global scale is a conservative upper reference that exceeds the maximum per-entry binomial standard error by `sqrt(2)`, not the sampling standard error of an individual kernel entry.
 
 ## Reproduction scripts
 

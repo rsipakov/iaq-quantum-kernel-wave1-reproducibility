@@ -447,7 +447,7 @@ hardware_kernels/zz4_H2_kernel.csv
 - `scripts/09b_analyze_wave1_distortion_direct.py`
 - `scripts/09c_wave1_distortion_uncertainty.py`
 - `scripts/09d_shot_noise_reference_scale_decomposition.py`
-- `scripts/common.py`
+- `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, and `09d` are self-contained and do not require the legacy path/runtime configuration files.
 
 ### Archival original execution scripts
 

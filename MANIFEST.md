@@ -281,7 +281,7 @@ The global scale is a conservative upper reference that exceeds the maximum per-
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script for distortion metrics. |
 | `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including diagonal sensitivity and leave-one-window-out jackknife rows. |
 | `scripts/09d_shot_noise_reference_scale_decomposition.py` | Computes Section 2.12 global and matrix-aware shot-noise reference-scale decomposition. |
-| `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
+| `scripts/common.py` | Legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, and `09d` are self-contained and do not require the legacy path/runtime configuration files. |
 | `scripts/archive_original_execution_pipeline/` | Archived original execution pipeline retained for provenance only; not part of the supported flat-package reproduction path. |
 | `archive_legacy_preprocessing/` | Archived legacy preprocessing code retained for source-context provenance only. |
 

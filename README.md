@@ -54,6 +54,10 @@ Expected high-level checks:
 - uncertainty diagnostics are regenerated;
 - shot-noise decomposition check passes against the persisted output table.
 
+These commands verify numerical reproduction, not byte-for-byte identity of regenerated files. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines. Do not use SHA-256 hashes of regenerated timestamped outputs as the numerical-reproduction criterion.
+
+The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_analysis/zz4_wave1_distortion_metrics.csv` are retained for schema compatibility and intentionally left blank/NaN in the supported minimal workflow. They are not used for any manuscript claim because kernel entries are dependent observations.
+
 ## Archival code
 
 The original numbered scripts `scripts/00_*` through `scripts/10_*` are archival records from the source execution environment and have been moved to `scripts/archive_original_execution_pipeline/`. They are not the supported reproduction path for this flat public package unless explicitly restored and documented.
@@ -486,13 +490,28 @@ python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . 
 
 The first command writes the Section 2.12 CSV/JSON/Markdown artifacts. The second command recomputes the same quantities and verifies that the persisted CSV is unchanged up to numerical tolerance.
 
-## Integrity verification
+## Numerical Reproduction Verification
 
-Verify the package state with:
+Run:
+
+```bash
+python scripts/08b_audit_kernel_reconstruction.py --project-root .
+python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
+```
+
+The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
+
+## Integrity Verification
+
+Before regenerating outputs, verify the curated package state with:
 
 ```bash
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
+
+This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for regenerated analysis outputs. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines.
 
 The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
 

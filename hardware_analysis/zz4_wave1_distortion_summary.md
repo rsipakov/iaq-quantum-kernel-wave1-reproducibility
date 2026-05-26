@@ -1,6 +1,6 @@
 # ZZ4 Wave 1 Hardware Distortion Summary
 
-- Created UTC: 2026-05-26T08:42:51Z
+- Created UTC: 2026-05-26T09:11:32Z
 - Mode: budget-safe H0/H1/H2, 1024 shots per circuit
 - All required regimes reported: `True`
 - Regimes reported: `H0, H1, H2`

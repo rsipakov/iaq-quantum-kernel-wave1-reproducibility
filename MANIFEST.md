@@ -285,6 +285,8 @@ The global scale is a conservative upper reference that exceeds the maximum per-
 | `scripts/archive_original_execution_pipeline/` | Archived original execution pipeline retained for provenance only; not part of the supported flat-package reproduction path. |
 | `archive_legacy_preprocessing/` | Archived legacy preprocessing code retained for source-context provenance only. |
 
+The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_analysis/zz4_wave1_distortion_metrics.csv` are retained for schema compatibility and intentionally left blank/NaN in the supported minimal workflow. They are not used for any manuscript claim because kernel entries are dependent observations.
+
 ## Environment and verification artifacts
 
 | Path | Purpose |
@@ -310,13 +312,28 @@ The global scale is a conservative upper reference that exceeds the maximum per-
 | --- | --- |
 | `decision_records/zz4_wave1_decision_record.json` | Final Wave 1 decision record with `decision = STOP_AFTER_WAVE1_REPORT_RESULTS`; records frozen `N = 24`, blocked subset change, blocked threshold relaxation, and no Wave 2 without a new decision record. |
 
-## Integrity verification
+## Numerical Reproduction Verification
 
-Verify the package state with:
+Run the supported direct workflow from the repository root:
+
+```bash
+python scripts/08b_audit_kernel_reconstruction.py --project-root .
+python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
+```
+
+The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
+
+## Integrity Verification
+
+Before regenerating outputs, verify the curated package state with:
 
 ```bash
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
+
+This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for regenerated analysis outputs. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines.
 
 The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
 

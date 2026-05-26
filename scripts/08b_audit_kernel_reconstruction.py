@@ -15,6 +15,7 @@ Outputs:
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 from datetime import datetime, timezone
@@ -125,4 +126,14 @@ def main(root: Path) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(Path(__file__).resolve().parents[1]))
+    parser = argparse.ArgumentParser(
+        description="Audit Wave 1 ZZ4 kernel reconstruction from persisted artifacts."
+    )
+    parser.add_argument(
+        "--project-root",
+        default=None,
+        help="Reproducibility repository root. Defaults to this script's repository root.",
+    )
+    cli_args = parser.parse_args()
+    root = Path(cli_args.project_root).resolve() if cli_args.project_root else Path(__file__).resolve().parents[1]
+    raise SystemExit(main(root))

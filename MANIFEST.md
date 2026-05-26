@@ -17,6 +17,50 @@ The package supports the manuscript Materials and Methods subsections:
 - **2.11. KTA/CKA tension analysis**
 - **2.12. Shot-noise reference-scale decomposition**
 
+## Reproducibility status
+
+This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 hardware analysis. It supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, and shot-noise reference-scale decomposition from the persisted frozen artifacts listed below.
+
+It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission workflow, and original numbered execution pipeline are retained only as provenance where present.
+
+## Supported input artifacts
+
+- `frozen_subset/hardware_subset_event_onset_next_1h.csv`
+- `statevector_reference/zz4_K_all_all.npy`
+- `hardware_results/zz4_H0_raw_results.json`
+- `hardware_results/zz4_H1_raw_results.json`
+- `hardware_results/zz4_H2_raw_results.json`
+- `hardware_kernels/zz4_wave1_kernel_entries_long.csv`
+- `hardware_kernels/zz4_H0_kernel.csv`
+- `hardware_kernels/zz4_H1_kernel.csv`
+- `hardware_kernels/zz4_H2_kernel.csv`
+
+## Supported analysis scripts
+
+- `scripts/08b_audit_kernel_reconstruction.py`
+- `scripts/09b_analyze_wave1_distortion_direct.py`
+- `scripts/09c_wave1_distortion_uncertainty.py`
+- `scripts/09d_shot_noise_reference_scale_decomposition.py`
+
+## Supported output artifacts
+
+- `metadata/zz4_wave1_kernel_reconstruction_audit.json`
+- `hardware_kernels/zz4_wave1_kernel_reconstruction_audit.csv`
+- `hardware_analysis/zz4_wave1_distortion_metrics.csv`
+- `hardware_analysis/zz4_wave1_distortion_summary.json`
+- `hardware_analysis/zz4_wave1_distortion_summary.md`
+- `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`
+- `hardware_analysis/zz4_wave1_distortion_uncertainty.json`
+- `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`
+- `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json`
+- `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md`
+
+## Archival code
+
+The original numbered execution scripts are retained for provenance only in `scripts/archive_original_execution_pipeline/`. They are not the supported reproduction path for this flat public artifact-level package.
+
+The historical preprocessing code is retained in `archive_legacy_preprocessing/` for source-context provenance. It is not part of the supported Wave 1 artifact-level reproduction path.
+
 ## Scope
 
 | Field | Value |
@@ -78,8 +122,8 @@ Within the current Wave 1 / v9 scope, the frozen subset is immutable. No observa
 | Path | Purpose |
 | --- | --- |
 | `config/config.py` | Defines allowed targets and compact feature sets, including `event_onset_next_1h` and `F_quantum_4`. |
-| `preprocessing/data.py` | Implements dataset loading, valid-label filtering, train-only imputation, train-only scaling to `[0, pi]`, and clipping. |
-| `preprocessing/feature_maps.py` | Implements the ZZ feature-map builder used for the `F_quantum_4 / ZZ4` kernel. |
+| `archive_legacy_preprocessing/preprocessing/data.py` | Historical preprocessing code retained for provenance; not part of the supported artifact-level reproduction path. |
+| `archive_legacy_preprocessing/preprocessing/feature_maps.py` | Historical feature-map builder code retained for provenance; not part of the supported artifact-level reproduction path. |
 | `metadata/qiskit_stage_v5_scaling_report.csv` | Reports split counts and feature-scaling diagnostics for `event_onset_next_1h` and `F_quantum_4`. |
 
 ## Frozen subset and freeze metadata
@@ -229,26 +273,17 @@ The point-estimate ranks are in tension. `M2/H2` is the best statevector-geometr
 The matrix-aware scale is computed from reconstructed hardware all-zero probabilities on the off-diagonal domain. The decomposition is diagnostic, not a full physical noise-model decomposition.
 The global scale is a conservative upper reference that exceeds the maximum per-entry binomial standard error by `sqrt(2)`, not the sampling standard error of an individual kernel entry.
 
-## Reproduction scripts
+## Supported and archival scripts
 
 | Path | Purpose |
 | --- | --- |
-| `scripts/00_artifact_lock.py` | Locks and verifies expected artifact paths before execution. |
-| `scripts/01_capture_live_backend_metadata.py` | Captures live backend metadata for the hardware execution context. |
-| `scripts/02_lock_runtime_options.py` | Locks runtime options used for Wave 1 execution. |
-| `scripts/03_optional_backend_compile_confirmation.py` | Confirms backend compile behavior before execution. |
-| `scripts/04_validate_wave1_preflight.py` | Validates Wave 1 preflight conditions before job construction or submission. |
-| `scripts/05_build_zz4_wave1_circuits.py` | Builds ZZ4 Wave 1 fidelity circuits for the frozen subset using the fixed pair and circuit inventories. |
-| `scripts/06_submit_wave1_jobs.py` | Submits Wave 1 hardware jobs. Included for traceability only; reproduction should not re-submit jobs unless explicitly authorized. |
-| `scripts/07_retrieve_wave1_results.py` | Retrieves Wave 1 hardware results and writes regime-specific raw-result JSON artifacts. |
-| `scripts/08_build_hardware_kernels.py` | Builds hardware-derived kernels from retrieved Wave 1 results. |
 | `scripts/08b_audit_kernel_reconstruction.py` | Independent reconstruction audit; verifies coordinate/pair-identifier consistency between retrieved PUBs and the circuit-index ledger. |
-| `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion in the source repository layout. |
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script for distortion metrics. |
 | `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including diagonal sensitivity and leave-one-window-out jackknife rows. |
 | `scripts/09d_shot_noise_reference_scale_decomposition.py` | Computes Section 2.12 global and matrix-aware shot-noise reference-scale decomposition. |
-| `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
+| `scripts/archive_original_execution_pipeline/` | Archived original execution pipeline retained for provenance only; not part of the supported flat-package reproduction path. |
+| `archive_legacy_preprocessing/` | Archived legacy preprocessing code retained for source-context provenance only. |
 
 ## Environment and verification artifacts
 
@@ -256,6 +291,7 @@ The global scale is a conservative upper reference that exceeds the maximum per-
 | --- | --- |
 | `environment/python_version.txt` | Python version recorded at package creation time. |
 | `environment/pip_freeze.txt` | Package-freeze record documenting the Python environment. |
+| `requirements.txt` | Minimal dependency declaration for the supported artifact-level reproduction scripts. |
 | `checksums/SHA256SUMS.txt` | SHA-256 checksum manifest for verifying the reproduction package state. |
 
 ## Repository metadata

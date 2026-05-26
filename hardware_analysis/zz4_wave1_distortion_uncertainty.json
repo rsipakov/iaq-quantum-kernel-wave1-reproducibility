@@ -1,6 +1,6 @@
 {
   "artifact_type": "zz4_wave1_distortion_uncertainty",
-  "created_utc": "2026-05-25T07:10:37Z",
+  "created_utc": "2026-05-26T08:42:51Z",
   "method": "leave_one_window_out_jackknife_and_diagonal_robustness",
   "resampling_unit": "frozen_subset_window",
   "n_windows": 24,

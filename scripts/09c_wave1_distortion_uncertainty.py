@@ -8,7 +8,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import spearmanr, pearsonr
 
 
 REGIMES = ["H0", "H1", "H2"]
@@ -61,13 +60,32 @@ def effective_rank(K: np.ndarray) -> float:
     return float(np.exp(-np.sum(p * np.log(p))))
 
 
+def pearson_statistic(x: np.ndarray, y: np.ndarray) -> float:
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    mask = np.isfinite(x) & np.isfinite(y)
+    if int(mask.sum()) < 2:
+        return float("nan")
+    x = x[mask]
+    y = y[mask]
+    if float(np.std(x)) == 0.0 or float(np.std(y)) == 0.0:
+        return float("nan")
+    return float(np.corrcoef(x, y)[0, 1])
+
+
+def spearman_statistic(x: np.ndarray, y: np.ndarray) -> float:
+    x_rank = pd.Series(np.asarray(x, dtype=float)).rank(method="average").to_numpy()
+    y_rank = pd.Series(np.asarray(y, dtype=float)).rank(method="average").to_numpy()
+    return pearson_statistic(x_rank, y_rank)
+
+
 def scalar_metrics(K_hw: np.ndarray, K_sv: np.ndarray) -> dict:
     hw = offdiag_values(K_hw)
     sv = offdiag_values(K_sv)
     diff = hw - sv
     return {
-        "spearman": float(spearmanr(sv, hw, nan_policy="omit").statistic),
-        "pearson": float(pearsonr(sv, hw).statistic),
+        "spearman": spearman_statistic(sv, hw),
+        "pearson": pearson_statistic(sv, hw),
         "mae": float(np.mean(np.abs(diff))),
         "rmse": float(np.sqrt(np.mean(diff ** 2))),
         "medae": float(np.median(np.abs(diff))),
@@ -182,8 +200,8 @@ def main() -> int:
         unique_hw = unique_offdiag_values(K)
 
         directed = {
-            "spearman": float(spearmanr(directed_sv, directed_hw, nan_policy="omit").statistic),
-            "pearson": float(pearsonr(directed_sv, directed_hw).statistic),
+            "spearman": spearman_statistic(directed_sv, directed_hw),
+            "pearson": pearson_statistic(directed_sv, directed_hw),
             "mae": float(np.mean(np.abs(directed_hw - directed_sv))),
             "rmse": float(np.sqrt(np.mean((directed_hw - directed_sv) ** 2))),
             "medae": float(np.median(np.abs(directed_hw - directed_sv))),
@@ -191,8 +209,8 @@ def main() -> int:
             "offdiag_variance": float(np.var(directed_hw)),
         }
         unique = {
-            "spearman": float(spearmanr(unique_sv, unique_hw, nan_policy="omit").statistic),
-            "pearson": float(pearsonr(unique_sv, unique_hw).statistic),
+            "spearman": spearman_statistic(unique_sv, unique_hw),
+            "pearson": pearson_statistic(unique_sv, unique_hw),
             "mae": float(np.mean(np.abs(unique_hw - unique_sv))),
             "rmse": float(np.sqrt(np.mean((unique_hw - unique_sv) ** 2))),
             "medae": float(np.median(np.abs(unique_hw - unique_sv))),

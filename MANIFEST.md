@@ -15,6 +15,7 @@ The package supports the manuscript Materials and Methods subsections:
 - **2.9. CKA — centered kernel alignment**
 - **2.10. KTA — kernel-target alignment**
 - **2.11. KTA/CKA tension analysis**
+- **2.12. Shot-noise reference-scale decomposition**
 
 ## Scope
 
@@ -51,12 +52,10 @@ The package supports the manuscript Materials and Methods subsections:
 | PSD policy | Diagnostic only; uncorrected minimum eigenvalue retained |
 | Geometry/distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, off-diagonal variance, effective rank, CKA, centered KTA |
 | Section 2.9 CKA point estimates | `M0/H0 = 0.9333906747`, `M1/H1 = 0.9373725928`, `M2/H2 = 0.9886681278` |
-| Section 2.9 CKA robustness | Diagonal sensitivity plus leave-one-window-out CKA jackknife and paired CKA contrasts |
 | Section 2.10 centered KTA point estimates | `SV = 0.1585110924`, `M0/H0 = 0.1833084594`, `M1/H1 = 0.1814633785`, `M2/H2 = 0.1710248441` |
-| Section 2.10 KTA robustness | Unit-diagonal sensitivity plus leave-one-window-out centered-KTA jackknife and paired KTA contrasts |
 | Section 2.11 CKA/KTA tension quantities | `CKA loss = 1 - CKA`; `Delta_KTA = KTA_hardware - KTA_statevector` |
-| Section 2.11 CKA/KTA tension result | `M2/H2` has highest CKA and smallest KTA uplift; `M0/H0` has highest absolute centered hardware KTA |
-| Section 2.11 robustness | Paired CKA/KTA jackknife contrast synthesis and unit-diagonal rank-stability statement |
+| Section 2.12 global shot reference | `sigma_shot = 1/sqrt(2*1024) = 0.0220970869121` |
+| Section 2.12 matrix-aware shot reference | `sqrt(mean_{Omega} p_ij(1-p_ij)/1024)` using reconstructed off-diagonal hardware probabilities |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
 | Claim scope | No quantum-advantage claim and no hardware classifier-superiority claim |
@@ -72,7 +71,7 @@ No threshold relaxation
 No Wave 2 execution without a new decision record
 ```
 
-Within the current Wave 1 / v9 scope, the frozen subset is immutable. No observation window may be added, removed, replaced, reordered, or reweighted after IBM hardware execution authorization. Thresholds used for inclusion, exclusion, hardware feasibility, compile-gate acceptance, subset stability, or pass/fail interpretation are frozen. Wave 2 execution is excluded unless explicitly authorized by a new decision record.
+Within the current Wave 1 / v9 scope, the frozen subset is immutable. No observation window may be added, removed, replaced, reordered, or reweighted after IBM hardware execution authorization.
 
 ## Dataset and preprocessing source files
 
@@ -87,7 +86,7 @@ Within the current Wave 1 / v9 scope, the frozen subset is immutable. No observa
 
 | Path | Purpose |
 | --- | --- |
-| `frozen_subset/hardware_subset_event_onset_next_1h.csv` | Fixed `N = 24` subset used for the Wave 1 ZZ4 hardware pilot. Contains `hardware_row_order` and `y_event_onset_next_1h`, which are used by the direct analysis script for centered KTA. |
+| `frozen_subset/hardware_subset_event_onset_next_1h.csv` | Fixed `N = 24` subset used for the Wave 1 ZZ4 hardware pilot. Contains `hardware_row_order` and `y_event_onset_next_1h`. |
 | `metadata/zz_only_pilot_operational_plan.json` | Defines the ZZ-only hardware-pilot scope, frozen-subset policy, allowed claims, pair counts, and Wave 2 restrictions. |
 | `metadata/zz_only_step8_execution_manifest.json` | Records the authorized hardware execution scope: `F_quantum_4`, `ZZ4`, frozen `N = 24`, pair counts, planned shots, pair-inventory checksum, and the three allowed regimes. |
 | `metadata/v9_audit_freeze_manifest.json` | Records the audit/freeze state, allowed subset, allowed feature set, allowed kernel, threshold policy, and immutable scope constraints. |
@@ -108,8 +107,8 @@ Within the current Wave 1 / v9 scope, the frozen subset is immutable. No observa
 
 | Path | Purpose |
 | --- | --- |
-| `metadata/statevector_reference_metadata.json` | Defines the statevector reference metadata for the ZZ4 feature order and the exact squared-fidelity kernel. |
-| `statevector_reference/zz4_K_all_all.npy` | Full `24 x 24` ZZ4 statevector reference kernel for the frozen subset; used as the reference matrix for CKA and as the statevector kernel for centered KTA. |
+| `metadata/statevector_reference_metadata.json` | Defines the statevector reference metadata for the ZZ4 feature order and exact squared-fidelity kernel. |
+| `statevector_reference/zz4_K_all_all.npy` | Full `24 x 24` ZZ4 statevector reference kernel for the frozen subset. |
 | `config/wave1_scope.json` | Wave 1 scope configuration consumed by circuit-build and kernel-reconstruction workflows. |
 | `metadata/zz4_wave1_feature_map_spec.json` | Manuscript-support feature-map specification for ZZ4. |
 
@@ -158,9 +157,9 @@ This label map is a reporting convention only; it does not create additional cir
 | --- | --- |
 | `hardware_kernels/zz4_wave1_kernel_entries_long.csv` | Long-form Wave 1 kernel-entry table recording regime, PUB order, circuit ID, pair ID, coordinates, all-zero bitstring, all-zero count, observed shots, and raw kernel value. |
 | `metadata/zz4_wave1_kernel_manifest.json` | Confirms that reconstructed hardware kernels are `24 x 24`, have no missing entries, use a measured-diagonal policy, and retain diagnostic PSD metadata. |
-| `hardware_kernels/zz4_H0_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H0` / `M0`; input to CKA, centered KTA, and Section 2.11 tension analysis. |
-| `hardware_kernels/zz4_H1_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H1` / `M1`; input to CKA, centered KTA, and Section 2.11 tension analysis. |
-| `hardware_kernels/zz4_H2_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H2` / `M2`; input to CKA, centered KTA, and Section 2.11 tension analysis. |
+| `hardware_kernels/zz4_H0_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H0` / `M0`. |
+| `hardware_kernels/zz4_H1_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H1` / `M1`. |
+| `hardware_kernels/zz4_H2_kernel.npy` | Wave 1 hardware-derived ZZ4 kernel for `H2` / `M2`. |
 | `hardware_kernels/zz4_H0_kernel.csv` | CSV representation of the `H0` / `M0` hardware-derived kernel. |
 | `hardware_kernels/zz4_H1_kernel.csv` | CSV representation of the `H1` / `M1` hardware-derived kernel. |
 | `hardware_kernels/zz4_H2_kernel.csv` | CSV representation of the `H2` / `M2` hardware-derived kernel. |
@@ -171,11 +170,22 @@ This label map is a reporting convention only; it does not create additional cir
 
 | Path | Purpose |
 | --- | --- |
-| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. For Section 2.9 it contains `CKA_hardware_vs_statevector`, `CKA_statevector_self`, and `CKA_drop_relative_to_statevector`. For Section 2.10 it contains `KTA_hardware`, `KTA_statevector`, and `KTA_drop_relative_to_statevector`. For Section 2.11 it provides `CKA loss = CKA_drop_relative_to_statevector` and `Delta_KTA = -KTA_drop_relative_to_statevector`. |
-| `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. Records `analysis_mode = direct_npy_loader_budget_safe_1024_shots`, all required regimes reported, input/output paths, no failure reasons, and the interpretation policy. |
-| `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary with the primary metric table, including KTA. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics. For Section 2.9 it contains CKA diagonal-sensitivity and leave-one-window-out CKA jackknife rows. For Section 2.10 it contains `diagonal_robustness`, `leave_one_window_out_jackknife`, and `paired_jackknife_contrast` rows with `metric = kta_centered`. For Section 2.11 it supplies paired CKA/KTA contrast ratios and unit-diagonal rank-stability evidence. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary recording the resampling unit, input paths, diagonal-sensitivity policy, CKA jackknife diagnostics, KTA jackknife diagnostics, and descriptive-only inferential policy. |
+| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. Supplies RMSE for Section 2.12 and CKA/KTA/effective-rank diagnostics for Sections 2.8--2.11. |
+| `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. |
+| `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics, including diagonal-sensitivity and leave-one-window-out jackknife summaries. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary. |
+| `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv` | Section 2.12 tabular shot-noise reference-scale decomposition, including global and matrix-aware scales, residuals, and shot-share values. |
+| `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json` | Machine-readable Section 2.12 decomposition with formulas, input paths, output paths, and diagnostic caveat. |
+| `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md` | Human-readable Section 2.12 decomposition summary. |
+
+### Section 2.8 primary distortion metrics
+
+| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Effective rank | Centered KTA |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.741297 | 0.827253 | 0.049036 | 0.087770 | 0.026154 | 0.568666 | 0.933391 | 21.184209 | 0.183308 |
+| `M1` | `H1` | 0.774951 | 0.842774 | 0.047290 | 0.086428 | 0.026143 | 0.563897 | 0.937373 | 21.217026 | 0.181463 |
+| `M2` | `H2` | 0.943744 | 0.986203 | 0.025726 | 0.042727 | 0.016161 | 0.263978 | 0.988668 | 19.788170 | 0.171025 |
 
 ### Section 2.9 CKA point estimates and robustness summary
 
@@ -187,8 +197,6 @@ This label map is a reporting convention only; it does not create additional cir
 
 The unit-diagonal CKA values are sensitivity checks only. Reported kernels retain the measured diagonal.
 
-The CKA leave-one-window-out jackknife rows are stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` with `diagonal_policy = measured_diagonal_full_matrix`. The persisted paired CKA contrasts are `M1-M0`, `M2-M1`, and `M2-M0`; they are descriptive robustness diagnostics, not inferential significance tests.
-
 ### Section 2.10 centered KTA point estimates and robustness summary
 
 | Kernel / manuscript label | Artifact regime | Centered KTA | Hardware minus statevector | Unit-diagonal KTA sensitivity |
@@ -198,19 +206,7 @@ The CKA leave-one-window-out jackknife rows are stored in `hardware_analysis/zz4
 | `M1` | `H1` | 0.1814633785 | +0.0229522861 | 0.1839754900 |
 | `M2` | `H2` | 0.1710248441 | +0.0125137518 | 0.1741450073 |
 
-The unit-diagonal KTA values are sensitivity checks only. Reported kernels retain the measured diagonal.
-
-| Centered KTA jackknife | `M0` / `H0` | `M1` / `H1` | `M2` / `H2` |
-| --- | ---: | ---: | ---: |
-| Point estimate ± jackknife SE | 0.1833084594 ± 0.036223 | 0.1814633785 ± 0.035045 | 0.1710248441 ± 0.035962 |
-
-| Paired centered-KTA contrast | Delta | Jackknife SE of delta | Descriptive z |
-| --- | ---: | ---: | ---: |
-| `M1-M0` | -0.001845 | 0.005621 | -0.328255 |
-| `M2-M1` | -0.010439 | 0.013436 | -0.776936 |
-| `M2-M0` | -0.012284 | 0.014088 | -0.871930 |
-
-Centered KTA is not classifier accuracy and is not a prediction-performance claim. The KTA paired contrasts are descriptive window-level robustness diagnostics, not inferential significance tests.
+Centered KTA is not classifier accuracy and is not a prediction-performance claim.
 
 ### Section 2.11 KTA/CKA tension summary
 
@@ -220,15 +216,17 @@ Centered KTA is not classifier accuracy and is not a prediction-performance clai
 | `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 |
 | `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 |
 
-The point-estimate ranks are in tension. `M2/H2` is the best statevector-geometry survivor and has the smallest KTA uplift relative to the statevector reference, while `M0/H0` has the largest absolute hardware KTA. Section 2.11 therefore interprets hardware KTA uplift as class-structured kernel distortion, not as a classifier-performance improvement.
+The point-estimate ranks are in tension. `M2/H2` is the best statevector-geometry survivor and has the smallest KTA uplift relative to the statevector reference, while `M0/H0` has the largest absolute hardware KTA.
 
-| Paired contrast | Delta CKA | CKA z | Delta centered KTA | KTA z |
-| --- | ---: | ---: | ---: | ---: |
-| `M1-M0` | +0.0039819182 | 0.626856 | -0.0018450809 | -0.328255 |
-| `M2-M1` | +0.0512955350 | 3.086171 | -0.0104385344 | -0.776936 |
-| `M2-M0` | +0.0552774532 | 2.828536 | -0.0122836153 | -0.871930 |
+### Section 2.12 shot-noise reference-scale decomposition summary
 
-The CKA contrast ratios support the `M2` geometry-survival conclusion. The KTA contrast ratios are unresolved at the window scale and are not used as model-selection evidence.
+| Manuscript label | Artifact regime | RMSE | sigma_shot global | residual_global | ShotShare global | sigma_shot matrix | residual_matrix | ShotShare matrix |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.087770 | 0.022097 | 0.084943 | 6.34% | 0.008266 | 0.087380 | 0.89% |
+| `M1` | `H1` | 0.086428 | 0.022097 | 0.083555 | 6.54% | 0.008243 | 0.086034 | 0.91% |
+| `M2` | `H2` | 0.042727 | 0.022097 | 0.036570 | 26.75% | 0.008528 | 0.041868 | 3.98% |
+
+The matrix-aware scale is computed from reconstructed hardware all-zero probabilities on the off-diagonal domain. The decomposition is diagnostic, not a full physical noise-model decomposition.
 
 ## Reproduction scripts
 
@@ -243,12 +241,13 @@ The CKA contrast ratios support the `M2` geometry-survival conclusion. The KTA c
 | `scripts/06_submit_wave1_jobs.py` | Submits Wave 1 hardware jobs. Included for traceability only; reproduction should not re-submit jobs unless explicitly authorized. |
 | `scripts/07_retrieve_wave1_results.py` | Retrieves Wave 1 hardware results and writes regime-specific raw-result JSON artifacts. |
 | `scripts/08_build_hardware_kernels.py` | Builds hardware-derived kernels from retrieved Wave 1 results. |
+| `scripts/08b_audit_kernel_reconstruction.py` | Independent reconstruction audit; verifies coordinate/pair-identifier consistency between retrieved PUBs and the circuit-index ledger. |
 | `scripts/09_analyze_wave1_distortion.py` | Analyzes Wave 1 statevector-to-hardware kernel distortion in the source repository layout. |
-| `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script. Implements `center_kernel`, `cka`, and centered KTA; reads the frozen subset, statevector kernel, and three hardware-kernel NumPy arrays, then writes the hardware-analysis artifacts. |
-| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including CKA diagonal sensitivity, leave-one-window-out CKA jackknife, KTA diagonal sensitivity, leave-one-window-out centered-KTA jackknife, paired KTA contrasts, and the paired CKA/KTA contrast ingredients used by Section 2.11. |
+| `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script for distortion metrics. |
+| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including diagonal sensitivity and leave-one-window-out jackknife rows. |
+| `scripts/09d_shot_noise_reference_scale_decomposition.py` | Computes Section 2.12 global and matrix-aware shot-noise reference-scale decomposition. |
 | `scripts/10_create_wave1_decision_record.py` | Creates the Wave 1 decision record; it does not authorize frozen-subset modification. |
 | `scripts/common.py` | Shared utilities for the Wave 1 scripts. |
-| `scripts/08b_audit_kernel_reconstruction.py` | Independent reconstruction audit; verifies coordinate/pair-identifier consistency between retrieved PUBs and the circuit-index ledger. |
 
 ## Environment and verification artifacts
 
@@ -262,10 +261,10 @@ The CKA contrast ratios support the `M2` geometry-survival conclusion. The KTA c
 
 | Path | Purpose |
 | --- | --- |
-| `README.md` | Main reproduction-package description, updated to include Section 2.11 and the KTA/CKA tension-analysis diagnostics. |
-| `MANIFEST.md` | This artifact manifest, updated to include Section 2.11 and the KTA/CKA tension-analysis diagnostics. |
+| `README.md` | Main reproduction-package description, updated to include Section 2.12 and the shot-noise reference-scale decomposition diagnostics. |
+| `MANIFEST.md` | This artifact manifest, updated to include Section 2.12 and the shot-noise reference-scale decomposition diagnostics. |
 | `CITATION.cff` | Citation metadata for the reproduction package. |
-| `LICENSE` | License file. No update is required for the addition of Section 2.11 documentation. |
+| `LICENSE` | License file. No update is required for the addition of Section 2.12 documentation. |
 | `.gitignore` | Local and sensitive-file exclusion rules. |
 
 ## Decision-record artifacts
@@ -288,6 +287,6 @@ The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virt
 
 This package supports kernel-geometry survival and distortion analysis only.
 
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics, not classifier-performance metrics. Section 2.11 treats KTA uplift as hardware-induced class-structured distortion, not as a prediction-performance improvement.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.
 
-The leave-one-window-out CKA and centered-KTA jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests.
+CKA, centered KTA, leave-one-window-out jackknife contrasts, and shot-noise reference-scale decomposition are descriptive diagnostics. Section 2.12 is not a physical noise-model decomposition and does not assign a mechanistic hardware-noise channel.

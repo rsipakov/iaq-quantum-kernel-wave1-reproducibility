@@ -1,0 +1,91 @@
+{
+  "artifact_type": "zz4_wave1_shot_noise_reference_scale_decomposition",
+  "created_utc": "2026-05-26T06:59:04Z",
+  "n": 24,
+  "shots_observed_per_entry": 1024,
+  "global_reference_scale": {
+    "formula": "1/sqrt(2*S)",
+    "sigma_shot_global": 0.022097086912079608,
+    "variance": 0.0004882812499999999
+  },
+  "matrix_reference_scale": {
+    "formula": "sqrt(mean_{(i,j) in Omega} p_ij*(1-p_ij)/S)",
+    "domain": "off-diagonal directed entries i != j; symmetric matrices make directed and unique-unordered averages identical",
+    "probability_source": "reconstructed hardware all-zero probabilities in hardware_kernels/zz4_H{0,1,2}_kernel.csv"
+  },
+  "input_paths": [
+    "hardware_analysis/zz4_wave1_distortion_metrics.csv",
+    "hardware_kernels/zz4_wave1_kernel_entries_long.csv",
+    "hardware_kernels/zz4_H0_kernel.csv",
+    "hardware_kernels/zz4_H1_kernel.csv",
+    "hardware_kernels/zz4_H2_kernel.csv"
+  ],
+  "output_paths": [
+    "hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv",
+    "hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json",
+    "hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md"
+  ],
+  "caveat": "This decomposition assumes a simple finite-shot reference scale and treats shot noise and residual hardware distortion as approximately separable in quadrature. It is diagnostic, not a full physical noise-model decomposition.",
+  "rows": [
+    {
+      "regime_id": "H0",
+      "manuscript_configuration": "M0",
+      "n": 24,
+      "shots_observed_per_entry": 1024,
+      "omega_size_directed": 552,
+      "omega_size_unique_unordered": 276,
+      "kernel_rmse": 0.0877704676366643,
+      "sigma_shot_global": 0.022097086912079608,
+      "sigma_shot_global_variance": 0.0004882812499999999,
+      "residual_global": 0.08494335606248869,
+      "shot_share_global": 0.06338306306385118,
+      "sigma_shot_matrix": 0.008265607161390446,
+      "sigma_shot_matrix_variance": 6.832026174642901e-05,
+      "residual_matrix": 0.08738040242189496,
+      "shot_share_matrix": 0.008868551595648472,
+      "hardware_offdiag_mean": 0.08208432404891304,
+      "hardware_offdiag_variance": 0.005386539766002768,
+      "decomposition_policy": "diagnostic_quadrature_reference_not_physical_noise_model"
+    },
+    {
+      "regime_id": "H1",
+      "manuscript_configuration": "M1",
+      "n": 24,
+      "shots_observed_per_entry": 1024,
+      "omega_size_directed": 552,
+      "omega_size_unique_unordered": 276,
+      "kernel_rmse": 0.0864275383627636,
+      "sigma_shot_global": 0.022097086912079608,
+      "sigma_shot_global_variance": 0.0004882812499999999,
+      "residual_global": 0.08355500067289194,
+      "shot_share_global": 0.06536808475303199,
+      "sigma_shot_matrix": 0.008243298136089369,
+      "sigma_shot_matrix_variance": 6.795196416045445e-05,
+      "residual_matrix": 0.0860335249962857,
+      "shot_share_matrix": 0.009096990212865187,
+      "hardware_offdiag_mean": 0.08151112432065218,
+      "hardware_offdiag_variance": 0.005284249632330007,
+      "decomposition_policy": "diagnostic_quadrature_reference_not_physical_noise_model"
+    },
+    {
+      "regime_id": "H2",
+      "manuscript_configuration": "M2",
+      "n": 24,
+      "shots_observed_per_entry": 1024,
+      "omega_size_directed": 552,
+      "omega_size_unique_unordered": 276,
+      "kernel_rmse": 0.0427274195046584,
+      "sigma_shot_global": 0.022097086912079608,
+      "sigma_shot_global_variance": 0.0004882812499999999,
+      "residual_global": 0.036569811696631184,
+      "shot_share_global": 0.26745869322355487,
+      "sigma_shot_matrix": 0.008528283705832446,
+      "sigma_shot_matrix_variance": 7.273162296716718e-05,
+      "residual_matrix": 0.0418676576196937,
+      "shot_share_matrix": 0.039839139501725344,
+      "hardware_offdiag_mean": 0.09285835597826086,
+      "hardware_offdiag_variance": 0.009758499784896263,
+      "decomposition_policy": "diagnostic_quadrature_reference_not_physical_noise_model"
+    }
+  ]
+}

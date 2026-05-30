@@ -43,6 +43,7 @@ It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ
 - `scripts/09b_analyze_wave1_distortion_direct.py`
 - `scripts/09c_wave1_distortion_uncertainty.py`
 - `scripts/09d_shot_noise_reference_scale_decomposition.py`
+- `scripts/09e_label_permutation_reference.py`
 
 ## Supported output artifacts
 
@@ -56,12 +57,16 @@ It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md`
+- `hardware_analysis/zz4_wave1_label_permutation_reference.csv`
+- `hardware_analysis/zz4_wave1_label_permutation_reference.json`
 
 ## Static Section 2.13 support artifact
 
 - `hardware_analysis/qiskit_kta_cka_permutation_tests.csv`
 
 This file is copied from the source artifact `step6_v6_consolidation/outputs/tables/qiskit_kta_cka_permutation_tests.csv`. It is a static label-permutation reference table for statevector kernels. Section 2.13 uses only the ZZ4 statevector rows; the table also contains RMA6 rows retained for source-level traceability.
+
+The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its persisted CSV/JSON outputs are byte-stable; local write-time provenance is emitted only to the ignored sidecar `hardware_analysis/zz4_wave1_label_permutation_reference_provenance.json`. Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
 
 ## Archival code
 
@@ -235,6 +240,8 @@ This label map is a reporting convention only; it does not create additional cir
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json` | Machine-readable Section 2.12 decomposition with formulas, input paths, output paths, and diagnostic caveat. |
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md` | Human-readable Section 2.12 decomposition summary. |
 | `hardware_analysis/qiskit_kta_cka_permutation_tests.csv` | Source-derived Section 2.13 label-permutation reference for statevector label alignment. |
+| `hardware_analysis/zz4_wave1_label_permutation_reference.csv` | Regenerable statevector ZZ4 label-permutation reference (upper-tail and symmetric two-sided), Section 2.13. |
+| `hardware_analysis/zz4_wave1_label_permutation_reference.json` | Machine-readable label-permutation reference with multi-seed sensitivity envelope. |
 
 ### Section 2.8 primary distortion metrics
 
@@ -290,21 +297,30 @@ The matrix-aware scale is computed from reconstructed hardware all-zero probabil
 | Item | Status |
 | --- | --- |
 | Statistical unit | Frozen observation window |
-| Pair-entry bootstrap CI | Not reported; kernel entries are dependent and no 10,000-replicate hardware-bootstrap CI artifact is present |
+| Pair-entry bootstrap CI | Not reported; no 10,000-replicate hardware-bootstrap CI artifact is present, and kernel entries are dependent observations |
 | Jackknife | Leave-one-window-out jackknife for Spearman, Pearson, MAE, CKA, and centered KTA |
 | Paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive `z = delta / SE_delta`, not formal tests |
-| RMSE uncertainty | RMSE point estimates are reported; no RMSE jackknife contrast is persisted |
+| Point-estimate-only metrics | RMSE, MedAE, MaxAE, off-diagonal variance, and effective rank are reported as point estimates; no window-level jackknife is persisted for any of them |
 | Correlation p-values | Blank/NaN and not used |
 | Hardware label permutation | Not persisted or claimed |
 | Statevector label permutation | Static source-derived ZZ4 reference, `n_perm = 5000` |
 | Multiple-comparison correction | Not applied because no formal hardware-contrast p-values are generated |
 
-| Kernel | Metric row | Observed | Null mean | Null SD | Null q95 | Null q99 | p_perm_two_sided | n_perm |
+| Kernel | Metric row | Observed | Null mean | Null SD | Null q95 | Null q99 | p_perm upper-tail (source field: `p_perm_two_sided`) | n_perm |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `zz4` | `CKA` | 0.1585110924 | 0.1709625562 | 0.0352334692 | 0.2346692114 | 0.2688889140 | 0.5946810638 | 5000 |
 | `zz4` | `KTA` | 0.1329093895 | 0.1433497722 | 0.0295427835 | 0.1967669338 | 0.2254596879 | 0.5946810638 | 5000 |
 
-In the manuscript notation, the `CKA` row above corresponds to `KTA_c(K_SV, y) = CKA(K_SV, yy^T)`. It is a statevector random-label reference, not a hardware-regime permutation test.
+The persisted source field `p_perm_two_sided` records an upper-tail exceedance probability $P(T_{\text{null}} \ge T_{\text{obs}})$, retained under its original name for provenance. The observed alignment lies below the permutation-null mean, so the conclusion (no alignment beyond a random-label reference) holds under both one- and two-sided conventions. An in-package regenerable reference with an explicit symmetric two-sided value is produced by `scripts/09e_label_permutation_reference.py`.
+
+The fixed-seed in-package reference records:
+
+| Kernel | Source metric label | Alignment convention | Observed | Null mean | Null SD | Null q95 | Null q99 | p_upper_tail | p_two_sided_centered | p_two_sided_2min | n_perm |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `zz4` | `CKA` | centered label alignment | 0.1585110924 | 0.1709786387 | 0.0355291291 | 0.2353874561 | 0.2681052758 | 0.5988 | 0.7294 | 0.8024 | 5000 |
+| `zz4` | `KTA` | uncentered label alignment | 0.1329093895 | 0.1433632571 | 0.0297906903 | 0.1973691723 | 0.2248026179 | 0.5988 | 0.7294 | 0.8024 | 5000 |
+
+In the manuscript notation, the source metric label `CKA` denotes the centered label-alignment row, equivalent to `KTA_c(K_SV, y) = CKA(K_SV, yy^T)`. The source metric label `KTA` denotes the companion uncentered alignment row and is retained for provenance only. It is a statevector random-label reference, not a hardware-regime permutation test.
 
 ## Supported and archival scripts
 
@@ -314,7 +330,8 @@ In the manuscript notation, the `CKA` row above corresponds to `KTA_c(K_SV, y) =
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script for distortion metrics. |
 | `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including diagonal sensitivity, leave-one-window-out jackknife rows, and paired descriptive contrasts. |
 | `scripts/09d_shot_noise_reference_scale_decomposition.py` | Computes Section 2.12 global and matrix-aware shot-noise reference-scale decomposition. |
-| `scripts/common.py` | Legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, and `09d` are self-contained and do not require the legacy path/runtime configuration files. |
+| `scripts/09e_label_permutation_reference.py` | Regenerates the statevector label-permutation reference with a fixed seed and validates the static source copy (`--check`). |
+| `scripts/common.py` | Legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, `09d`, and `09e` are self-contained and do not require the legacy path/runtime configuration files. |
 | `scripts/archive_original_execution_pipeline/` | Archived original execution pipeline retained for provenance only; not part of the supported flat-package reproduction path. |
 | `archive_legacy_preprocessing/` | Archived legacy preprocessing code retained for source-context provenance only. |
 
@@ -354,9 +371,10 @@ python scripts/08b_audit_kernel_reconstruction.py --project-root .
 python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
+python scripts/09e_label_permutation_reference.py --project-root . --check
 ```
 
-The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
+The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of every regenerated timestamped/numerical diagnostic output. The `09e` CSV/JSON reference artifacts are byte-stable under the fixed seed; its write timestamp is kept in an ignored provenance sidecar.
 
 ## Integrity Verification
 
@@ -366,9 +384,9 @@ Before regenerating outputs, verify the curated package state with:
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
 
-This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for regenerated analysis outputs. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines.
+This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for every regenerated analysis output. Some supported scripts write `created_utc` timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` CSV/JSON reference artifacts are byte-stable; their write timestamp is kept in an ignored provenance sidecar.
 
-The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
+The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
 
 ## Claim limitation
 

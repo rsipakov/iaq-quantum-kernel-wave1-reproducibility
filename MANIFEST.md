@@ -66,7 +66,7 @@ It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ
 
 This file is copied from the source artifact `step6_v6_consolidation/outputs/tables/qiskit_kta_cka_permutation_tests.csv`. It is a static label-permutation reference table for statevector kernels. Section 2.13 uses only the ZZ4 statevector rows; the table also contains RMA6 rows retained for source-level traceability.
 
-The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
+The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its persisted CSV/JSON outputs are byte-stable; local write-time provenance is emitted only to the ignored sidecar `hardware_analysis/zz4_wave1_label_permutation_reference_provenance.json`. Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
 
 ## Archival code
 
@@ -374,7 +374,7 @@ python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . 
 python scripts/09e_label_permutation_reference.py --project-root . --check
 ```
 
-The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
+The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of every regenerated timestamped/numerical diagnostic output. The `09e` CSV/JSON reference artifacts are byte-stable under the fixed seed; its write timestamp is kept in an ignored provenance sidecar.
 
 ## Integrity Verification
 
@@ -384,7 +384,7 @@ Before regenerating outputs, verify the curated package state with:
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
 
-This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for regenerated analysis outputs. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines.
+This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for every regenerated analysis output. Some supported scripts write `created_utc` timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` CSV/JSON reference artifacts are byte-stable; their write timestamp is kept in an ignored provenance sidecar.
 
 The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
 

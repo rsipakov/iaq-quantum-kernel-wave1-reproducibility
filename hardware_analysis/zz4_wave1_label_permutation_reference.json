@@ -1,6 +1,5 @@
 {
   "artifact_type": "zz4_wave1_label_permutation_reference",
-  "created_utc": "2026-05-30T07:01:11Z",
   "description": "Regenerable statevector ZZ4 label-permutation reference. The persisted source field p_perm_two_sided is an upper-tail exceedance probability; this artifact reports the upper-tail probability together with explicit symmetric two-sided conventions and a multi-seed sensitivity envelope.",
   "inputs": {
     "statevector_kernel": "statevector_reference/zz4_K_all_all.npy",

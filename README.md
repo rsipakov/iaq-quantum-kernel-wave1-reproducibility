@@ -44,7 +44,7 @@ Section 2.13 additionally uses the static source-derived label-permutation refer
 hardware_analysis/qiskit_kta_cka_permutation_tests.csv
 ```
 
-The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
+The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its persisted CSV/JSON outputs are byte-stable; local write-time provenance is emitted only to the ignored sidecar `hardware_analysis/zz4_wave1_label_permutation_reference_provenance.json`. Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
 
 ## Supported reproduction commands
 
@@ -67,7 +67,7 @@ Expected high-level checks:
 - label-permutation reference check validates the static source-derived copy against the regenerable in-package reference;
 - Section 2.13 statistical statements are traceable to the persisted distortion, uncertainty, and label-permutation artifacts.
 
-These commands verify numerical reproduction, not byte-for-byte identity of regenerated files. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines. Do not use SHA-256 hashes of regenerated timestamped outputs as the numerical-reproduction criterion.
+These commands verify numerical reproduction, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write `created_utc` timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
 
 The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_analysis/zz4_wave1_distortion_metrics.csv` are retained for schema compatibility and intentionally left blank/NaN in the supported minimal workflow. They are not used for any manuscript claim because kernel entries are dependent observations.
 
@@ -415,7 +415,7 @@ The source-derived static label-permutation reference artifact is:
 hardware_analysis/qiskit_kta_cka_permutation_tests.csv
 ```
 
-The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
+The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its persisted CSV/JSON outputs are byte-stable; local write-time provenance is emitted only to the ignored sidecar `hardware_analysis/zz4_wave1_label_permutation_reference_provenance.json`. Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
 
 For the ZZ4 statevector centered-alignment row, this artifact records:
 
@@ -612,7 +612,7 @@ Before regenerating outputs, verify the curated package state with:
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
 
-This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for regenerated analysis outputs. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines.
+This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for every regenerated analysis output. Some supported scripts write `created_utc` timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` CSV/JSON reference artifacts are byte-stable; their write timestamp is kept in an ignored provenance sidecar.
 
 The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
 

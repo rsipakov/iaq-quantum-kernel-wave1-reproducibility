@@ -25,15 +25,17 @@ Outputs
 -------
 hardware_analysis/zz4_wave1_label_permutation_reference.csv
 hardware_analysis/zz4_wave1_label_permutation_reference.json
+hardware_analysis/zz4_wave1_label_permutation_reference_provenance.json
 
 Usage
 -----
 python scripts/09e_label_permutation_reference.py --project-root .
 python scripts/09e_label_permutation_reference.py --project-root . --check
 
-The default invocation writes the regenerable CSV/JSON artifacts. The
-``--check`` invocation builds the reference in memory and validates the static
-source copy without rewriting the timestamped JSON artifact.
+The default invocation writes byte-stable CSV/JSON reference artifacts and a
+local provenance JSON with the write timestamp. The ``--check`` invocation
+builds the reference in memory and validates the static source copy without
+rewriting persisted artifacts.
 """
 from __future__ import annotations
 
@@ -190,7 +192,6 @@ def build_reference(root: Path) -> dict:
 
     return {
         "artifact_type": "zz4_wave1_label_permutation_reference",
-        "created_utc": utc_now(),
         "description": (
             "Regenerable statevector ZZ4 label-permutation reference. The persisted "
             "source field p_perm_two_sided is an upper-tail exceedance probability; "
@@ -224,11 +225,12 @@ def build_reference(root: Path) -> dict:
     }
 
 
-def write_outputs(root: Path, ref: dict) -> tuple[Path, Path]:
+def write_outputs(root: Path, ref: dict) -> tuple[Path, Path, Path]:
     out_dir = root / "hardware_analysis"
     out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = out_dir / "zz4_wave1_label_permutation_reference.csv"
     json_path = out_dir / "zz4_wave1_label_permutation_reference.json"
+    provenance_path = out_dir / "zz4_wave1_label_permutation_reference_provenance.json"
 
     df = pd.DataFrame(ref["primary_rows"])
     cols = ["kernel_name", "metric", "alignment_convention",
@@ -239,7 +241,20 @@ def write_outputs(root: Path, ref: dict) -> tuple[Path, Path]:
     df = df[cols]
     df.to_csv(csv_path, index=False)
     json_path.write_text(json.dumps(ref, indent=2) + "\n")
-    return csv_path, json_path
+    provenance = {
+        "artifact_type": "zz4_wave1_label_permutation_reference_provenance",
+        "created_utc": utc_now(),
+        "reference_csv": str(csv_path.relative_to(root)),
+        "reference_json": str(json_path.relative_to(root)),
+        "note": (
+            "Local write-time provenance for the regenerable label-permutation "
+            "reference. This file is intentionally excluded from the checksum "
+            "manifest so the main CSV/JSON artifacts remain byte-stable across "
+            "plain regeneration runs."
+        ),
+    }
+    provenance_path.write_text(json.dumps(provenance, indent=2) + "\n")
+    return csv_path, json_path, provenance_path
 
 
 def run_check(root: Path, ref: dict) -> int:
@@ -286,9 +301,10 @@ def main() -> int:
     if args.check:
         return run_check(root, ref)
 
-    csv_path, json_path = write_outputs(root, ref)
+    csv_path, json_path, provenance_path = write_outputs(root, ref)
     print(f"[09e] wrote {csv_path}")
     print(f"[09e] wrote {json_path}")
+    print(f"[09e] wrote {provenance_path}")
     return 0
 
 

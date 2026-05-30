@@ -36,12 +36,15 @@ The supported reproduction path is:
 2. `scripts/09b_analyze_wave1_distortion_direct.py`
 3. `scripts/09c_wave1_distortion_uncertainty.py`
 4. `scripts/09d_shot_noise_reference_scale_decomposition.py --check`
+5. `scripts/09e_label_permutation_reference.py --check`
 
 Section 2.13 additionally uses the static source-derived label-permutation reference artifact:
 
 ```text
 hardware_analysis/qiskit_kta_cka_permutation_tests.csv
 ```
+
+The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
 
 ## Supported reproduction commands
 
@@ -52,6 +55,7 @@ python scripts/08b_audit_kernel_reconstruction.py --project-root .
 python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
+python scripts/09e_label_permutation_reference.py --project-root . --check
 ```
 
 Expected high-level checks:
@@ -60,6 +64,7 @@ Expected high-level checks:
 - distortion metrics are regenerated for H0, H1, and H2;
 - uncertainty diagnostics are regenerated;
 - shot-noise decomposition check passes against the persisted output table;
+- label-permutation reference check validates the static source-derived copy against the regenerable in-package reference;
 - Section 2.13 statistical statements are traceable to the persisted distortion, uncertainty, and label-permutation artifacts.
 
 These commands verify numerical reproduction, not byte-for-byte identity of regenerated files. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines. Do not use SHA-256 hashes of regenerated timestamped outputs as the numerical-reproduction criterion.
@@ -103,6 +108,7 @@ The historical preprocessing code has been moved to `archive_legacy_preprocessin
 - Kernel-reconstruction symmetrization policy: average duplicate entries, then mirror
 - PSD policy: diagnostic only; the uncorrected minimum eigenvalue is retained
 - Geometry metrics: Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, and centered kernel-target alignment
+- RMSE, median and maximum absolute error, off-diagonal variance, and effective rank are reported as point estimates only; no window-level jackknife is persisted for them.
 - Section 2.12 finite-shot diagnostic: global shot-noise reference scale plus matrix-aware plug-in shot scale computed from reconstructed off-diagonal all-zero probabilities
 - Section 2.13 statistical unit: frozen observation window, not an individual kernel entry
 - Section 2.13 resampling: leave-one-window-out jackknife for Spearman, Pearson, MAE, CKA, and centered KTA
@@ -289,6 +295,7 @@ Relevant artifacts:
 ```text
 scripts/09b_analyze_wave1_distortion_direct.py
 scripts/09c_wave1_distortion_uncertainty.py
+scripts/09e_label_permutation_reference.py
 hardware_analysis/zz4_wave1_distortion_metrics.csv
 hardware_analysis/zz4_wave1_distortion_summary.json
 hardware_analysis/zz4_wave1_distortion_summary.md
@@ -398,6 +405,8 @@ This artifact contains:
 - diagonal-sensitivity rows for CKA, effective rank, and centered KTA;
 - directed-versus-unique off-diagonal equivalence checks.
 
+RMSE, median and maximum absolute error, off-diagonal variance, and effective rank are reported as point estimates only; no window-level jackknife is persisted for them.
+
 The descriptive paired contrast ratios are not formal significance tests and are not converted to p-values. No pair-entry bootstrap confidence intervals are reported. No hardware-regime label-permutation p-values are reported. Since no formal hardware-contrast p-values are generated, no Holm-Bonferroni correction is applied.
 
 The source-derived static label-permutation reference artifact is:
@@ -406,22 +415,36 @@ The source-derived static label-permutation reference artifact is:
 hardware_analysis/qiskit_kta_cka_permutation_tests.csv
 ```
 
+The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py` (fixed reference seed and multi-seed sensitivity). Its `--check` mode validates the static copy without rewriting the persisted CSV/JSON artifacts.
+
 For the ZZ4 statevector centered-alignment row, this artifact records:
 
-| Kernel | Metric row | Observed | Permutation null mean | Null SD | Null q95 | Null q99 | Two-sided p_perm | n_perm |
+| Kernel | Metric row | Observed | Null mean | Null SD | Null q95 | Null q99 | p_perm upper-tail (source field: `p_perm_two_sided`) | n_perm |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `zz4` | `CKA` | 0.1585110924 | 0.1709625562 | 0.0352334692 | 0.2346692114 | 0.2688889140 | 0.5946810638 | 5000 |
 
-In the manuscript notation, this `CKA` row corresponds to the centered label-alignment value `KTA_c(K_SV, y) = CKA(K_SV, yy^T)`. The result is used only as a statevector random-label reference. It is not a hardware-configuration selection test and is not evidence of classifier performance.
+The persisted source field `p_perm_two_sided` records an upper-tail exceedance probability $P(T_{\text{null}} \ge T_{\text{obs}})$, retained under its original name for provenance. The observed alignment lies below the permutation-null mean, so the conclusion (no alignment beyond a random-label reference) holds under both one- and two-sided conventions. An in-package regenerable reference with an explicit symmetric two-sided value is produced by `scripts/09e_label_permutation_reference.py`.
+
+The fixed-seed in-package reference records:
+
+| Kernel | Source metric label | Alignment convention | Observed | Null mean | Null SD | Null q95 | Null q99 | p_upper_tail | p_two_sided_centered | p_two_sided_2min | n_perm |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `zz4` | `CKA` | centered label alignment | 0.1585110924 | 0.1709786387 | 0.0355291291 | 0.2353874561 | 0.2681052758 | 0.5988 | 0.7294 | 0.8024 | 5000 |
+| `zz4` | `KTA` | uncentered label alignment | 0.1329093895 | 0.1433632571 | 0.0297906903 | 0.1973691723 | 0.2248026179 | 0.5988 | 0.7294 | 0.8024 | 5000 |
+
+In the manuscript notation, the source metric label `CKA` denotes the centered label-alignment row, equivalent to `KTA_c(K_SV, y) = CKA(K_SV, yy^T)`. The source metric label `KTA` denotes the companion uncentered alignment row and is retained for provenance only. The result is used only as a statevector random-label reference. It is not a hardware-configuration selection test and is not evidence of classifier performance.
 
 Relevant artifacts:
 
 ```text
 scripts/09c_wave1_distortion_uncertainty.py
+scripts/09e_label_permutation_reference.py
 hardware_analysis/zz4_wave1_distortion_metrics.csv
 hardware_analysis/zz4_wave1_distortion_uncertainty.csv
 hardware_analysis/zz4_wave1_distortion_uncertainty.json
 hardware_analysis/qiskit_kta_cka_permutation_tests.csv
+hardware_analysis/zz4_wave1_label_permutation_reference.csv
+hardware_analysis/zz4_wave1_label_permutation_reference.json
 frozen_subset/hardware_subset_event_onset_next_1h.csv
 statevector_reference/zz4_K_all_all.npy
 hardware_kernels/zz4_H0_kernel.npy
@@ -505,6 +528,8 @@ hardware_kernels/zz4_H2_kernel.npy
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md`
 - `hardware_analysis/qiskit_kta_cka_permutation_tests.csv`
+- `hardware_analysis/zz4_wave1_label_permutation_reference.csv`
+- `hardware_analysis/zz4_wave1_label_permutation_reference.json`
 
 ### Supported reproduction scripts
 
@@ -512,7 +537,8 @@ hardware_kernels/zz4_H2_kernel.npy
 - `scripts/09b_analyze_wave1_distortion_direct.py`
 - `scripts/09c_wave1_distortion_uncertainty.py`
 - `scripts/09d_shot_noise_reference_scale_decomposition.py`
-- `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, and `09d` are self-contained and do not require the legacy path/runtime configuration files.
+- `scripts/09e_label_permutation_reference.py`
+- `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, `09d`, and `09e` are self-contained and do not require the legacy path/runtime configuration files.
 
 ### Archival original execution scripts
 
@@ -557,10 +583,12 @@ From the repository root:
 
 ```bash
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+python scripts/09e_label_permutation_reference.py --project-root .
+python scripts/09e_label_permutation_reference.py --project-root . --check
 head -n 5 hardware_analysis/qiskit_kta_cka_permutation_tests.csv
 ```
 
-The first command regenerates the window-level jackknife and paired descriptive contrast artifact. The second command verifies that the Section 2.13 label-permutation reference artifact is present. Section 2.13 does not require re-submitting IBM Quantum jobs and does not introduce a hardware-regime permutation test.
+The first command regenerates the window-level jackknife and paired descriptive contrast artifact. The second command regenerates the in-package label-permutation reference. The third command validates the static source-derived copy without rewriting the persisted CSV/JSON artifacts. The final command verifies that the historical Section 2.13 label-permutation reference artifact is present. Section 2.13 does not require re-submitting IBM Quantum jobs and does not introduce a hardware-regime permutation test.
 
 ## Numerical Reproduction Verification
 
@@ -571,6 +599,7 @@ python scripts/08b_audit_kernel_reconstruction.py --project-root .
 python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
+python scripts/09e_label_permutation_reference.py --project-root . --check
 ```
 
 The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
@@ -585,7 +614,7 @@ shasum -a 256 -c checksums/SHA256SUMS.txt
 
 This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for regenerated analysis outputs. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines.
 
-The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
+The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
 
 ## Claim limitation
 

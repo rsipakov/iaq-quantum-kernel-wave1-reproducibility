@@ -1,0 +1,89 @@
+{
+  "artifact_type": "zz4_wave1_label_permutation_reference",
+  "created_utc": "2026-05-30T07:01:11Z",
+  "description": "Regenerable statevector ZZ4 label-permutation reference. The persisted source field p_perm_two_sided is an upper-tail exceedance probability; this artifact reports the upper-tail probability together with explicit symmetric two-sided conventions and a multi-seed sensitivity envelope.",
+  "inputs": {
+    "statevector_kernel": "statevector_reference/zz4_K_all_all.npy",
+    "labels": "frozen_subset/hardware_subset_event_onset_next_1h.csv"
+  },
+  "label_balance": {
+    "positive": 12,
+    "negative": 12
+  },
+  "primary_seed": 0,
+  "sensitivity_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "n_perm": 5000,
+  "primary_rows": [
+    {
+      "observed": 0.15851109235208113,
+      "null_mean": 0.17097863873640975,
+      "null_std": 0.035529129136444355,
+      "null_q95": 0.23538745613549725,
+      "null_q99": 0.26810527579522103,
+      "p_upper_tail": 0.5988,
+      "p_upper_tail_addone": 0.598880223955209,
+      "p_two_sided_centered": 0.7294,
+      "p_two_sided_2min": 0.8024,
+      "kernel_name": "zz4",
+      "metric": "CKA",
+      "alignment_convention": "centered_label_alignment",
+      "n_rows": 24,
+      "n_perm": 5000,
+      "seed": 0
+    },
+    {
+      "observed": 0.13290938949796374,
+      "null_mean": 0.1433632571351765,
+      "null_std": 0.02979069030973804,
+      "null_q95": 0.19736917225299094,
+      "null_q99": 0.22480261790119554,
+      "p_upper_tail": 0.5988,
+      "p_upper_tail_addone": 0.598880223955209,
+      "p_two_sided_centered": 0.7294,
+      "p_two_sided_2min": 0.8024,
+      "kernel_name": "zz4",
+      "metric": "KTA",
+      "alignment_convention": "uncentered_label_alignment",
+      "n_rows": 24,
+      "n_perm": 5000,
+      "seed": 0
+    }
+  ],
+  "sensitivity_summary": {
+    "CKA_p_upper_tail_mean": 0.5977875,
+    "CKA_p_upper_tail_std": 0.006412670563033782,
+    "CKA_p_upper_tail_min": 0.587,
+    "CKA_p_upper_tail_max": 0.6082,
+    "CKA_p_two_sided_centered_mean": 0.7267625,
+    "CKA_p_two_sided_centered_std": 0.01116539716042382,
+    "CKA_p_two_sided_centered_min": 0.701,
+    "CKA_p_two_sided_centered_max": 0.7438,
+    "KTA_p_upper_tail_mean": 0.5977875,
+    "KTA_p_upper_tail_std": 0.006412670563033782,
+    "KTA_p_upper_tail_min": 0.587,
+    "KTA_p_upper_tail_max": 0.6082,
+    "KTA_p_two_sided_centered_mean": 0.7267625,
+    "KTA_p_two_sided_centered_std": 0.01116539716042382,
+    "KTA_p_two_sided_centered_min": 0.701,
+    "KTA_p_two_sided_centered_max": 0.7438
+  },
+  "convention_note": "p_upper_tail = P(T_null >= T_obs). p_two_sided_centered = P(|T_null - mean| >= |T_obs - mean|). p_two_sided_2min = 2*min(lower, upper) capped at 1. The static source field p_perm_two_sided corresponds numerically to p_upper_tail. The source metric label CKA denotes the centered label-alignment row, equivalent to manuscript KTA_c(K_SV, y); the source metric label KTA denotes the companion uncentered alignment row retained for provenance.",
+  "inferential_policy": "Statevector random-label reference only; not a hardware-configuration selection test and not a classifier-performance claim."
+}

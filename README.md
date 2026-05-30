@@ -14,6 +14,7 @@ This repository is a curated reproducibility package for the manuscript Material
 - **2.10. KTA — kernel-target alignment**
 - **2.11. KTA/CKA tension analysis**
 - **2.12. Shot-noise reference-scale decomposition**
+- **2.13. Statistical analysis**
 
 The package preserves the non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis. It is derived from the working repository:
 
@@ -25,7 +26,7 @@ Only non-sensitive files required to support the manuscript claims are included.
 
 ## Reproducibility scope
 
-This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 IBM Quantum hardware analysis. It supports reproduction of the reported kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, and shot-noise reference-scale decomposition from persisted frozen artifacts.
+This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 IBM Quantum hardware analysis. It supports reproduction of the reported kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, shot-noise reference-scale decomposition, and Section 2.13 statistical-analysis policy from persisted frozen artifacts.
 
 This repository is not intended to reproduce the full upstream IAQ dataset construction, preprocessing, feature engineering, IBM Quantum job submission, or original execution environment end-to-end. The original numbered execution scripts are retained only as archival provenance.
 
@@ -35,6 +36,12 @@ The supported reproduction path is:
 2. `scripts/09b_analyze_wave1_distortion_direct.py`
 3. `scripts/09c_wave1_distortion_uncertainty.py`
 4. `scripts/09d_shot_noise_reference_scale_decomposition.py --check`
+
+Section 2.13 additionally uses the static source-derived label-permutation reference artifact:
+
+```text
+hardware_analysis/qiskit_kta_cka_permutation_tests.csv
+```
 
 ## Supported reproduction commands
 
@@ -52,7 +59,8 @@ Expected high-level checks:
 - kernel reconstruction audit reports coordinate and pair-identifier consistency;
 - distortion metrics are regenerated for H0, H1, and H2;
 - uncertainty diagnostics are regenerated;
-- shot-noise decomposition check passes against the persisted output table.
+- shot-noise decomposition check passes against the persisted output table;
+- Section 2.13 statistical statements are traceable to the persisted distortion, uncertainty, and label-permutation artifacts.
 
 These commands verify numerical reproduction, not byte-for-byte identity of regenerated files. Several supported scripts write `created_utc` timestamps and floating-point eigensolver diagnostics that may differ at roundoff scale across machines. Do not use SHA-256 hashes of regenerated timestamped outputs as the numerical-reproduction criterion.
 
@@ -96,6 +104,10 @@ The historical preprocessing code has been moved to `archive_legacy_preprocessin
 - PSD policy: diagnostic only; the uncorrected minimum eigenvalue is retained
 - Geometry metrics: Spearman, Pearson, MAE, RMSE, median absolute error, maximum absolute error, off-diagonal variance, effective rank, centered kernel alignment, and centered kernel-target alignment
 - Section 2.12 finite-shot diagnostic: global shot-noise reference scale plus matrix-aware plug-in shot scale computed from reconstructed off-diagonal all-zero probabilities
+- Section 2.13 statistical unit: frozen observation window, not an individual kernel entry
+- Section 2.13 resampling: leave-one-window-out jackknife for Spearman, Pearson, MAE, CKA, and centered KTA
+- Section 2.13 paired contrasts: `M1-M0`, `M2-M1`, and `M2-M0`, reported as descriptive jackknife contrast ratios, not formal tests
+- Section 2.13 label-permutation reference: source-derived static ZZ4/RMA6 statevector label-alignment permutation table with 5,000 permutations; only the ZZ4 statevector rows are used for the manuscript Section 2.13 label-permutation statement
 - Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
 - Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
 
@@ -369,6 +381,54 @@ hardware_kernels/zz4_H1_kernel.csv
 hardware_kernels/zz4_H2_kernel.csv
 ```
 
+## Section 2.13: statistical analysis
+
+Section 2.13 defines the statistical-analysis policy for the frozen Wave 1 package. The statistical unit is the frozen observation window, not an individual kernel entry. Kernel entries are dependent because multiple entries share the same observation window and because reconstructed kernels are symmetric.
+
+The supported window-level uncertainty artifact is:
+
+```text
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+```
+
+This artifact contains:
+
+- leave-one-window-out jackknife standard errors for Spearman, Pearson, MAE, CKA, and centered KTA;
+- paired descriptive jackknife contrasts for `M1-M0`, `M2-M1`, and `M2-M0`;
+- diagonal-sensitivity rows for CKA, effective rank, and centered KTA;
+- directed-versus-unique off-diagonal equivalence checks.
+
+The descriptive paired contrast ratios are not formal significance tests and are not converted to p-values. No pair-entry bootstrap confidence intervals are reported. No hardware-regime label-permutation p-values are reported. Since no formal hardware-contrast p-values are generated, no Holm-Bonferroni correction is applied.
+
+The source-derived static label-permutation reference artifact is:
+
+```text
+hardware_analysis/qiskit_kta_cka_permutation_tests.csv
+```
+
+For the ZZ4 statevector centered-alignment row, this artifact records:
+
+| Kernel | Metric row | Observed | Permutation null mean | Null SD | Null q95 | Null q99 | Two-sided p_perm | n_perm |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `zz4` | `CKA` | 0.1585110924 | 0.1709625562 | 0.0352334692 | 0.2346692114 | 0.2688889140 | 0.5946810638 | 5000 |
+
+In the manuscript notation, this `CKA` row corresponds to the centered label-alignment value `KTA_c(K_SV, y) = CKA(K_SV, yy^T)`. The result is used only as a statevector random-label reference. It is not a hardware-configuration selection test and is not evidence of classifier performance.
+
+Relevant artifacts:
+
+```text
+scripts/09c_wave1_distortion_uncertainty.py
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.json
+hardware_analysis/qiskit_kta_cka_permutation_tests.csv
+frozen_subset/hardware_subset_event_onset_next_1h.csv
+statevector_reference/zz4_K_all_all.npy
+hardware_kernels/zz4_H0_kernel.npy
+hardware_kernels/zz4_H1_kernel.npy
+hardware_kernels/zz4_H2_kernel.npy
+```
+
 ## Included materials
 
 ### Dataset and preprocessing
@@ -434,7 +494,7 @@ hardware_kernels/zz4_H2_kernel.csv
 - `hardware_kernels/zz4_wave1_kernel_entries_long.csv`
 - `hardware_kernels/zz4_wave1_kernel_reconstruction_audit.csv`
 
-### Hardware analysis
+### Hardware analysis and statistical artifacts
 
 - `hardware_analysis/zz4_wave1_distortion_metrics.csv`
 - `hardware_analysis/zz4_wave1_distortion_summary.json`
@@ -444,6 +504,7 @@ hardware_kernels/zz4_H2_kernel.csv
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md`
+- `hardware_analysis/qiskit_kta_cka_permutation_tests.csv`
 
 ### Supported reproduction scripts
 
@@ -490,6 +551,17 @@ python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . 
 
 The first command writes the Section 2.12 CSV/JSON/Markdown artifacts. The second command recomputes the same quantities and verifies that the persisted CSV is unchanged up to numerical tolerance.
 
+## Reproducing Section 2.13
+
+From the repository root:
+
+```bash
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+head -n 5 hardware_analysis/qiskit_kta_cka_permutation_tests.csv
+```
+
+The first command regenerates the window-level jackknife and paired descriptive contrast artifact. The second command verifies that the Section 2.13 label-permutation reference artifact is present. Section 2.13 does not require re-submitting IBM Quantum jobs and does not introduce a hardware-regime permutation test.
+
 ## Numerical Reproduction Verification
 
 Run:
@@ -519,4 +591,8 @@ The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virt
 
 This package supports kernel-geometry survival and distortion analysis only. It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
 
-CKA, centered KTA, and shot-noise reference-scale decomposition are descriptive diagnostics. They are not classifier-performance metrics and are not physical noise-model decompositions.
+The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived statevector label-permutation diagnostics, and shot-noise reference-scale decomposition are descriptive diagnostics, not classifier-performance metrics.
+
+## License
+
+This package is released under the MIT License. No license update is required for the addition of Section 2.13 documentation or the source-derived non-sensitive label-permutation reference artifact.

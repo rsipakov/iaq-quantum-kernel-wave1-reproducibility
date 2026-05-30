@@ -16,10 +16,11 @@ The package supports the manuscript Materials and Methods subsections:
 - **2.10. KTA — kernel-target alignment**
 - **2.11. KTA/CKA tension analysis**
 - **2.12. Shot-noise reference-scale decomposition**
+- **2.13. Statistical analysis**
 
 ## Reproducibility status
 
-This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 hardware analysis. It supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, and shot-noise reference-scale decomposition from the persisted frozen artifacts listed below.
+This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 hardware analysis. It supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, shot-noise reference-scale decomposition, and Section 2.13 statistical-analysis policy from the persisted frozen artifacts listed below.
 
 It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission workflow, and original numbered execution pipeline are retained only as provenance where present.
 
@@ -34,6 +35,7 @@ It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ
 - `hardware_kernels/zz4_H0_kernel.csv`
 - `hardware_kernels/zz4_H1_kernel.csv`
 - `hardware_kernels/zz4_H2_kernel.csv`
+- `hardware_analysis/qiskit_kta_cka_permutation_tests.csv`
 
 ## Supported analysis scripts
 
@@ -54,6 +56,12 @@ It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json`
 - `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md`
+
+## Static Section 2.13 support artifact
+
+- `hardware_analysis/qiskit_kta_cka_permutation_tests.csv`
+
+This file is copied from the source artifact `step6_v6_consolidation/outputs/tables/qiskit_kta_cka_permutation_tests.csv`. It is a static label-permutation reference table for statevector kernels. Section 2.13 uses only the ZZ4 statevector rows; the table also contains RMA6 rows retained for source-level traceability.
 
 ## Archival code
 
@@ -100,6 +108,10 @@ The historical preprocessing code is retained in `archive_legacy_preprocessing/`
 | Section 2.11 CKA/KTA tension quantities | `CKA loss = 1 - CKA`; `Delta_KTA = KTA_hardware - KTA_statevector` |
 | Section 2.12 conservative global shot reference | `sigma_shot = 1/sqrt(2*1024) = 0.0220970869121`; conservative upper reference, not an individual-entry sampling SE |
 | Section 2.12 matrix-aware shot reference | `sqrt(mean_{Omega} p_ij(1-p_ij)/1024)` using reconstructed off-diagonal hardware probabilities |
+| Section 2.13 statistical unit | Frozen observation window |
+| Section 2.13 jackknife metrics | Spearman, Pearson, MAE, CKA, centered KTA |
+| Section 2.13 paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive contrast ratios only |
+| Section 2.13 label permutation | Static source-derived ZZ4 statevector random-label reference with `n_perm = 5000`; no hardware-regime permutation p-values |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
 | Claim scope | No quantum-advantage claim and no hardware classifier-superiority claim |
@@ -214,14 +226,15 @@ This label map is a reporting convention only; it does not create additional cir
 
 | Path | Purpose |
 | --- | --- |
-| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. Supplies RMSE for Section 2.12 and CKA/KTA/effective-rank diagnostics for Sections 2.8--2.11. |
+| `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. Supplies RMSE for Section 2.12 and CKA/KTA/effective-rank diagnostics for Sections 2.8--2.13. |
 | `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. |
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics, including diagonal-sensitivity and leave-one-window-out jackknife summaries. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics, including diagonal-sensitivity, leave-one-window-out jackknife summaries, and paired descriptive contrasts used in Section 2.13. |
 | `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary. |
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv` | Section 2.12 tabular shot-noise reference-scale decomposition, including global and matrix-aware scales, residuals, and shot-share values. |
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json` | Machine-readable Section 2.12 decomposition with formulas, input paths, output paths, and diagnostic caveat. |
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md` | Human-readable Section 2.12 decomposition summary. |
+| `hardware_analysis/qiskit_kta_cka_permutation_tests.csv` | Source-derived Section 2.13 label-permutation reference for statevector label alignment. |
 
 ### Section 2.8 primary distortion metrics
 
@@ -270,8 +283,28 @@ The point-estimate ranks are in tension. `M2/H2` is the best statevector-geometr
 | `M1` | `H1` | 0.086428 | 0.022097 | 0.083555 | 6.54% | 0.008243 | 0.086034 | 0.91% |
 | `M2` | `H2` | 0.042727 | 0.022097 | 0.036570 | 26.75% | 0.008528 | 0.041868 | 3.98% |
 
-The matrix-aware scale is computed from reconstructed hardware all-zero probabilities on the off-diagonal domain. The decomposition is diagnostic, not a full physical noise-model decomposition.
-The global scale is a conservative upper reference that exceeds the maximum per-entry binomial standard error by `sqrt(2)`, not the sampling standard error of an individual kernel entry.
+The matrix-aware scale is computed from reconstructed hardware all-zero probabilities on the off-diagonal domain. The decomposition is diagnostic, not a full physical noise-model decomposition. The global scale is a conservative upper reference that exceeds the maximum per-entry binomial standard error by `sqrt(2)`, not the sampling standard error of an individual kernel entry.
+
+### Section 2.13 statistical analysis summary
+
+| Item | Status |
+| --- | --- |
+| Statistical unit | Frozen observation window |
+| Pair-entry bootstrap CI | Not reported; kernel entries are dependent and no 10,000-replicate hardware-bootstrap CI artifact is present |
+| Jackknife | Leave-one-window-out jackknife for Spearman, Pearson, MAE, CKA, and centered KTA |
+| Paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive `z = delta / SE_delta`, not formal tests |
+| RMSE uncertainty | RMSE point estimates are reported; no RMSE jackknife contrast is persisted |
+| Correlation p-values | Blank/NaN and not used |
+| Hardware label permutation | Not persisted or claimed |
+| Statevector label permutation | Static source-derived ZZ4 reference, `n_perm = 5000` |
+| Multiple-comparison correction | Not applied because no formal hardware-contrast p-values are generated |
+
+| Kernel | Metric row | Observed | Null mean | Null SD | Null q95 | Null q99 | p_perm_two_sided | n_perm |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `zz4` | `CKA` | 0.1585110924 | 0.1709625562 | 0.0352334692 | 0.2346692114 | 0.2688889140 | 0.5946810638 | 5000 |
+| `zz4` | `KTA` | 0.1329093895 | 0.1433497722 | 0.0295427835 | 0.1967669338 | 0.2254596879 | 0.5946810638 | 5000 |
+
+In the manuscript notation, the `CKA` row above corresponds to `KTA_c(K_SV, y) = CKA(K_SV, yy^T)`. It is a statevector random-label reference, not a hardware-regime permutation test.
 
 ## Supported and archival scripts
 
@@ -279,7 +312,7 @@ The global scale is a conservative upper reference that exceeds the maximum per-
 | --- | --- |
 | `scripts/08b_audit_kernel_reconstruction.py` | Independent reconstruction audit; verifies coordinate/pair-identifier consistency between retrieved PUBs and the circuit-index ledger. |
 | `scripts/09b_analyze_wave1_distortion_direct.py` | Direct reproduction script for distortion metrics. |
-| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including diagonal sensitivity and leave-one-window-out jackknife rows. |
+| `scripts/09c_wave1_distortion_uncertainty.py` | Computes robustness diagnostics, including diagonal sensitivity, leave-one-window-out jackknife rows, and paired descriptive contrasts. |
 | `scripts/09d_shot_noise_reference_scale_decomposition.py` | Computes Section 2.12 global and matrix-aware shot-noise reference-scale decomposition. |
 | `scripts/common.py` | Legacy shared utility module retained for archival/source-context provenance; the supported direct reproduction scripts `08b`, `09b`, `09c`, and `09d` are self-contained and do not require the legacy path/runtime configuration files. |
 | `scripts/archive_original_execution_pipeline/` | Archived original execution pipeline retained for provenance only; not part of the supported flat-package reproduction path. |
@@ -300,10 +333,10 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 
 | Path | Purpose |
 | --- | --- |
-| `README.md` | Main reproduction-package description, updated to include Section 2.12 and the shot-noise reference-scale decomposition diagnostics. |
-| `MANIFEST.md` | This artifact manifest, updated to include Section 2.12 and the shot-noise reference-scale decomposition diagnostics. |
+| `README.md` | Main reproduction-package description, updated to include Section 2.13 and the source-derived statevector label-permutation reference. |
+| `MANIFEST.md` | This artifact manifest, updated to include Section 2.13 and the source-derived statevector label-permutation reference. |
 | `CITATION.cff` | Citation metadata for the reproduction package. |
-| `LICENSE` | License file. No update is required for the addition of Section 2.12 documentation. |
+| `LICENSE` | License file. No update is required for the addition of Section 2.13 documentation. |
 | `.gitignore` | Local and sensitive-file exclusion rules. |
 
 ## Decision-record artifacts
@@ -343,4 +376,4 @@ This package supports kernel-geometry survival and distortion analysis only.
 
 It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.
 
-CKA, centered KTA, leave-one-window-out jackknife contrasts, and shot-noise reference-scale decomposition are descriptive diagnostics. Section 2.12 is not a physical noise-model decomposition and does not assign a mechanistic hardware-noise channel.
+CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived statevector label-permutation diagnostics, and shot-noise reference-scale decomposition are descriptive diagnostics. Section 2.12 is not a physical noise-model decomposition and does not assign a mechanistic hardware-noise channel. Section 2.13 does not introduce classifier-performance claims, hardware-regime permutation tests, or formal multiple-comparison-adjusted significance claims.

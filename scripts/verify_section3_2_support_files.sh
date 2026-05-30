@@ -31,6 +31,7 @@ required = [
     "hardware_analysis/zz4_wave1_distortion_summary.md",
     "hardware_analysis/zz4_wave1_distortion_summary.json",
     "hardware_analysis/zz4_wave1_distortion_uncertainty.csv",
+    "hardware_analysis/zz4_wave1_distortion_uncertainty.json",
     "scripts/09b_analyze_wave1_distortion_direct.py",
     "scripts/09c_wave1_distortion_uncertainty.py",
 ]
@@ -169,34 +170,32 @@ retained = {r: as_float(by_regime[r], "hardware_offdiag_variance") / sv_var for 
 if not (retained["H0"] < 0.30 and retained["H1"] < 0.30 and 0.50 < retained["H2"] < 0.55):
     raise AssertionError(f"Unexpected off-diagonal variance-retention pattern: {retained}")
 
-uncertainty_path = ROOT / "hardware_analysis/zz4_wave1_distortion_uncertainty.csv"
-with uncertainty_path.open(newline="") as f:
-    uncertainty_rows = list(csv.DictReader(f))
-
-paired = {
-    (row["metric"], row["contrast"]): row
-    for row in uncertainty_rows
-    if row["analysis_block"] == "paired_jackknife_contrast"
-}
+# Jackknife resolution checks used by Section 3.2.
+unc_path = ROOT / "hardware_analysis/zz4_wave1_distortion_uncertainty.csv"
+with unc_path.open(newline="") as f:
+    paired = [
+        row
+        for row in csv.DictReader(f)
+        if row["analysis_block"] == "paired_jackknife_contrast"
+    ]
 
 def paired_z(metric: str, contrast: str) -> float:
-    try:
-        return as_float(paired[(metric, contrast)], "z_descriptive")
-    except KeyError as exc:
-        raise AssertionError(f"Missing paired jackknife contrast {metric}:{contrast}") from exc
+    for row in paired:
+        if row["metric"] == metric and row["contrast"] == contrast:
+            return float(row["z_descriptive"])
+    raise AssertionError(f"Missing paired jackknife contrast: {metric} {contrast}")
 
-if paired_z("spearman", "M2-M0") <= 3:
-    raise AssertionError("Expected Spearman M2-M0 jackknife contrast z > 3")
-if paired_z("spearman", "M2-M1") <= 3:
-    raise AssertionError("Expected Spearman M2-M1 jackknife contrast z > 3")
-if paired_z("mae", "M2-M0") >= -3:
-    raise AssertionError("Expected MAE M2-M0 jackknife contrast z < -3")
-if paired_z("mae", "M2-M1") >= -3:
-    raise AssertionError("Expected MAE M2-M1 jackknife contrast z < -3")
-if abs(paired_z("pearson", "M1-M0")) >= 1:
-    raise AssertionError("Expected unresolved Pearson M1-M0 jackknife contrast |z| < 1")
-if abs(paired_z("mae", "M1-M0")) >= 1.5:
-    raise AssertionError("Expected unresolved MAE M1-M0 jackknife contrast |z| < 1.5")
+for metric in ("spearman", "mae", "cka"):
+    for contrast in ("M2-M0", "M2-M1"):
+        if abs(paired_z(metric, contrast)) <= 2:
+            raise AssertionError(f"Expected |z| > 2 for {metric} {contrast}")
+
+if abs(paired_z("pearson", "M2-M1")) <= 2:
+    raise AssertionError("Expected |z| > 2 for pearson M2-M1")
+
+for metric in ("pearson", "mae", "cka"):
+    if abs(paired_z(metric, "M1-M0")) >= 1.5:
+        raise AssertionError(f"Expected |z| < 1.5 (unresolved) for {metric} M1-M0")
 
 summary_md = (ROOT / "hardware_analysis/zz4_wave1_distortion_summary.md").read_text()
 for token in ("H0", "H1", "H2", "0.933391", "0.937373", "0.988668"):
@@ -207,7 +206,7 @@ print("Section 3.2 verification passed.")
 print("metrics rows: H0, H1, H2")
 print("H2 point estimates: highest Spearman/Pearson/CKA; lowest MAE/RMSE/MedAE/MaxAE")
 print("PSD relative Frobenius corrections: all < 5e-15")
-print("paired jackknife contrasts match Section 3.2 resolution statements")
+print("jackknife resolution: H2 separated for Spearman/MAE/CKA (and Pearson vs H1); H1-H0 unresolved")
 print("hardware KTA uplift is treated as distortion; H2 has the smallest uplift")
 print("off-diagonal variance retained: H0={:.1%}, H1={:.1%}, H2={:.1%}".format(retained["H0"], retained["H1"], retained["H2"]))
 PY

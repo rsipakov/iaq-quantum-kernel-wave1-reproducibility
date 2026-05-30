@@ -23,6 +23,7 @@ find . \
   ! -path './__pycache__/*' \
   ! -path '*/__pycache__/*' \
   ! -name '.DS_Store' \
+  ! -name '*_provenance.json' \
   ! -path './checksums/SHA256SUMS.txt' \
   -print0 \
 | sort -z \

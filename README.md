@@ -284,9 +284,9 @@ hardware_kernels/zz4_H2_kernel.csv
 
 ## Section 2.8: geometry and distortion metrics
 
-The Wave 1 distortion analysis compares each reconstructed hardware kernel with the fixed ZZ4 statevector reference kernel. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including CKA, effective rank, and centered KTA, are evaluated on the full symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
+Section 2.8 defines the Wave 1 distortion metrics used to compare each reconstructed hardware kernel with the fixed ZZ4 statevector reference kernel; the values are reported in Section 3.2. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including CKA, effective rank, and centered KTA, are evaluated on the full symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
 
-The primary distortion metrics are stored in:
+The primary distortion-metric values are stored in:
 
 ```text
 hardware_analysis/zz4_wave1_distortion_metrics.csv
@@ -485,17 +485,19 @@ scripts/verify_section3_1_support_files.sh
 
 ## Section 3.2: main distortion metrics
 
-Section 3.2 reports the main statevector-to-hardware distortion metrics for the three Wave 1 configurations. The section uses the supported direct workflow output `hardware_analysis/zz4_wave1_distortion_metrics.csv` and reports point estimates at manuscript precision.
+Section 3.2 reports the main statevector-to-hardware distortion metrics for the three Wave 1 configurations. The section uses the supported direct workflow output `hardware_analysis/zz4_wave1_distortion_metrics.csv` and reports point estimates at manuscript precision. The table below is a manuscript-precision mirror of `hardware_analysis/zz4_wave1_distortion_metrics.csv`.
 
-| Configuration | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | KTA_c hw | Eff. rank hw | PSD rel. Fro. |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.741 | 0.827 | 0.0490 | 0.0878 | 0.0262 | 0.569 | 0.933 | 0.183 | 21.18 | `<2e-15` |
-| `M1` dynamical decoupling | `H1` | 0.775 | 0.843 | 0.0473 | 0.0864 | 0.0261 | 0.564 | 0.937 | 0.181 | 21.22 | `<2e-15` |
-| `M2` gate twirling | `H2` | 0.944 | 0.986 | 0.0257 | 0.0427 | 0.0162 | 0.264 | 0.989 | 0.171 | 19.79 | `<2e-15` |
+| Configuration | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | KTA_c hw | Eff. rank hw | min eig | PSD rel. Fro. |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` baseline | `H0` | 0.741 | 0.827 | 0.0490 | 0.0878 | 0.0262 | 0.569 | 0.933 | 0.183 | 21.18 | 0.429 | `<2e-15` |
+| `M1` dynamical decoupling | `H1` | 0.775 | 0.843 | 0.0473 | 0.0864 | 0.0261 | 0.564 | 0.937 | 0.181 | 21.22 | 0.462 | `<2e-15` |
+| `M2` gate twirling | `H2` | 0.944 | 0.986 | 0.0257 | 0.0427 | 0.0162 | 0.264 | 0.989 | 0.171 | 19.79 | 0.232 | `<2e-15` |
 
 `M2/H2` has the best observed point estimates for statevector-geometry survival: highest Spearman, Pearson, and CKA; lowest MAE, RMSE, median absolute error, and maximum absolute error; closest effective rank to the statevector reference; and the smallest centered-KTA uplift relative to the statevector. This is a descriptive fixed-subset result, not a formal significance claim.
 
 The `M0/H0` and `M1/H1` point estimates are close. Dynamical decoupling alone is therefore documented as a small descriptive shift relative to baseline, not as a resolved improvement at the frozen-window scale.
+
+The leave-one-window-out jackknife (Section 2.13; `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`) resolves `H2` from both `H0` and `H1` for Spearman and MAE (`|z|` approximately 4-5), more weakly for Pearson, while the `H1-H0` contrast is unresolved for Pearson/MAE (`|z|` less than or approximately 1) and at most borderline for Spearman (`z` approximately 2.0). RMSE, MedAE, MaxAE, off-diagonal variance, and effective rank are point estimates only (no persisted jackknife).
 
 Relevant artifacts:
 
@@ -653,6 +655,7 @@ From the repository root:
 
 ```bash
 python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 bash scripts/verify_section3_2_support_files.sh .
 ```
 

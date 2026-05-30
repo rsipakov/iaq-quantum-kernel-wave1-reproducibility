@@ -444,9 +444,9 @@ In the manuscript notation, the source metric label `CKA` denotes the centered l
 | `scripts/publish_section3_1_updates.sh` | Runs Section 3.1 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
 | `scripts/run_section3_1_copy_verify_publish.sh` | Runs Section 3.1 copy, verify, and publish in sequence. |
 | `scripts/copy_section3_2_support_files.sh` | Idempotently copies Section 3.2 support inputs from the upstream source tree if files are absent or changed; curated in-package analysis scripts are retained locally. |
-| `scripts/verify_section3_2_support_files.sh` | Verifies the Section 3.2 metric table, point-estimate ordering, PSD roundoff-scale diagnostics, KTA-uplift interpretation boundary, and off-diagonal variance-retention pattern. |
+| `scripts/verify_section3_2_support_files.sh` | Verifies the Section 3.2 metric table, point-estimate ordering, PSD roundoff-scale diagnostics, paired jackknife resolution checks, KTA-uplift interpretation boundary, and off-diagonal variance-retention pattern. |
 | `scripts/publish_section3_2_updates.sh` | Runs Section 3.2 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_2_copy_verify_publish.sh` | Runs Section 3.2 copy, direct metric regeneration, verify, and publish in sequence. |
+| `scripts/run_section3_2_copy_verify_publish.sh` | Runs Section 3.2 copy, direct metric and uncertainty regeneration, verify, and publish in sequence. |
 | `scripts/archive_original_execution_pipeline/00_artifact_lock.py` through `scripts/archive_original_execution_pipeline/10_create_wave1_decision_record.py` | Original numbered execution scripts retained as archival provenance only. |
 
 ## Environment and integrity artifacts

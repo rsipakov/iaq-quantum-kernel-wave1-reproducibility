@@ -95,5 +95,6 @@ Section 3.2 support-file copy completed.
 
 Recommended next steps from the repository root:
   python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+  python scripts/09c_wave1_distortion_uncertainty.py --project-root .
   bash scripts/verify_section3_2_support_files.sh .
 MSG

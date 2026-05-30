@@ -50,6 +50,8 @@ git add \
   hardware_analysis/zz4_wave1_distortion_metrics.csv \
   hardware_analysis/zz4_wave1_distortion_summary.json \
   hardware_analysis/zz4_wave1_distortion_summary.md \
+  hardware_analysis/zz4_wave1_distortion_uncertainty.csv \
+  hardware_analysis/zz4_wave1_distortion_uncertainty.json \
   scripts/copy_section3_2_support_files.sh \
   scripts/verify_section3_2_support_files.sh \
   scripts/publish_section3_2_updates.sh \

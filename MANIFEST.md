@@ -123,11 +123,11 @@ hardware_analysis/zz4_wave1_distortion_metrics.csv
 
 The point estimates reported at manuscript precision are:
 
-| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Centered KTA hw | Eff. rank hw | PSD rel. Fro. |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` | `H0` | 0.741 | 0.827 | 0.0490 | 0.0878 | 0.0262 | 0.569 | 0.933 | 0.183 | 21.18 | `<2e-15` |
-| `M1` | `H1` | 0.775 | 0.843 | 0.0473 | 0.0864 | 0.0261 | 0.564 | 0.937 | 0.181 | 21.22 | `<2e-15` |
-| `M2` | `H2` | 0.944 | 0.986 | 0.0257 | 0.0427 | 0.0162 | 0.264 | 0.989 | 0.171 | 19.79 | `<2e-15` |
+| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Centered KTA hw | Eff. rank hw | min eig | PSD rel. Fro. |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.741 | 0.827 | 0.0490 | 0.0878 | 0.0262 | 0.569 | 0.933 | 0.183 | 21.18 | 0.429 | `<2e-15` |
+| `M1` | `H1` | 0.775 | 0.843 | 0.0473 | 0.0864 | 0.0261 | 0.564 | 0.937 | 0.181 | 21.22 | 0.462 | `<2e-15` |
+| `M2` | `H2` | 0.944 | 0.986 | 0.0257 | 0.0427 | 0.0162 | 0.264 | 0.989 | 0.171 | 19.79 | 0.232 | `<2e-15` |
 
 The verification script `scripts/verify_section3_2_support_files.sh` enforces the following Section 3.2 invariants:
 
@@ -136,8 +136,14 @@ The verification script `scripts/verify_section3_2_support_files.sh` enforces th
 - correlation-test p-value columns remain blank/NaN in the supported minimal workflow;
 - `H2` has the highest Spearman, Pearson, and CKA point estimates;
 - `H2` has the lowest MAE, RMSE, MedAE, and MaxAE point estimates;
-- all uncorrected hardware matrices have positive minimum eigenvalues;
+- among the three regimes, `H2` is closest to the statevector effective rank
+  (smallest |erank_hw - erank_SV|), i.e. the least spectral flattening;
+- all uncorrected hardware matrices have strictly positive minimum eigenvalues
+  (H0 = 0.4288, H1 = 0.4622, H2 = 0.2322); the diagnostic PSD correction is roundoff-scale only;
+- PSD grounding is based on `min_eigenvalue_before_psd`, not on `psd_correction_frobenius_relative`;
 - PSD relative Frobenius corrections remain below `5e-15`;
+- the paired leave-one-window-out jackknife resolves `H2` from `H0` and `H1` for Spearman, MAE, and CKA (and Pearson vs `H1`), while the `H1-H0` contrast is unresolved;
+- the verification requires `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` and `.json`;
 - all hardware centered-KTA values exceed the statevector KTA, and `H2` has the smallest uplift;
 - `H0` and `H1` retain less than 30% of the statevector off-diagonal variance, while `H2` retains approximately 52%.
 
@@ -186,16 +192,16 @@ The historical preprocessing code is retained in `archive_legacy_preprocessing/`
 | Section 3.1 retrieved PUB total | 900 |
 | Section 3.1 observed hardware shots | `3 * 300 * 1024 = 921600` |
 | Section 3.1 billed quantum seconds | `80 + 80 + 84 = 244` (`~4.07` min), from `job_metrics.usage.quantum_seconds` |
-| Section 3.2 main distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, CKA, centered KTA, effective rank, off-diagonal variance, PSD relative Frobenius |
-| Geometry/distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, off-diagonal variance, effective rank, CKA, centered KTA |
+| Section 2.8 geometry/distortion definitions | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, off-diagonal variance, effective rank, CKA, centered KTA |
+| Section 3.2 main distortion table | Manuscript-precision point estimates from `hardware_analysis/zz4_wave1_distortion_metrics.csv`, plus PSD minimum-eigenvalue and roundoff-scale correction diagnostics |
 | Section 2.9 CKA point estimates | `M0/H0 = 0.9333906747`, `M1/H1 = 0.9373725928`, `M2/H2 = 0.9886681278` |
 | Section 2.10 centered KTA point estimates | `SV = 0.1585110924`, `M0/H0 = 0.1833084594`, `M1/H1 = 0.1814633785`, `M2/H2 = 0.1710248441` |
 | Section 2.11 CKA/KTA tension quantities | `CKA loss = 1 - CKA`; `Delta_KTA = KTA_hardware - KTA_statevector` |
 | Section 2.12 conservative global shot reference | `sigma_shot = 1/sqrt(2*1024) = 0.0220970869121`; conservative upper reference, not an individual-entry sampling SE |
 | Section 2.12 matrix-aware shot reference | `sqrt(mean_{Omega} p_ij(1-p_ij)/1024)` using reconstructed off-diagonal hardware probabilities |
 | Section 2.13 statistical unit | Frozen observation window |
-| Section 2.13 jackknife metrics | Spearman, Pearson, MAE, CKA, centered KTA |
-| Section 2.13 paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive contrast ratios only |
+| Section 2.13 jackknife metrics | Spearman, Pearson, MAE, CKA, centered KTA; policy/definitions in Section 2.13; reported values in Section 3.2 and in the relevant later Results subsections |
+| Section 2.13 paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive contrast ratios only; policy/definitions in Section 2.13; reported values in Section 3.2 and in the relevant later Results subsections |
 | Section 2.13 label permutation | Static source-derived ZZ4 statevector random-label reference with `n_perm = 5000`; no hardware-regime permutation p-values |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
@@ -331,7 +337,7 @@ Billed quantum seconds: 244 = 80 + 80 + 84 (from job_metrics.usage.quantum_secon
 | `hardware_analysis/zz4_wave1_distortion_metrics.csv` | Tabular Wave 1 geometry and distortion metrics. Supplies the Section 3.2 main distortion metrics and the RMSE values used in Section 2.12. |
 | `hardware_analysis/zz4_wave1_distortion_summary.json` | Summary of Wave 1 statevector-to-hardware kernel distortion metrics. |
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary. |
-| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics, including diagonal-sensitivity, leave-one-window-out jackknife summaries, directed-versus-unique checks, and paired descriptive contrasts. |
+| `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics, including diagonal-sensitivity, leave-one-window-out jackknife summaries, directed-versus-unique checks, and paired descriptive contrasts. Section 2.13 defines the jackknife/statistical policy; reported values appear in Section 3.2 and in the relevant later Results subsections. |
 | `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary. |
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv` | Section 2.12 tabular shot-noise reference-scale decomposition, including global and matrix-aware scales, residuals, and shot-share values. |
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json` | Machine-readable Section 2.12 decomposition with formulas, input paths, output paths, and diagnostic caveat. |
@@ -340,7 +346,9 @@ Billed quantum seconds: 244 = 80 + 80 + 84 (from job_metrics.usage.quantum_secon
 | `hardware_analysis/zz4_wave1_label_permutation_reference.csv` | Regenerable statevector ZZ4 label-permutation reference for Section 2.13. |
 | `hardware_analysis/zz4_wave1_label_permutation_reference.json` | Machine-readable label-permutation reference with multi-seed sensitivity envelope. |
 
-### Section 2.8 / 3.2 primary distortion metrics
+### Section 2.8 definitions / Section 3.2 primary distortion metrics
+
+Section 2.8 defines the metrics; the values below are reported in Section 3.2 from `hardware_analysis/zz4_wave1_distortion_metrics.csv`.
 
 | Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | Effective rank | Centered KTA |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -398,7 +406,7 @@ The matrix-aware scale is computed from reconstructed hardware all-zero probabil
 | Statistical unit | Frozen observation window |
 | Pair-entry bootstrap CI | Not reported; no 10,000-replicate hardware-bootstrap CI artifact is present, and kernel entries are dependent observations |
 | Jackknife | Leave-one-window-out jackknife for Spearman, Pearson, MAE, CKA, and centered KTA |
-| Paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive `z = delta / SE_delta`, not formal tests |
+| Paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive `z = delta / SE_delta`, not formal tests; values are reported in Section 3.2 and in the relevant later Results subsections |
 | Point-estimate-only metrics | RMSE, MedAE, MaxAE, off-diagonal variance, and effective rank are reported as point estimates; no window-level jackknife is persisted for any of them |
 | Correlation p-values | Blank/NaN and not used |
 | Hardware label permutation | Not persisted or claimed |
@@ -435,7 +443,7 @@ In the manuscript notation, the source metric label `CKA` denotes the centered l
 | `scripts/verify_section3_1_support_files.sh` | Verifies job manifests, retrieval manifest, raw-result counts, shot counts, `H2` randomization metadata, billed quantum seconds, and long-form kernel-entry counts needed by Section 3.1. |
 | `scripts/publish_section3_1_updates.sh` | Runs Section 3.1 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
 | `scripts/run_section3_1_copy_verify_publish.sh` | Runs Section 3.1 copy, verify, and publish in sequence. |
-| `scripts/copy_section3_2_support_files.sh` | Idempotently copies Section 3.2 support inputs and the supported direct-analysis script from the upstream source tree if files are absent or changed. |
+| `scripts/copy_section3_2_support_files.sh` | Idempotently copies Section 3.2 support inputs from the upstream source tree if files are absent or changed; curated in-package analysis scripts are retained locally. |
 | `scripts/verify_section3_2_support_files.sh` | Verifies the Section 3.2 metric table, point-estimate ordering, PSD roundoff-scale diagnostics, KTA-uplift interpretation boundary, and off-diagonal variance-retention pattern. |
 | `scripts/publish_section3_2_updates.sh` | Runs Section 3.2 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
 | `scripts/run_section3_2_copy_verify_publish.sh` | Runs Section 3.2 copy, direct metric regeneration, verify, and publish in sequence. |

@@ -3,7 +3,7 @@
   "schema_version": "v9.0.artifact_lock.1",
   "created_utc": "2026-05-09T08:33:39Z",
   "operator_identifier": "unspecified",
-  "project_root": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks",
+  "project_root": "${PROJECT_ROOT}",
   "scope_lock_pass": true,
   "failure_reasons": [],
   "v8b_authorization_decision": "GO",
@@ -88,7 +88,7 @@
   },
   "token_value_absent_from_artifact": true,
   "local_secret_scan": {
-    "scan_root": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks/step6b_hardware_subset_package/outputs",
+    "scan_root": "${PROJECT_ROOT}/step6b_hardware_subset_package/outputs",
     "status": "passed",
     "finding_count": 0,
     "findings": {}

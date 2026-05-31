@@ -56,24 +56,12 @@ The manuscript files `NewSection_3.1.md`, `NewSection_3.2.md`, `NewSection_3.3.m
 
 ## Results-section support scripts
 
-These shell scripts are operational helpers for copying, verifying, and publishing Results-section support state. They do not submit IBM Quantum jobs and do not alter the frozen scientific scope.
+These shell scripts verify Results-section support state. They do not submit IBM Quantum jobs and do not alter the frozen scientific scope.
 
-- `scripts/copy_section3_1_support_files.sh`
 - `scripts/verify_section3_1_support_files.sh`
-- `scripts/publish_section3_1_updates.sh`
-- `scripts/run_section3_1_copy_verify_publish.sh`
-- `scripts/copy_section3_2_support_files.sh`
 - `scripts/verify_section3_2_support_files.sh`
-- `scripts/publish_section3_2_updates.sh`
-- `scripts/run_section3_2_copy_verify_publish.sh`
-- `scripts/copy_section3_3_support_files.sh`
 - `scripts/verify_section3_3_support_files.sh`
-- `scripts/publish_section3_3_updates.sh`
-- `scripts/run_section3_3_copy_verify_publish.sh`
-- `scripts/copy_section3_4_support_files.sh`
 - `scripts/verify_section3_4_support_files.sh`
-- `scripts/publish_section3_4_updates.sh`
-- `scripts/run_section3_4_copy_verify_publish.sh`
 
 ## Supported output artifacts
 
@@ -366,22 +354,10 @@ The shot-noise decomposition used in Section 3.4 is:
 | `scripts/09d_shot_noise_reference_scale_decomposition.py` | Regenerates Section 2.12 / Section 3.4 finite-shot reference-scale decomposition; supports `--check`. |
 | `scripts/09e_label_permutation_reference.py` | Regenerates and checks the Section 2.13 / Section 3.3 / Section 3.4 statevector label-permutation reference. |
 | `scripts/common.py` | Legacy shared utility module retained for archival/source-context provenance; not required by the supported direct reproduction scripts. |
-| `scripts/copy_section3_1_support_files.sh` | Idempotently copies Section 3.1 support artifacts from the upstream source tree into the flat reproducibility layout if files are absent or changed. |
 | `scripts/verify_section3_1_support_files.sh` | Verifies job manifests, retrieval manifest, raw-result counts, shot counts, `H2` randomization metadata, billed quantum seconds, and long-form kernel-entry counts needed by Section 3.1. |
-| `scripts/publish_section3_1_updates.sh` | Runs Section 3.1 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_1_copy_verify_publish.sh` | Runs Section 3.1 copy, verify, and publish in sequence. |
-| `scripts/copy_section3_2_support_files.sh` | Idempotently copies Section 3.2 support inputs from the upstream source tree if files are absent or changed. |
 | `scripts/verify_section3_2_support_files.sh` | Verifies the Section 3.2 metric table, point-estimate ordering, PSD diagnostics, KTA-uplift boundary, and off-diagonal variance-retention pattern. |
-| `scripts/publish_section3_2_updates.sh` | Runs Section 3.2 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_2_copy_verify_publish.sh` | Runs Section 3.2 copy, direct metric regeneration, verify, and publish in sequence. |
-| `scripts/copy_section3_3_support_files.sh` | Idempotently copies Section 3.3 support inputs and the static permutation provenance table if files are absent or changed. |
 | `scripts/verify_section3_3_support_files.sh` | Verifies Section 3.3 jackknife table values, paired descriptive contrasts, RMSE point-estimate-only status, KTA/CKA tension, diagonal sensitivity, and label-permutation reference. |
-| `scripts/publish_section3_3_updates.sh` | Runs Section 3.3 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_3_copy_verify_publish.sh` | Runs Section 3.3 copy, direct metric regeneration, label-permutation regeneration/check, verify, and publish in sequence. |
-| `scripts/copy_section3_4_support_files.sh` | Idempotently copies Section 3.4 support inputs and outputs; excludes Section 3.4 manuscript drafts. |
 | `scripts/verify_section3_4_support_files.sh` | Verifies Section 3.4 KTA/CKA-tension ordering, finite-shot reference-scale decomposition, residual-distortion interpretation, and statevector label-permutation boundary. |
-| `scripts/publish_section3_4_updates.sh` | Runs Section 3.4 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_4_copy_verify_publish.sh` | Runs Section 3.4 copy, direct metric regeneration, shot-noise check, label-permutation check, verification, and publishing in sequence. |
 | `scripts/archive_original_execution_pipeline/00_artifact_lock.py` through `scripts/archive_original_execution_pipeline/10_create_wave1_decision_record.py` | Original numbered execution scripts retained as archival provenance only. |
 
 ## Environment and integrity artifacts

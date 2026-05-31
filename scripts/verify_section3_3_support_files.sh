@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPRO="${1:-/Users/rostyslavsipakov/Documents/GitHub/reproducibility/iaq-quantum-kernel-wave1-reproducibility}"
+REPRO="${1:-.}"
 if [[ ! -d "$REPRO" ]]; then
   echo "ERROR: REPRO does not exist: $REPRO" >&2
   exit 1
@@ -34,10 +34,7 @@ required = [
     "scripts/09b_analyze_wave1_distortion_direct.py",
     "scripts/09c_wave1_distortion_uncertainty.py",
     "scripts/09e_label_permutation_reference.py",
-    "scripts/copy_section3_3_support_files.sh",
     "scripts/verify_section3_3_support_files.sh",
-    "scripts/publish_section3_3_updates.sh",
-    "scripts/run_section3_3_copy_verify_publish.sh",
 ]
 
 missing = [p for p in required if not (ROOT / p).is_file()]

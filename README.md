@@ -595,6 +595,7 @@ scripts/verify_section3_4_support_files.sh
 - `scripts/09c_wave1_distortion_uncertainty.py`
 - `scripts/09d_shot_noise_reference_scale_decomposition.py`
 - `scripts/09e_label_permutation_reference.py`
+- `scripts/verify_privacy_cleanup.sh`
 - `scripts/verify_section3_1_support_files.sh`
 - `scripts/verify_section3_2_support_files.sh`
 - `scripts/verify_section3_3_support_files.sh`

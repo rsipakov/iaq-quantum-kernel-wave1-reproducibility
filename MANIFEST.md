@@ -58,6 +58,7 @@ The manuscript files `NewSection_3.1.md`, `NewSection_3.2.md`, `NewSection_3.3.m
 
 These shell scripts verify Results-section support state. They do not submit IBM Quantum jobs and do not alter the frozen scientific scope.
 
+- `scripts/verify_privacy_cleanup.sh`
 - `scripts/verify_section3_1_support_files.sh`
 - `scripts/verify_section3_2_support_files.sh`
 - `scripts/verify_section3_3_support_files.sh`
@@ -354,6 +355,7 @@ The shot-noise decomposition used in Section 3.4 is:
 | `scripts/09d_shot_noise_reference_scale_decomposition.py` | Regenerates Section 2.12 / Section 3.4 finite-shot reference-scale decomposition; supports `--check`. |
 | `scripts/09e_label_permutation_reference.py` | Regenerates and checks the Section 2.13 / Section 3.3 / Section 3.4 statevector label-permutation reference. |
 | `scripts/common.py` | Legacy shared utility module retained for archival/source-context provenance; not required by the supported direct reproduction scripts. |
+| `scripts/verify_privacy_cleanup.sh` | Verifies that manuscript drafts are absent from the repository root, local username or absolute macOS path strings are absent from tracked files, and maintainer-only copy/publish/run scripts are not tracked. |
 | `scripts/verify_section3_1_support_files.sh` | Verifies job manifests, retrieval manifest, raw-result counts, shot counts, `H2` randomization metadata, billed quantum seconds, and long-form kernel-entry counts needed by Section 3.1. |
 | `scripts/verify_section3_2_support_files.sh` | Verifies the Section 3.2 metric table, point-estimate ordering, PSD diagnostics, KTA-uplift boundary, and off-diagonal variance-retention pattern. |
 | `scripts/verify_section3_3_support_files.sh` | Verifies Section 3.3 jackknife table values, paired descriptive contrasts, RMSE point-estimate-only status, KTA/CKA tension, diagonal sensitivity, and label-permutation reference. |

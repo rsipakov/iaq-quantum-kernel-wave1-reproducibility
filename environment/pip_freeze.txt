@@ -16,7 +16,7 @@ kiwisolver==1.5.0
 matplotlib==3.10.9
 numpy==2.4.4
 orjson==3.11.9
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1777103621/work
+packaging==26.0
 pandas==3.0.2
 pillow==12.2.0
 pybase64==1.4.3

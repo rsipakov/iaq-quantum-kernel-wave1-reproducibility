@@ -1,8 +1,8 @@
 # IAQ Quantum Kernel Wave 1 Reproducibility Package
 
-This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.4.
+This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.5.
 
-The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival, hardware-distortion, statistical-diagnostic, label-alignment, shot-noise reference-scale, and KTA/CKA-tension analyses. It is derived from the working repository:
+The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival, hardware-distortion, statistical-diagnostic, label-alignment, shot-noise reference-scale, CKA/KTA-tension, and Section 3.5 dimensionless shot-noise scale-separation analyses. It is derived from the working repository:
 
 ```text
 rsipakov/QuantumKernel
@@ -24,7 +24,8 @@ This repository supports reproduction of:
 8. Section 3.1 hardware-execution summary;
 9. Section 3.2 main distortion metrics;
 10. Section 3.3 statistical support and label-alignment diagnostics;
-11. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension.
+11. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension;
+12. Section 3.5 new diagnostic result: dimensionless shot-noise reference-scale decomposition.
 
 This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance.
 
@@ -40,6 +41,7 @@ bash scripts/verify_section3_1_support_files.sh .
 bash scripts/verify_section3_2_support_files.sh .
 bash scripts/verify_section3_3_support_files.sh .
 bash scripts/verify_section3_4_support_files.sh .
+bash scripts/verify_section3_5_support_files.sh .
 ```
 
 Expected high-level checks:
@@ -52,7 +54,8 @@ Expected high-level checks:
 - Section 3.1 verification reports three `DONE` jobs, 300 retrieved PUB results per regime, 1024 shots per retrieved entry, 900 long-form kernel-entry rows, and billed quantum seconds `H0=80`, `H1=80`, `H2=84`;
 - Section 3.2 verification reports the main distortion metrics, the `M2/H2` best observed point-estimate ordering for statevector geometry survival, and roundoff-scale PSD diagnostics;
 - Section 3.3 verification reports the window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement;
-- Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim.
+- Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim;
+- Section 3.5 verification confirms the dimensionless RMSE-to-shot-reference ratios, residual variance fractions, matrix-aware scale ordering, and diagnostic-only decomposition policy.
 
 These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
 
@@ -97,6 +100,7 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 | Section 3.2 main distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, CKA, centered KTA, effective rank, off-diagonal variance, and PSD diagnostics |
 | Section 3.3 statistical support diagnostics | Jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference |
 | Section 3.4 central synthesis | KTA/CKA tension plus finite-shot reference-scale support for residual hardware distortion |
+| Section 3.5 new diagnostic result | Dimensionless finite-shot scale separation: RMSE-to-reference ratios and residual variance fractions |
 | Purpose | Statevector-to-hardware kernel-geometry survival and distortion analysis |
 | Claim scope | No quantum-advantage claim, no hardware classifier-superiority claim, and no IAQ forecasting-performance claim |
 
@@ -509,6 +513,26 @@ hardware_kernels/zz4_H2_kernel.npy
 scripts/verify_section3_4_support_files.sh
 ```
 
+## Section 3.5: New diagnostic result — shot-noise reference-scale decomposition
+
+Section 3.5 isolates the finite-shot diagnostic as a dimensionless scale-separation result, avoiding duplication of the absolute decomposition already reported in Section 3.4. It reports RMSE in units of the conservative global and matrix-aware finite-shot reference scales, and reports the residual variance fraction left after quadrature subtraction of each reference.
+
+| Configuration | Artifact regime | RMSE | sigma_shot_matrix | RMSE / sigma_ref_global | residual variance after global reference | RMSE / sigma_shot_matrix | residual variance after matrix reference |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` baseline | `H0` | 0.087770 | 0.008266 | 3.97 | 93.66% | 10.62 | 99.11% |
+| `M1` dynamical decoupling | `H1` | 0.086428 | 0.008243 | 3.91 | 93.46% | 10.48 | 99.09% |
+| `M2` gate twirling | `H2` | 0.042727 | 0.008528 | 1.93 | 73.25% | 5.01 | 96.02% |
+
+Section 3.5 support is checked by:
+
+```bash
+bash scripts/verify_section3_5_support_files.sh .
+```
+
+This check recomputes the decomposition with `scripts/09d_shot_noise_reference_scale_decomposition.py --check`, validates the persisted rows, verifies the scale-ratio and residual-variance values used in the manuscript section, and confirms the diagnostic-only decomposition policy.
+
+The manuscript draft file `NewSection_3.5.md` is not an artifact to copy into this repository.
+
 ## Included materials
 
 ### Dataset and preprocessing
@@ -600,6 +624,7 @@ scripts/verify_section3_4_support_files.sh
 - `scripts/verify_section3_2_support_files.sh`
 - `scripts/verify_section3_3_support_files.sh`
 - `scripts/verify_section3_4_support_files.sh`
+- `scripts/verify_section3_5_support_files.sh`
 - `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance
 
 ### Environment, checksums, and repository metadata
@@ -614,16 +639,13 @@ scripts/verify_section3_4_support_files.sh
 - `LICENSE`
 - `.gitignore`
 
-## Reproducing Section 3.4
+## Reproducing Section 3.5
 
 From the repository root:
 
 ```bash
-python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
-python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
-python scripts/09e_label_permutation_reference.py --project-root . --check
-bash scripts/verify_section3_4_support_files.sh .
+bash scripts/verify_section3_5_support_files.sh .
 ```
 
 ## Numerical reproduction verification
@@ -640,6 +662,7 @@ bash scripts/verify_section3_1_support_files.sh .
 bash scripts/verify_section3_2_support_files.sh .
 bash scripts/verify_section3_3_support_files.sh .
 bash scripts/verify_section3_4_support_files.sh .
+bash scripts/verify_section3_5_support_files.sh .
 ```
 
 The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
@@ -668,6 +691,11 @@ find . \
   ! -name 'NewSection_3.4.md' \
   ! -name 'NewSection_3.4_Revised*.md' \
   ! -name 'NewSection_3.4_*Instructions.md' \
+  ! -name 'NewSection_3.5.md' \
+  ! -name 'NewSection_3.5_*.md' \
+  ! -name 'copy_section3_5_support_files.sh' \
+  ! -name 'publish_section3_5_updates.sh' \
+  ! -name 'run_section3_5_update_all.sh' \
   ! -path './checksums/SHA256SUMS.txt' \
   -print0 \
   | sort -z \
@@ -677,18 +705,18 @@ find . \
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
 
-The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, ignored provenance sidecars, manuscript draft files, and the checksum file itself.
+The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, ignored provenance sidecars, local-only transfer scripts, manuscript draft files, and the checksum file itself.
 
 ## Claim limitation
 
-This package supports kernel-geometry survival, hardware-distortion analysis, statistical diagnostics, finite-shot reference-scale diagnostics, and repository-grounded Results-section summaries only. It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
+This package supports kernel-geometry survival, hardware-distortion analysis, statistical diagnostics, finite-shot reference-scale diagnostics, dimensionless shot-noise scale-separation diagnostics, and repository-grounded Results-section summaries only. It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
 
 The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.
 
-CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived and regenerable statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, Section 3.2 main distortion metrics, Section 3.3 statistical support diagnostics, and Section 3.4 KTA/CKA-tension diagnostics are descriptive diagnostics, not classifier-performance metrics.
+CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived and regenerable statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, Section 3.2 main distortion metrics, Section 3.3 statistical support diagnostics, Section 3.4 KTA/CKA-tension diagnostics, and Section 3.5 scale-ratio diagnostics are descriptive diagnostics, not classifier-performance metrics.
 
-For Section 3.4, `M2/H2` is reported as the configuration that best preserved the intended statevector geometry and had the smallest centered-KTA uplift, not as a better or worse classifier. Higher observed hardware KTA in `M0/H0` and `M1/H1` is interpreted as non-affine, label-correlated hardware distortion, not as supervised predictive improvement. The shot-noise reference-scale decomposition supports residual hardware distortion as the dominant source of observed RMSE discrepancy, but it is diagnostic and not a full physical noise model.
+For Section 3.5, `M2/H2` has the smallest RMSE and residual distortion term, but the residual remains the dominant variance component under both shot-noise references. This is a diagnostic scale accounting, not a physical noise-model fit and not a classifier-performance result.
 
 ## License
 
-This package is released under the MIT License. No license update is required for the addition of Section 3.4 documentation or the Section 3.4 support-file verification scripts.
+This package is released under the MIT License. No license update is required for the addition of Section 3.5 documentation or the Section 3.5 support-file verification script.

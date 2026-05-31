@@ -6,3 +6,7 @@ __pycache__/
 .qiskit/
 .idea/
 hardware_analysis/zz4_wave1_label_permutation_reference_provenance.json
+NewSection_*.md
+copy_section*.sh
+publish_section*.sh
+run_section*.sh

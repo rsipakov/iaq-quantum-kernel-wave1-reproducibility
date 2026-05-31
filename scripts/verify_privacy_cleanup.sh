@@ -30,10 +30,11 @@ if (( ${#drafts[@]} > 0 )); then
   exit 1
 fi
 
-abs_path_pattern="/""Users/"
+macos_abs_path_pattern="/""Users/"
+linux_abs_path_pattern="/""home/"
 username_pattern="rostyslav""sipakov"
-if git grep -nIF -e "${username_pattern}" -e "${abs_path_pattern}" -- .; then
-  echo "ERROR: local username or absolute macOS path strings remain in tracked files." >&2
+if git grep -nIF -e "${username_pattern}" -e "${macos_abs_path_pattern}" -e "${linux_abs_path_pattern}" -- .; then
+  echo "ERROR: local username or absolute user-home path strings remain in tracked files." >&2
   exit 1
 fi
 
@@ -44,5 +45,5 @@ fi
 
 echo "Privacy cleanup verification passed."
 echo "  no manuscript drafts in repository root"
-echo "  no local username or absolute macOS path strings in tracked files"
+echo "  no local username or absolute user-home path strings in tracked files"
 echo "  no maintainer-only copy/publish/run scripts tracked"

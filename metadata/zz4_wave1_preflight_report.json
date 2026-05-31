@@ -37,7 +37,7 @@
   "wave2_excluded": true,
   "token_value_absent_from_artifact": true,
   "local_secret_scan": {
-    "scan_root": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks/step6b_hardware_subset_package/outputs",
+    "scan_root": "${PROJECT_ROOT}/step6b_hardware_subset_package/outputs",
     "status": "passed",
     "finding_count": 0,
     "findings": {}

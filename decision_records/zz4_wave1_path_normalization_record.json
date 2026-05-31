@@ -1,0 +1,17 @@
+{
+  "record_id": "WAVE1_PATH_NORMALIZATION",
+  "supersedes": null,
+  "scope": "documentation_and_provenance_only",
+  "action": "Normalized absolute local execution paths to ${PROJECT_ROOT}/${REPRO_ROOT} placeholders in metadata provenance fields; removed maintainer-only copy/publish/run scripts from the public package.",
+  "affected_metadata": [
+    "metadata/zz4_wave1_preflight_report.json",
+    "metadata/v9_audit_freeze_manifest.json",
+    "metadata/zz4_wave1_circuit_build_manifest.json",
+    "metadata/zz_only_step8_execution_manifest.json"
+  ],
+  "scientific_scope_changed": false,
+  "frozen_subset_changed": false,
+  "kernels_or_metrics_changed": false,
+  "file_checksums_regenerated": true,
+  "note": "Geometry, metrics, labels, and numerical results are unchanged. File-level SHA-256 values are reset by this normalization. Git commit hashes are unaffected (no history rewrite); they would change only if the optional history scrub is later performed."
+}

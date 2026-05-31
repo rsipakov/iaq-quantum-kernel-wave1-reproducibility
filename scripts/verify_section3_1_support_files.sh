@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPRO="${1:-/Users/rostyslavsipakov/Documents/GitHub/reproducibility/iaq-quantum-kernel-wave1-reproducibility}"
+REPRO="${1:-.}"
 if [[ ! -d "$REPRO" ]]; then
   echo "ERROR: REPRO does not exist: $REPRO" >&2
   exit 1

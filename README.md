@@ -506,10 +506,7 @@ statevector_reference/zz4_K_all_all.npy
 hardware_kernels/zz4_H0_kernel.npy
 hardware_kernels/zz4_H1_kernel.npy
 hardware_kernels/zz4_H2_kernel.npy
-scripts/copy_section3_4_support_files.sh
 scripts/verify_section3_4_support_files.sh
-scripts/publish_section3_4_updates.sh
-scripts/run_section3_4_copy_verify_publish.sh
 ```
 
 ## Included materials
@@ -598,22 +595,11 @@ scripts/run_section3_4_copy_verify_publish.sh
 - `scripts/09c_wave1_distortion_uncertainty.py`
 - `scripts/09d_shot_noise_reference_scale_decomposition.py`
 - `scripts/09e_label_permutation_reference.py`
-- `scripts/copy_section3_1_support_files.sh`
+- `scripts/verify_privacy_cleanup.sh`
 - `scripts/verify_section3_1_support_files.sh`
-- `scripts/publish_section3_1_updates.sh`
-- `scripts/run_section3_1_copy_verify_publish.sh`
-- `scripts/copy_section3_2_support_files.sh`
 - `scripts/verify_section3_2_support_files.sh`
-- `scripts/publish_section3_2_updates.sh`
-- `scripts/run_section3_2_copy_verify_publish.sh`
-- `scripts/copy_section3_3_support_files.sh`
 - `scripts/verify_section3_3_support_files.sh`
-- `scripts/publish_section3_3_updates.sh`
-- `scripts/run_section3_3_copy_verify_publish.sh`
-- `scripts/copy_section3_4_support_files.sh`
 - `scripts/verify_section3_4_support_files.sh`
-- `scripts/publish_section3_4_updates.sh`
-- `scripts/run_section3_4_copy_verify_publish.sh`
 - `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance
 
 ### Environment, checksums, and repository metadata
@@ -638,31 +624,6 @@ python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
 python scripts/09e_label_permutation_reference.py --project-root . --check
 bash scripts/verify_section3_4_support_files.sh .
-```
-
-To copy or refresh Section 3.4 support inputs from the upstream source repository, use:
-
-```bash
-SOURCE="/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks"
-REPRO="/Users/rostyslavsipakov/Documents/GitHub/reproducibility/iaq-quantum-kernel-wave1-reproducibility"
-cd "$REPRO"
-bash scripts/copy_section3_4_support_files.sh "$SOURCE" "$REPRO"
-python scripts/09b_analyze_wave1_distortion_direct.py --project-root "$REPRO"
-python scripts/09c_wave1_distortion_uncertainty.py --project-root "$REPRO"
-python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root "$REPRO" --check
-python scripts/09e_label_permutation_reference.py --project-root "$REPRO" --check
-bash scripts/verify_section3_4_support_files.sh "$REPRO"
-```
-
-The Section 3.4 copy script is idempotent. It copies only support inputs and outputs if absent or changed. It does not copy manuscript drafts such as `NewSection_3.4.md`, `NewSection_3.4_Revised*.md`, or `NewSection_3.4_*Instructions.md` into the reproducibility repository.
-
-To run copy, verification, checksum regeneration, commit, and push in sequence:
-
-```bash
-SOURCE="/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks"
-REPRO="/Users/rostyslavsipakov/Documents/GitHub/reproducibility/iaq-quantum-kernel-wave1-reproducibility"
-cd "$REPRO"
-bash scripts/run_section3_4_copy_verify_publish.sh "$SOURCE" "$REPRO" "Add Section 3.4 KTA/CKA tension support"
 ```
 
 ## Numerical reproduction verification

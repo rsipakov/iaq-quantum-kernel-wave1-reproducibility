@@ -56,24 +56,13 @@ The manuscript files `NewSection_3.1.md`, `NewSection_3.2.md`, `NewSection_3.3.m
 
 ## Results-section support scripts
 
-These shell scripts are operational helpers for copying, verifying, and publishing Results-section support state. They do not submit IBM Quantum jobs and do not alter the frozen scientific scope.
+These shell scripts verify Results-section support state. They do not submit IBM Quantum jobs and do not alter the frozen scientific scope.
 
-- `scripts/copy_section3_1_support_files.sh`
+- `scripts/verify_privacy_cleanup.sh`
 - `scripts/verify_section3_1_support_files.sh`
-- `scripts/publish_section3_1_updates.sh`
-- `scripts/run_section3_1_copy_verify_publish.sh`
-- `scripts/copy_section3_2_support_files.sh`
 - `scripts/verify_section3_2_support_files.sh`
-- `scripts/publish_section3_2_updates.sh`
-- `scripts/run_section3_2_copy_verify_publish.sh`
-- `scripts/copy_section3_3_support_files.sh`
 - `scripts/verify_section3_3_support_files.sh`
-- `scripts/publish_section3_3_updates.sh`
-- `scripts/run_section3_3_copy_verify_publish.sh`
-- `scripts/copy_section3_4_support_files.sh`
 - `scripts/verify_section3_4_support_files.sh`
-- `scripts/publish_section3_4_updates.sh`
-- `scripts/run_section3_4_copy_verify_publish.sh`
 
 ## Supported output artifacts
 
@@ -322,13 +311,13 @@ No hardware-regime label-permutation p-values are persisted or claimed.
 
 ## Section 3.4 central synthesis: CKA/KTA tension and shot-noise grounding
 
-Section 3.4 uses the Section 3.2 and 3.3 outputs and the finite-shot reference-scale decomposition to state the central synthesis: the configuration with the highest hardware-vs-statevector fidelity is not the configuration with the largest observed hardware centered KTA.
+Section 3.4 uses the Section 3.2 and 3.3 outputs and the finite-shot reference-scale decomposition to state the central synthesis: the configuration with the highest hardware-vs-statevector fidelity is not the configuration with the largest observed hardware centered KTA. The absolute hardware and statevector KTA values are reported in the Section 3.3.3 tension table; Section 3.4 carries the synthesis bridge.
 
-| Manuscript label | Artifact regime | CKA | CKA loss | Hardware KTA | Statevector KTA | Delta_KTA | RMSE | Matrix residual |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` | `H0` | 0.9333906747 | 0.0666093253 | 0.1833084594 | 0.1585110924 | +0.0247973670 | 0.0877704676 | 0.0873804024 |
-| `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 | 0.0864275384 | 0.0860335250 |
-| `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 | 0.0427274195 | 0.0418676576 |
+| Manuscript label | Artifact regime | CKA loss | Delta_KTA | RMSE | Matrix-aware shot share |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.066609 | +0.024797 | 0.087770 | 0.89% |
+| `M1` | `H1` | 0.062627 | +0.022952 | 0.086428 | 0.91% |
+| `M2` | `H2` | 0.011332 | +0.012514 | 0.042727 | 3.98% |
 
 The geometry-fidelity ordering is `H2` best, while the absolute hardware centered-KTA ordering is `H0 > H1 > H2`. `H2` has the smallest KTA uplift and is closest to the statevector KTA. The CKA (fidelity) ordering is window-resolved (CKA contrasts z_desc = 3.09, 2.83); the absolute centered-KTA ordering is not (|z_desc| <= 0.87).
 
@@ -366,22 +355,11 @@ The shot-noise decomposition used in Section 3.4 is:
 | `scripts/09d_shot_noise_reference_scale_decomposition.py` | Regenerates Section 2.12 / Section 3.4 finite-shot reference-scale decomposition; supports `--check`. |
 | `scripts/09e_label_permutation_reference.py` | Regenerates and checks the Section 2.13 / Section 3.3 / Section 3.4 statevector label-permutation reference. |
 | `scripts/common.py` | Legacy shared utility module retained for archival/source-context provenance; not required by the supported direct reproduction scripts. |
-| `scripts/copy_section3_1_support_files.sh` | Idempotently copies Section 3.1 support artifacts from the upstream source tree into the flat reproducibility layout if files are absent or changed. |
+| `scripts/verify_privacy_cleanup.sh` | Verifies that manuscript drafts are absent from the repository root, local username or absolute macOS path strings are absent from tracked files, and maintainer-only copy/publish/run scripts are not tracked. |
 | `scripts/verify_section3_1_support_files.sh` | Verifies job manifests, retrieval manifest, raw-result counts, shot counts, `H2` randomization metadata, billed quantum seconds, and long-form kernel-entry counts needed by Section 3.1. |
-| `scripts/publish_section3_1_updates.sh` | Runs Section 3.1 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_1_copy_verify_publish.sh` | Runs Section 3.1 copy, verify, and publish in sequence. |
-| `scripts/copy_section3_2_support_files.sh` | Idempotently copies Section 3.2 support inputs from the upstream source tree if files are absent or changed. |
 | `scripts/verify_section3_2_support_files.sh` | Verifies the Section 3.2 metric table, point-estimate ordering, PSD diagnostics, KTA-uplift boundary, and off-diagonal variance-retention pattern. |
-| `scripts/publish_section3_2_updates.sh` | Runs Section 3.2 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_2_copy_verify_publish.sh` | Runs Section 3.2 copy, direct metric regeneration, verify, and publish in sequence. |
-| `scripts/copy_section3_3_support_files.sh` | Idempotently copies Section 3.3 support inputs and the static permutation provenance table if files are absent or changed. |
 | `scripts/verify_section3_3_support_files.sh` | Verifies Section 3.3 jackknife table values, paired descriptive contrasts, RMSE point-estimate-only status, KTA/CKA tension, diagonal sensitivity, and label-permutation reference. |
-| `scripts/publish_section3_3_updates.sh` | Runs Section 3.3 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_3_copy_verify_publish.sh` | Runs Section 3.3 copy, direct metric regeneration, label-permutation regeneration/check, verify, and publish in sequence. |
-| `scripts/copy_section3_4_support_files.sh` | Idempotently copies Section 3.4 support inputs and outputs; excludes Section 3.4 manuscript drafts. |
 | `scripts/verify_section3_4_support_files.sh` | Verifies Section 3.4 KTA/CKA-tension ordering, finite-shot reference-scale decomposition, residual-distortion interpretation, and statevector label-permutation boundary. |
-| `scripts/publish_section3_4_updates.sh` | Runs Section 3.4 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
-| `scripts/run_section3_4_copy_verify_publish.sh` | Runs Section 3.4 copy, direct metric regeneration, shot-noise check, label-permutation check, verification, and publishing in sequence. |
 | `scripts/archive_original_execution_pipeline/00_artifact_lock.py` through `scripts/archive_original_execution_pipeline/10_create_wave1_decision_record.py` | Original numbered execution scripts retained as archival provenance only. |
 
 ## Environment and integrity artifacts

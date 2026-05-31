@@ -3,7 +3,7 @@
   "schema_version": "v8b.step8.1.package.1",
   "created_utc": "2026-05-09T06:55:51Z",
   "operator_identifier": "Rostyslav Sipakov",
-  "project_root": "/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks",
+  "project_root": "${PROJECT_ROOT}",
   "authorized_by": {
     "path": "step6b_hardware_subset_package/outputs/metadata/zz_only_pilot_go_v8b.json",
     "sha256": "9ca925a189bc2826f6e1339793679aacd7977df510660d849c02a9037ae878e2",

@@ -21,7 +21,7 @@ This manifest lists the curated, non-sensitive artifacts included in the IAQ Qua
 - **3.2. Main distortion metrics**
 - **3.3. Window-level statistical support and label-alignment reference**
 - **3.4. Central synthesis: the CKA/KTA tension and the finite-shot reference scale**
-- **3.5. New diagnostic result: shot-noise reference-scale decomposition**
+- **3.5. Dimensionless finite-shot scale separation of the off-diagonal RMSE**
 
 ## Reproducibility status
 
@@ -130,8 +130,8 @@ The historical table is a static source-derived reference: it is not produced by
 | Section 2.12 matrix-aware shot reference | `sqrt(mean_{Omega} p_ij(1-p_ij)/1024)` using reconstructed off-diagonal hardware probabilities |
 | Section 3.5 global scale ratios | `RMSE/sigma_ref_global`: `H0=3.9720`, `H1=3.9113`, `H2=1.9336` |
 | Section 3.5 matrix-aware scale ratios | `RMSE/sigma_shot_matrix`: `H0=10.6188`, `H1=10.4846`, `H2=5.0101` |
-| Section 3.5 residual variance fractions after global reference | `H0=93.66%`, `H1=93.46%`, `H2=73.25%` |
-| Section 3.5 residual variance fractions after matrix-aware reference | `H0=99.11%`, `H1=99.09%`, `H2=96.02%` |
+| Section 3.5 quadrature residual fractions (global reference) | `H0=93.66%`, `H1=93.46%`, `H2=73.25%` |
+| Section 3.5 quadrature residual fractions (matrix-aware reference) | `H0=99.11%`, `H1=99.09%`, `H2=96.02%` |
 | Section 2.13 statistical unit | Frozen observation window |
 | Section 2.13 jackknife metrics | Spearman, Pearson, MAE, CKA, centered KTA |
 | Section 2.13 paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive contrast ratios only |
@@ -358,7 +358,7 @@ The shot-noise decomposition used in Section 3.4 is:
 
 Section 3.5 uses the persisted shot-noise reference-scale decomposition to report dimensionless finite-shot scale separation. It adds no new kernels, no new execution configuration, no new statistical resampling unit, and no physical noise-model fit.
 
-| Manuscript label | Artifact regime | RMSE | sigma_shot_matrix | RMSE/sigma_ref_global | Global residual variance fraction | RMSE/sigma_shot_matrix | Matrix residual variance fraction |
+| Manuscript label | Artifact regime | RMSE | sigma_shot_matrix | RMSE/sigma_ref_global | Global quadrature residual fraction | RMSE/sigma_shot_matrix | Matrix quadrature residual fraction |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `M0` | `H0` | 0.087770 | 0.008266 | 3.9720 | 93.66% | 10.6188 | 99.11% |
 | `M1` | `H1` | 0.086428 | 0.008243 | 3.9113 | 93.46% | 10.4846 | 99.09% |
@@ -373,8 +373,8 @@ Section 3.5 uses the persisted shot-noise reference-scale decomposition to repor
 - every row has `n = 24`, `shots_observed_per_entry = 1024`, `omega_size_directed = 552`, and `omega_size_unique_unordered = 276`;
 - the global reference is `1/sqrt(2*S)`;
 - all RMSE values exceed both finite-shot reference scales;
-- the Section 3.5 RMSE-to-reference ratios and residual variance fractions match the manuscript values;
-- the matrix-aware residual variance fraction is above 96% in every regime;
+- the Section 3.5 RMSE-to-reference ratios and quadrature residual fractions match the manuscript values;
+- the matrix-aware quadrature residual fraction is above 96% in every regime;
 - the Section 3.5 decomposition is retained as diagnostic quadrature bookkeeping, not a physical noise model.
 
 ## Supported and archival scripts

@@ -11,10 +11,12 @@ fi
 REPO=$(cd "${REPO}" && pwd)
 cd "${REPO}"
 
-if [[ -e "NewSection_3.4.md" ]]; then
-  echo "ERROR: NewSection_3.4.md must remain outside the reproducibility repository." >&2
-  exit 1
-fi
+for draft in NewSection_3.4.md NewSection_3.4_Revised*.md NewSection_3.4_*Instructions.md; do
+  if [[ -e "${draft}" ]]; then
+    echo "ERROR: ${draft} must remain outside the reproducibility repository." >&2
+    exit 1
+  fi
+done
 
 bash scripts/verify_section3_4_support_files.sh "${REPO}"
 
@@ -39,6 +41,8 @@ find . \
   ! -name '.DS_Store' \
   ! -name '*_provenance.json' \
   ! -name 'NewSection_3.4.md' \
+  ! -name 'NewSection_3.4_Revised*.md' \
+  ! -name 'NewSection_3.4_*Instructions.md' \
   ! -path './checksums/SHA256SUMS.txt' \
   -print0 \
   | sort -z \

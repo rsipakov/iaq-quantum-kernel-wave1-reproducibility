@@ -24,7 +24,7 @@ This repository supports reproduction of:
 8. Section 3.1 hardware-execution summary;
 9. Section 3.2 main distortion metrics;
 10. Section 3.3 statistical support and label-alignment diagnostics;
-11. Section 3.4 KTA/CKA tension and RQ3 shot-noise support.
+11. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension.
 
 This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance.
 
@@ -52,7 +52,7 @@ Expected high-level checks:
 - Section 3.1 verification reports three `DONE` jobs, 300 retrieved PUB results per regime, 1024 shots per retrieved entry, 900 long-form kernel-entry rows, and billed quantum seconds `H0=80`, `H1=80`, `H2=84`;
 - Section 3.2 verification reports the main distortion metrics, the `M2/H2` best observed point-estimate ordering for statevector geometry survival, and roundoff-scale PSD diagnostics;
 - Section 3.3 verification reports the window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement;
-- Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, and the absence of a hardware-regime label-permutation claim.
+- Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim.
 
 These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
 
@@ -461,19 +461,9 @@ The observed centered statevector alignment lies below the permutation-null mean
 
 `M2/H2` has the smallest CKA loss and smallest KTA uplift. The baseline has the largest hardware KTA but also the largest CKA loss. This pattern is interpreted as non-affine, label-correlated hardware distortion, not as supervised improvement.
 
-## Section 3.4: new central result — KTA/CKA tension
+## Section 3.4: Central synthesis — the CKA/KTA tension and the finite-shot reference scale
 
 Section 3.4 gives the central synthesis of RQ3 and RQ4. It uses the point estimates and statistical support established in Sections 3.2 and 3.3, adds the finite-shot reference-scale decomposition, and states the interpretation boundary.
-
-### Geometry fidelity versus label alignment
-
-| Configuration | Artifact regime | CKA(hw,sv) | CKA loss | Hardware KTA_c | Statevector KTA_c | Delta_KTA | RMSE | Matrix-aware residual |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.933391 | 0.066609 | 0.183308 | 0.158511 | +0.024797 | 0.087770 | 0.087380 |
-| `M1` dynamical decoupling | `H1` | 0.937373 | 0.062627 | 0.181463 | 0.158511 | +0.022952 | 0.086428 | 0.086034 |
-| `M2` gate twirling | `H2` | 0.988668 | 0.011332 | 0.171025 | 0.158511 | +0.012514 | 0.042727 | 0.041868 |
-
-`M2/H2` best preserved the intended statevector geometry but did not maximize hardware centered KTA. It produced the lowest hardware centered KTA among the three execution configurations and was closest to the statevector centered KTA.
 
 ### Shot-noise reference-scale support
 
@@ -483,7 +473,17 @@ Section 3.4 gives the central synthesis of RQ3 and RQ4. It uses the point estima
 | `M1` dynamical decoupling | `H1` | 0.086428 | 0.022097 | 0.083555 | 6.54% | 0.008243 | 0.086034 | 0.91% |
 | `M2` gate twirling | `H2` | 0.042727 | 0.022097 | 0.036570 | 26.75% | 0.008528 | 0.041868 | 3.98% |
 
-All three observed RMSE values exceed both finite-shot reference scales. Under the matrix-aware plug-in calculation, finite-shot variance accounts for less than 1% of squared off-diagonal RMSE in `H0` and `H1`, and about 4% in `H2`. The residual discrepancy is therefore dominated by hardware distortion rather than by finite-shot sampling alone.
+All three observed RMSE values exceed both finite-shot reference scales. Under the matrix-aware plug-in calculation, finite-shot variance accounts for less than 1% of squared off-diagonal RMSE in `H0` and `H1`, and 3.98% in `H2`. The residual discrepancy is therefore dominated by hardware distortion rather than by finite-shot sampling alone.
+
+### Cross-RQ synthesis bridge
+
+| Configuration | Artifact regime | L_CKA | Delta_KTA | RMSE | Matrix-aware shot share |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `M0` baseline | `H0` | 0.066609 | +0.024797 | 0.087770 | 0.89% |
+| `M1` dynamical decoupling | `H1` | 0.062627 | +0.022952 | 0.086428 | 0.91% |
+| `M2` gate twirling | `H2` | 0.011332 | +0.012514 | 0.042727 | 3.98% |
+
+`M2/H2` best preserved the intended statevector geometry and had the smallest centered-KTA uplift. The configuration with the largest observed hardware centered KTA is therefore not the configuration with the smallest geometry loss, and the matrix-aware shot shares show that finite-shot variance is too small to explain the residual RMSE discrepancy by itself.
 
 Relevant artifacts:
 
@@ -654,7 +654,7 @@ python scripts/09e_label_permutation_reference.py --project-root "$REPRO" --chec
 bash scripts/verify_section3_4_support_files.sh "$REPRO"
 ```
 
-The Section 3.4 copy script is idempotent. It copies only support inputs and outputs if absent or changed. It does not copy `NewSection_3.4.md` into the reproducibility repository.
+The Section 3.4 copy script is idempotent. It copies only support inputs and outputs if absent or changed. It does not copy manuscript drafts such as `NewSection_3.4.md`, `NewSection_3.4_Revised*.md`, or `NewSection_3.4_*Instructions.md` into the reproducibility repository.
 
 To run copy, verification, checksum regeneration, commit, and push in sequence:
 
@@ -705,6 +705,8 @@ find . \
   ! -name '.DS_Store' \
   ! -name '*_provenance.json' \
   ! -name 'NewSection_3.4.md' \
+  ! -name 'NewSection_3.4_Revised*.md' \
+  ! -name 'NewSection_3.4_*Instructions.md' \
   ! -path './checksums/SHA256SUMS.txt' \
   -print0 \
   | sort -z \

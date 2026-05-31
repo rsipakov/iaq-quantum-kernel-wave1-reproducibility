@@ -20,7 +20,7 @@ This manifest lists the curated, non-sensitive artifacts included in the IAQ Qua
 - **3.1. Hardware execution summary**
 - **3.2. Main distortion metrics**
 - **3.3. Window-level statistical support and label-alignment reference**
-- **3.4. New central result: KTA/CKA tension**
+- **3.4. Central synthesis: the CKA/KTA tension and the finite-shot reference scale**
 
 ## Reproducibility status
 
@@ -28,7 +28,7 @@ This repository is an artifact-level reproducibility package for the frozen Wave
 
 It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission workflow, and original numbered execution pipeline are retained only as provenance where present.
 
-The manuscript files `NewSection_3.1.md`, `NewSection_3.2.md`, `NewSection_3.3.md`, and `NewSection_3.4.md` are not artifacts to copy into this repository. They are manuscript draft files supplied outside the reproducibility package.
+The manuscript files `NewSection_3.1.md`, `NewSection_3.2.md`, `NewSection_3.3.md`, `NewSection_3.4.md`, `NewSection_3.4_Revised*.md`, and `NewSection_3.4_*Instructions.md` are not artifacts to copy into this repository. They are manuscript draft files supplied outside the reproducibility package.
 
 ## Supported input artifacts
 
@@ -134,6 +134,7 @@ The historical table is a static source-derived reference: it is not produced by
 | Section 2.9 CKA point estimates | `M0/H0 = 0.9333906747`, `M1/H1 = 0.9373725928`, `M2/H2 = 0.9886681278` |
 | Section 2.10 centered KTA point estimates | `SV = 0.1585110924`, `M0/H0 = 0.1833084594`, `M1/H1 = 0.1814633785`, `M2/H2 = 0.1710248441` |
 | Section 2.11 / 3.4 KTA/CKA tension quantities | `CKA loss = 1 - CKA`; `Delta_KTA = KTA_hardware - KTA_statevector` |
+| Section 3.4 hardware off-diagonal probability means | `hardware_offdiag_mean` field of `zz4_wave1_shot_noise_reference_scale_decomposition.{csv,json}` |
 | Section 2.12 conservative global shot reference | `sigma_ref_global = 1/sqrt(2*1024) = 0.0220970869121` |
 | Section 2.12 matrix-aware shot reference | `sqrt(mean_{Omega} p_ij(1-p_ij)/1024)` using reconstructed off-diagonal hardware probabilities |
 | Section 2.13 statistical unit | Frozen observation window |
@@ -247,8 +248,8 @@ This label map is a reporting convention only; it does not create additional cir
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable Wave 1 distortion summary. |
 | `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Robustness diagnostics, including diagonal sensitivity, leave-one-window-out jackknife summaries, and paired descriptive contrasts. |
 | `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | Machine-readable uncertainty/robustness summary. |
-| `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv` | Tabular shot-noise reference-scale decomposition, including global and matrix-aware scales, residuals, and shot-share values. |
-| `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json` | Machine-readable decomposition with formulas, input paths, output paths, and diagnostic caveat. |
+| `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv` | Tabular shot-noise reference-scale decomposition, including global and matrix-aware scales, residuals, shot-share values, `hardware_offdiag_mean`, and `hardware_offdiag_variance`. |
+| `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json` | Machine-readable decomposition with formulas, input paths, output paths, hardware off-diagonal probability summaries, and diagnostic caveat. |
 | `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md` | Human-readable decomposition summary. |
 | `hardware_analysis/qiskit_kta_cka_permutation_tests.csv` | Source-derived label-permutation reference for statevector label alignment. |
 | `hardware_analysis/zz4_wave1_label_permutation_reference.csv` | Regenerable statevector ZZ4 label-permutation reference. |
@@ -319,7 +320,7 @@ The fixed-seed statevector permutation reference is:
 
 No hardware-regime label-permutation p-values are persisted or claimed.
 
-## Section 3.4 KTA/CKA tension and shot-noise grounding
+## Section 3.4 central synthesis: CKA/KTA tension and shot-noise grounding
 
 Section 3.4 uses the Section 3.2 and 3.3 outputs and the finite-shot reference-scale decomposition to state the central synthesis: the configuration with the highest hardware-vs-statevector fidelity is not the configuration with the largest observed hardware centered KTA.
 
@@ -329,7 +330,7 @@ Section 3.4 uses the Section 3.2 and 3.3 outputs and the finite-shot reference-s
 | `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 | 0.0864275384 | 0.0860335250 |
 | `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 | 0.0427274195 | 0.0418676576 |
 
-The geometry-fidelity ordering is `H2` best, while the absolute hardware centered-KTA ordering is `H0 > H1 > H2`. `H2` has the smallest KTA uplift and is closest to the statevector KTA.
+The geometry-fidelity ordering is `H2` best, while the absolute hardware centered-KTA ordering is `H0 > H1 > H2`. `H2` has the smallest KTA uplift and is closest to the statevector KTA. The CKA (fidelity) ordering is window-resolved (CKA contrasts z_desc = 3.09, 2.83); the absolute centered-KTA ordering is not (|z_desc| <= 0.87).
 
 The shot-noise decomposition used in Section 3.4 is:
 
@@ -342,7 +343,7 @@ The shot-noise decomposition used in Section 3.4 is:
 `scripts/verify_section3_4_support_files.sh` enforces the following Section 3.4 invariants:
 
 - required support files and scripts are present;
-- `NewSection_3.4.md` is not present in the repository root;
+- manuscript drafts such as `NewSection_3.4.md`, `NewSection_3.4_Revised*.md`, and `NewSection_3.4_*Instructions.md` are not present in the repository root;
 - distortion metrics contain exactly three rows for `H0`, `H1`, and `H2`, with `n = 24` and 1024 submitted shots;
 - correlation-test p-value columns remain blank/NaN;
 - `H2` has the highest CKA and the smallest CKA loss;
@@ -377,7 +378,7 @@ The shot-noise decomposition used in Section 3.4 is:
 | `scripts/verify_section3_3_support_files.sh` | Verifies Section 3.3 jackknife table values, paired descriptive contrasts, RMSE point-estimate-only status, KTA/CKA tension, diagonal sensitivity, and label-permutation reference. |
 | `scripts/publish_section3_3_updates.sh` | Runs Section 3.3 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
 | `scripts/run_section3_3_copy_verify_publish.sh` | Runs Section 3.3 copy, direct metric regeneration, label-permutation regeneration/check, verify, and publish in sequence. |
-| `scripts/copy_section3_4_support_files.sh` | Idempotently copies Section 3.4 support inputs and outputs; excludes `NewSection_3.4.md`. |
+| `scripts/copy_section3_4_support_files.sh` | Idempotently copies Section 3.4 support inputs and outputs; excludes Section 3.4 manuscript drafts. |
 | `scripts/verify_section3_4_support_files.sh` | Verifies Section 3.4 KTA/CKA-tension ordering, finite-shot reference-scale decomposition, residual-distortion interpretation, and statevector label-permutation boundary. |
 | `scripts/publish_section3_4_updates.sh` | Runs Section 3.4 verification, regenerates `checksums/SHA256SUMS.txt`, and stages/commits/pushes repository updates. |
 | `scripts/run_section3_4_copy_verify_publish.sh` | Runs Section 3.4 copy, direct metric regeneration, shot-noise check, label-permutation check, verification, and publishing in sequence. |
@@ -418,6 +419,8 @@ find . \
   ! -name '.DS_Store' \
   ! -name '*_provenance.json' \
   ! -name 'NewSection_3.4.md' \
+  ! -name 'NewSection_3.4_Revised*.md' \
+  ! -name 'NewSection_3.4_*Instructions.md' \
   ! -path './checksums/SHA256SUMS.txt' \
   -print0 \
   | sort -z \

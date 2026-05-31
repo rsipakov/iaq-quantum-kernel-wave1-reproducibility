@@ -4,7 +4,7 @@ set -euo pipefail
 # Idempotently copy Section 3.4 support files from the upstream source tree into
 # the flat reproducibility repository. This script copies only repository
 # artifacts required to support Section 3.4. It deliberately does not copy
-# NewSection_3.4.md into the reproducibility repository.
+# Section 3.4 manuscript drafts into the reproducibility repository.
 
 SOURCE=${1:-${SOURCE:-}}
 REPRO=${2:-${REPRO:-}}
@@ -96,10 +96,16 @@ for rel in "${FILES[@]}"; do
   copy_one "${rel}"
 done
 
-if [[ -e "${REPRO}/NewSection_3.4.md" ]]; then
-  echo "ERROR: ${REPRO}/NewSection_3.4.md exists, but manuscript draft files must not be copied into the reproducibility repository." >&2
-  exit 1
-fi
+for draft in \
+  "${REPRO}/NewSection_3.4.md" \
+  "${REPRO}"/NewSection_3.4_Revised*.md \
+  "${REPRO}"/NewSection_3.4_*Instructions.md
+do
+  if [[ -e "${draft}" ]]; then
+    echo "ERROR: ${draft} exists, but manuscript draft files must not be copied into the reproducibility repository." >&2
+    exit 1
+  fi
+done
 
 cat <<SUMMARY
 Section 3.4 copy refresh complete.

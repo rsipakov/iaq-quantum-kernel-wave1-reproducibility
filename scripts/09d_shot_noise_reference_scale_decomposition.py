@@ -222,7 +222,7 @@ def write_outputs(root: Path, table: pd.DataFrame) -> None:
             "",
             "The matrix-aware scale is computed from reconstructed hardware all-zero probabilities. "
             "Under this plug-in calculation, finite-shot variance accounts for less than 1% of the "
-            "squared off-diagonal RMSE in `M0/H0` and `M1/H1`, and about 4% in `M2/H2`.",
+            "squared off-diagonal RMSE in `M0/H0` and `M1/H1`, and 3.98% in `M2/H2`.",
             "",
         ]
     )

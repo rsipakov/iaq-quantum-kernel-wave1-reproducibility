@@ -9,10 +9,12 @@ fi
 REPO=$(cd "${REPO}" && pwd)
 cd "${REPO}"
 
-if [[ -e "NewSection_3.4.md" ]]; then
-  echo "ERROR: NewSection_3.4.md is a manuscript draft and must not be committed to the reproducibility repository root." >&2
-  exit 1
-fi
+for draft in NewSection_3.4.md NewSection_3.4_Revised*.md NewSection_3.4_*Instructions.md; do
+  if [[ -e "${draft}" ]]; then
+    echo "ERROR: ${draft} is a manuscript draft and must not be committed to the reproducibility repository root." >&2
+    exit 1
+  fi
+done
 
 required_files=(
   "hardware_analysis/zz4_wave1_distortion_metrics.csv"

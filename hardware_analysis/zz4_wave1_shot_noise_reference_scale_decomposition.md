@@ -11,4 +11,4 @@
 | `M1` | `H1` | 0.086428 | 0.022097 | 0.083555 | 6.54% | 0.008243 | 0.086034 | 0.91% |
 | `M2` | `H2` | 0.042727 | 0.022097 | 0.036570 | 26.75% | 0.008528 | 0.041868 | 3.98% |
 
-The matrix-aware scale is computed from reconstructed hardware all-zero probabilities. Under this plug-in calculation, finite-shot variance accounts for less than 1% of the squared off-diagonal RMSE in `M0/H0` and `M1/H1`, and about 4% in `M2/H2`.
+The matrix-aware scale is computed from reconstructed hardware all-zero probabilities. Under this plug-in calculation, finite-shot variance accounts for less than 1% of the squared off-diagonal RMSE in `M0/H0` and `M1/H1`, and 3.98% in `M2/H2`.

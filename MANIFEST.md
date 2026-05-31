@@ -207,8 +207,11 @@ This label map is a reporting convention only; it does not create additional cir
 | `job_metadata/zz4_wave1_job_manifest_H1_1024.csv` | CSV job manifest for `H1` / `M1`. |
 | `job_metadata/zz4_wave1_job_manifest_H2_1024.json` | JSON job manifest for `H2` / `M2`. |
 | `job_metadata/zz4_wave1_job_manifest_H2_1024.csv` | CSV job manifest for `H2` / `M2`. |
+| `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json` | Combined budget-safe submission manifest preserving H0/H1/H2 job IDs, timestamps, backend, shots, circuit counts, and hash provenance. |
+| `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.csv` | Tabular version of the combined budget-safe submission manifest. |
 | `job_metadata/zz4_wave1_retrieval_manifest.json` | Retrieval manifest recording all three jobs as `DONE`, 300 retrieved PUB results per regime, and no recorded retrieval failure. |
-| `logs/zz4_wave1_submission_log.md` | Human-readable submission log. |
+| `logs/zz4_wave1_submission_log_budget_safe_combined.md` | Derived human-readable combined submission log reconstructed from the combined manifest. |
+| `logs/zz4_wave1_submission_log_H2_final_partial_run.md` | Retained original human-readable log from the final H2 partial submission only. |
 | `logs/zz4_wave1_retrieval_log.md` | Human-readable retrieval log. |
 
 ## Raw hardware-result artifacts

@@ -46,8 +46,11 @@ required = [
     "job_metadata/zz4_wave1_job_manifest_H1_1024.csv",
     "job_metadata/zz4_wave1_job_manifest_H2_1024.json",
     "job_metadata/zz4_wave1_job_manifest_H2_1024.csv",
+    "job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json",
+    "job_metadata/zz4_wave1_job_manifest_budget_safe_combined.csv",
     "job_metadata/zz4_wave1_retrieval_manifest.json",
-    "logs/zz4_wave1_submission_log.md",
+    "logs/zz4_wave1_submission_log_H2_final_partial_run.md",
+    "logs/zz4_wave1_submission_log_budget_safe_combined.md",
     "logs/zz4_wave1_retrieval_log.md",
     "hardware_results/zz4_H0_raw_results.json",
     "hardware_results/zz4_H1_raw_results.json",
@@ -75,6 +78,29 @@ for row in rows:
     regime = row["regime_id"]
     assert regime in expected_jobs, regime
     assert row["job_id"] == expected_jobs[regime], row
+    assert int(row["shots_submitted"]) == 1024, row
+    assert int(row["circuit_count_submitted"]) == 300, row
+    assert int(row["pair_count_covered"]) == 300, row
+    assert bool(row["scope_lock_confirmed"]) is True, row
+    assert bool(row["rma_excluded"]) is True, row
+    assert bool(row["wave2_excluded"]) is True, row
+
+combined = json.loads((ROOT / "job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json").read_text())
+assert combined.get("artifact_type") == "zz4_wave1_job_manifest_budget_safe_combined", combined.get("artifact_type")
+assert combined.get("selected_regimes") == ["H0", "H1", "H2"], combined.get("selected_regimes")
+assert combined.get("shots_submitted_per_circuit") == [1024], combined.get("shots_submitted_per_circuit")
+assert combined.get("job_ids_recorded_for_H0_H1_H2") is True, combined.get("job_ids_recorded_for_H0_H1_H2")
+assert combined.get("budget_safe_partial_submission") is True, combined.get("budget_safe_partial_submission")
+assert int(combined.get("total_circuits_submitted")) == 900, combined.get("total_circuits_submitted")
+
+combined_rows = combined.get("rows", [])
+assert len(combined_rows) == 3, len(combined_rows)
+
+combined_by_regime = {row["regime_id"]: row for row in combined_rows}
+for regime, job_id in expected_jobs.items():
+    row = combined_by_regime.get(regime)
+    assert row is not None, f"missing combined row for {regime}"
+    assert row["job_id"] == job_id, row
     assert int(row["shots_submitted"]) == 1024, row
     assert int(row["circuit_count_submitted"]) == 300, row
     assert int(row["pair_count_covered"]) == 300, row
@@ -231,4 +257,7 @@ print(
 print("usage sub-fields agree per regime: usage.quantum_seconds = usage.seconds = bss.seconds")
 print(f"total billed quantum seconds: {total_billed} (~{total_billed / 60:.2f} min)")
 print(usage_msg)
+print("combined budget-safe submission manifest: H0/H1/H2 present; 900 circuits total")
+print("human-readable combined submission log: reconstructed from combined manifest")
+print("retained original submission log: H2 final partial run only")
 PY

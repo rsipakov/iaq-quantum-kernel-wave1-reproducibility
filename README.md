@@ -231,13 +231,37 @@ job_metadata/zz4_wave1_job_manifest_H1_1024.json
 job_metadata/zz4_wave1_job_manifest_H1_1024.csv
 job_metadata/zz4_wave1_job_manifest_H2_1024.json
 job_metadata/zz4_wave1_job_manifest_H2_1024.csv
+job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json
+job_metadata/zz4_wave1_job_manifest_budget_safe_combined.csv
 job_metadata/zz4_wave1_retrieval_manifest.json
-logs/zz4_wave1_submission_log.md
+logs/zz4_wave1_submission_log_budget_safe_combined.md
+logs/zz4_wave1_submission_log_H2_final_partial_run.md
 logs/zz4_wave1_retrieval_log.md
 hardware_results/zz4_H0_raw_results.json
 hardware_results/zz4_H1_raw_results.json
 hardware_results/zz4_H2_raw_results.json
 ```
+
+### Submission-log provenance note
+
+Wave 1 was submitted as budget-safe partial hardware runs. The original
+submission script wrote the human-readable submission log to a single fixed
+path; therefore the final H2 partial submission overwrote the earlier H0/H1
+human-readable logs. The retained original text log is preserved as
+`logs/zz4_wave1_submission_log_H2_final_partial_run.md`.
+
+The complete H0-H2 submission provenance is provided by the machine-readable
+combined manifest:
+
+- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json`
+- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.csv`
+
+For readability, a derived combined text log is also provided:
+
+- `logs/zz4_wave1_submission_log_budget_safe_combined.md`
+
+The job manifest, not the H2-only text log, is the source of truth for H0-H2
+submission provenance.
 
 ## Section 2.6: execution configurations
 
@@ -593,8 +617,11 @@ The manuscript draft file `NewSection_3.5.md` is not an artifact to copy into th
 - `job_metadata/zz4_wave1_job_manifest_H1_1024.csv`
 - `job_metadata/zz4_wave1_job_manifest_H2_1024.json`
 - `job_metadata/zz4_wave1_job_manifest_H2_1024.csv`
+- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json`
+- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.csv`
 - `job_metadata/zz4_wave1_retrieval_manifest.json`
-- `logs/zz4_wave1_submission_log.md`
+- `logs/zz4_wave1_submission_log_budget_safe_combined.md`
+- `logs/zz4_wave1_submission_log_H2_final_partial_run.md`
 - `logs/zz4_wave1_retrieval_log.md`
 
 ### Hardware results and reconstructed kernels

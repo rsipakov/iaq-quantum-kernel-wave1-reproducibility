@@ -12,20 +12,35 @@ Only non-sensitive files required to support manuscript claims are included. IBM
 
 ## Reproducibility scope
 
-This repository supports reproduction of:
+This repository supports artifact-level reproduction of the manuscript components listed below.
 
-1. kernel reconstruction audit;
-2. statevector-to-hardware geometry-distortion metrics;
-3. CKA and centered-KTA diagnostics;
-4. leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks;
-5. statevector label-permutation reference;
-6. finite-shot reference-scale decomposition;
-7. Section 2.13 statistical-analysis policy;
-8. Section 3.1 hardware-execution summary;
-9. Section 3.2 main distortion metrics;
-10. Section 3.3 statistical support and label-alignment diagnostics;
-11. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension;
-12. Section 3.5 new diagnostic result: dimensionless shot-noise reference-scale decomposition.
+### Materials and methods
+
+1. Section 2.1 dataset and prediction context;
+2. Section 2.2 frozen subset;
+3. Section 2.3 ZZ4 quantum feature map;
+4. Section 2.4 pair inventory;
+5. Section 2.5 IBM Quantum hardware protocol;
+6. Section 2.6 execution configurations;
+7. Section 2.7 kernel reconstruction;
+8. Section 2.8 geometry and distortion metrics;
+9. Section 2.9 CKA -- centered kernel alignment;
+10. Section 2.10 KTA -- kernel-target alignment;
+11. Section 2.11 KTA/CKA tension analysis;
+12. Section 2.12 shot-noise reference-scale decomposition;
+13. Section 2.13 statistical-analysis policy.
+
+### Results
+
+1. Section 3.1 hardware-execution summary;
+2. Section 3.2 main distortion metrics;
+3. Section 3.3 window-level statistical support and label-alignment diagnostics;
+4. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension;
+5. Section 3.5 new diagnostic result: dimensionless shot-noise reference-scale decomposition.
+
+### Supported analytical modules
+
+The package supports the following reproducible analytical modules: kernel reconstruction audit; statevector-to-hardware geometry-distortion metrics; CKA and centered-KTA diagnostics; leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks; statevector label-permutation reference; and finite-shot reference-scale decomposition.
 
 This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance.
 

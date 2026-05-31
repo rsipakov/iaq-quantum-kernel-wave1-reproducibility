@@ -31,7 +31,8 @@ if (( ${#drafts[@]} > 0 )); then
 fi
 
 abs_path_pattern="/""Users/"
-if git grep -nIF -e "rostyslavsipakov" -e "${abs_path_pattern}" -- .; then
+username_pattern="rostyslav""sipakov"
+if git grep -nIF -e "${username_pattern}" -e "${abs_path_pattern}" -- .; then
   echo "ERROR: local username or absolute macOS path strings remain in tracked files." >&2
   exit 1
 fi

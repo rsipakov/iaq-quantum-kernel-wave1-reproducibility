@@ -311,13 +311,13 @@ No hardware-regime label-permutation p-values are persisted or claimed.
 
 ## Section 3.4 central synthesis: CKA/KTA tension and shot-noise grounding
 
-Section 3.4 uses the Section 3.2 and 3.3 outputs and the finite-shot reference-scale decomposition to state the central synthesis: the configuration with the highest hardware-vs-statevector fidelity is not the configuration with the largest observed hardware centered KTA.
+Section 3.4 uses the Section 3.2 and 3.3 outputs and the finite-shot reference-scale decomposition to state the central synthesis: the configuration with the highest hardware-vs-statevector fidelity is not the configuration with the largest observed hardware centered KTA. The absolute hardware and statevector KTA values are reported in the Section 3.3.3 tension table; Section 3.4 carries the synthesis bridge.
 
-| Manuscript label | Artifact regime | CKA | CKA loss | Hardware KTA | Statevector KTA | Delta_KTA | RMSE | Matrix residual |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` | `H0` | 0.9333906747 | 0.0666093253 | 0.1833084594 | 0.1585110924 | +0.0247973670 | 0.0877704676 | 0.0873804024 |
-| `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 | 0.0864275384 | 0.0860335250 |
-| `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 | 0.0427274195 | 0.0418676576 |
+| Manuscript label | Artifact regime | CKA loss | Delta_KTA | RMSE | Matrix-aware shot share |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.066609 | +0.024797 | 0.087770 | 0.89% |
+| `M1` | `H1` | 0.062627 | +0.022952 | 0.086428 | 0.91% |
+| `M2` | `H2` | 0.011332 | +0.012514 | 0.042727 | 3.98% |
 
 The geometry-fidelity ordering is `H2` best, while the absolute hardware centered-KTA ordering is `H0 > H1 > H2`. `H2` has the smallest KTA uplift and is closest to the statevector KTA. The CKA (fidelity) ordering is window-resolved (CKA contrasts z_desc = 3.09, 2.83); the absolute centered-KTA ordering is not (|z_desc| <= 0.87).
 

@@ -1,8 +1,8 @@
 # IAQ Quantum Kernel Wave 1 Reproducibility Package
 
-This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports the manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.2.
+This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports the manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.3.
 
-The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival and hardware-distortion analysis. It is derived from the working repository:
+The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival, hardware-distortion, statistical-diagnostic, and label-alignment analyses. It is derived from the working repository:
 
 ```text
 rsipakov/QuantumKernel
@@ -12,9 +12,9 @@ Only non-sensitive files required to support manuscript claims are included. IBM
 
 ## Reproducibility scope
 
-This repository supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, shot-noise reference-scale decomposition, Section 2.13 statistical-analysis policy, Section 3.1 hardware-execution summary, and Section 3.2 main distortion metrics from persisted frozen artifacts.
+This repository supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, leave-one-window-out jackknife and diagonal-robustness checks, statevector label-permutation reference, shot-noise reference-scale decomposition, Section 2.13 statistical-analysis policy, Section 3.1 hardware-execution summary, Section 3.2 main distortion metrics, and Section 3.3 statistical-confidence and label-alignment diagnostics from persisted frozen artifacts.
 
-This repository is not intended to reproduce the full upstream IAQ dataset construction, preprocessing, feature engineering, IBM Quantum job submission, or original execution environment end-to-end. The original numbered execution scripts are retained only as archival provenance. The supported numerical reproduction path is:
+This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end-to-end. The original numbered execution scripts are retained only as archival provenance. The supported numerical reproduction path is:
 
 1. `scripts/08b_audit_kernel_reconstruction.py`
 2. `scripts/09b_analyze_wave1_distortion_direct.py`
@@ -27,9 +27,10 @@ The supported Results-section repository-audit helpers are:
 ```text
 scripts/verify_section3_1_support_files.sh
 scripts/verify_section3_2_support_files.sh
+scripts/verify_section3_3_support_files.sh
 ```
 
-The Section 3.1 and Section 3.2 copy/publication helper scripts are operational convenience scripts. They do not submit IBM Quantum jobs and do not generate new scientific claims:
+The Results-section copy/publication helper scripts are operational convenience scripts. They do not submit IBM Quantum jobs and do not generate new scientific claims:
 
 ```text
 scripts/copy_section3_1_support_files.sh
@@ -40,6 +41,10 @@ scripts/copy_section3_2_support_files.sh
 scripts/verify_section3_2_support_files.sh
 scripts/publish_section3_2_updates.sh
 scripts/run_section3_2_copy_verify_publish.sh
+scripts/copy_section3_3_support_files.sh
+scripts/verify_section3_3_support_files.sh
+scripts/publish_section3_3_updates.sh
+scripts/run_section3_3_copy_verify_publish.sh
 ```
 
 ## Supported reproduction commands
@@ -54,6 +59,7 @@ python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . 
 python scripts/09e_label_permutation_reference.py --project-root . --check
 bash scripts/verify_section3_1_support_files.sh .
 bash scripts/verify_section3_2_support_files.sh .
+bash scripts/verify_section3_3_support_files.sh .
 ```
 
 Expected high-level checks:
@@ -63,10 +69,9 @@ Expected high-level checks:
 - uncertainty diagnostics are regenerated;
 - shot-noise decomposition check passes against the persisted output table;
 - label-permutation reference check validates the static source-derived copy against the regenerable in-package reference;
-- Section 3.1 execution-summary artifacts are present and internally consistent;
-- Section 3.1 verification reports three `DONE` jobs, 300 retrieved PUB results per regime, 1024 shots per retrieved entry, and 900 long-form kernel-entry rows;
-- Section 3.1 verification reports the billed quantum seconds read from `job_metrics.usage.quantum_seconds` (`H0`=80, `H1`=80, `H2`=84; total 244), confirms the three usage sub-fields agree per regime, and confirms the job-lifecycle timestamps are present and monotonic;
-- Section 3.2 verification reports the main distortion metrics for `H0`, `H1`, and `H2`, confirms the `M2/H2` best observed point-estimate ordering for Spearman, Pearson, CKA, MAE, RMSE, MedAE, and MaxAE, and confirms that PSD correction norms remain at float64 roundoff scale.
+- Section 3.1 verification reports three `DONE` jobs, 300 retrieved PUB results per regime, 1024 shots per retrieved entry, 900 long-form kernel-entry rows, and billed quantum seconds `H0=80`, `H1=80`, `H2=84`;
+- Section 3.2 verification reports the main distortion metrics, the `M2/H2` best observed point-estimate ordering for statevector geometry survival, and roundoff-scale PSD diagnostics;
+- Section 3.3 verification reports the window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement.
 
 These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
 
@@ -80,41 +85,44 @@ The historical preprocessing code has been moved to `archive_legacy_preprocessin
 
 ## Scope
 
-- Domain: real indoor-air-quality duplicate-sensor monitoring data
-- Prediction target: `event_onset_next_1h` / `y_event_onset_next_1h`
-- Feature set: `F_quantum_4`
-- Feature map / kernel family: `ZZ4`
-- Input dimension: 4 train-scaled pollutant features
-- Frozen subset: `N = 24` fixed observation windows
-- Frozen hardware split: 16 train windows + 8 test windows
-- Frozen labels for KTA: `0 -> -1` and `1 -> +1`, ordered by `hardware_row_order`
-- Frozen signed-label balance: 12 negative labels and 12 positive labels
-- Statevector reference: exact ZZ4 squared-fidelity kernel
-- Pair inventory: 300 unordered upper-triangular pairs including diagonal entries
-- Unique unordered off-diagonal pairs: 276
-- Diagonal entries: 24
-- Off-diagonal matrix entries used for entrywise distortion metrics: 552 directed entries with `i != j`
-- Full-matrix entries used for CKA and centered KTA: complete `24 x 24` centered matrices, including the measured hardware diagonal
-- Hardware backend: `ibm_fez`
-- Primitive: Qiskit Runtime `SamplerV2`
-- Artifact hardware-regime labels: `H0`, `H1`, `H2`
-- Manuscript execution-configuration labels: `M0`, `M1`, `M2`
-- Label mapping: `M0 = H0`, `M1 = H1`, `M2 = H2`
-- Fidelity circuits: 900 total = 300 pairs x 3 regimes
-- Originally planned shots: 4096 per circuit
-- Submitted shots in the reported Wave 1 execution: 1024 per circuit
-- Raw retrieved results: 300 PUB results per regime, three regimes
-- Reconstructed hardware kernels: three complete `24 x 24` matrices
-- Kernel-reconstruction diagonal policy: measured diagonal
-- Kernel-reconstruction symmetrization policy: average duplicate entries, then mirror
-- PSD policy: diagnostic only; the uncorrected minimum eigenvalue is retained
-- Section 3.1 execution jobs: one backend-mode job per executed regime
-- Section 3.1 retrieved PUB total: `3 x 300 = 900`
-- Section 3.1 observed hardware-shot total: `3 x 300 x 1024 = 921600`
-- Section 3.1 billed quantum seconds: `80 + 80 + 84 = 244` (`~4.07` min), read from `job_metrics.usage.quantum_seconds` in the raw-result payloads, with the agreeing sub-fields `usage.seconds` and `bss.seconds`
-- Section 3.2 main distortion metrics: Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, CKA, centered KTA, effective rank, off-diagonal variance, and PSD relative Frobenius diagnostics
-- Purpose: statevector-to-hardware kernel-geometry survival/distortion analysis
-- Claim scope: no quantum-advantage claim and no hardware classifier-superiority claim
+| Field | Value |
+| --- | --- |
+| Domain | Real indoor-air-quality duplicate-sensor monitoring data |
+| Prediction target | `event_onset_next_1h` / `y_event_onset_next_1h` |
+| Feature set | `F_quantum_4` |
+| Feature map / kernel family | `ZZ4` |
+| Input dimension | 4 train-scaled pollutant features |
+| Frozen subset | `N = 24` fixed observation windows |
+| Frozen hardware split | 16 train windows + 8 test windows |
+| Frozen labels for KTA | `0 -> -1`, `1 -> +1`, ordered by `hardware_row_order` |
+| Frozen signed-label balance | 12 negative labels and 12 positive labels |
+| Statevector reference | Exact ZZ4 squared-fidelity kernel |
+| Pair inventory | 300 unordered upper-triangular pairs including diagonal entries |
+| Unique unordered off-diagonal pairs | 276 |
+| Diagonal entries | 24 |
+| Off-diagonal matrix entries for entrywise metrics | 552 directed entries with `i != j` |
+| Full-matrix entries for CKA and centered KTA | Complete `24 x 24` centered matrices, including measured hardware diagonal |
+| Hardware backend | `ibm_fez` |
+| Primitive | Qiskit Runtime `SamplerV2` |
+| Artifact hardware-regime labels | `H0`, `H1`, `H2` |
+| Manuscript execution-configuration labels | `M0`, `M1`, `M2` |
+| Label mapping | `M0 = H0`, `M1 = H1`, `M2 = H2` |
+| Fidelity circuits | 900 total = 300 pairs x 3 regimes |
+| Originally planned shots | 4096 per circuit |
+| Submitted shots in reported Wave 1 execution | 1024 per circuit |
+| Raw retrieved results | 300 PUB results per regime, three regimes |
+| Reconstructed hardware kernels | Three complete `24 x 24` matrices |
+| Kernel-reconstruction diagonal policy | Measured diagonal |
+| Kernel-reconstruction symmetrization policy | Average duplicate entries, then mirror |
+| PSD policy | Diagnostic only; uncorrected minimum eigenvalue retained |
+| Section 3.1 execution jobs | One backend-mode job per executed regime |
+| Section 3.1 retrieved PUB total | `3 x 300 = 900` |
+| Section 3.1 observed hardware-shot total | `3 x 300 x 1024 = 921600` |
+| Section 3.1 billed quantum seconds | `80 + 80 + 84 = 244` (`~4.07` min), read from `job_metrics.usage.quantum_seconds` |
+| Section 3.2 main distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, CKA, centered KTA, effective rank, off-diagonal variance, and PSD diagnostics |
+| Section 3.3 statistical diagnostics | Jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference |
+| Purpose | Statevector-to-hardware kernel-geometry survival and distortion analysis |
+| Claim scope | No quantum-advantage claim, no hardware classifier-superiority claim, and no IAQ forecasting-performance claim |
 
 The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the pair inventory, the reconstruction rules, or the distortion-metric definitions.
 
@@ -284,7 +292,7 @@ hardware_kernels/zz4_H2_kernel.csv
 
 ## Section 2.8: geometry and distortion metrics
 
-Section 2.8 defines the Wave 1 distortion metrics used to compare each reconstructed hardware kernel with the fixed ZZ4 statevector reference kernel; the values are reported in Section 3.2. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including CKA, effective rank, and centered KTA, are evaluated on the full symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
+Section 2.8 defines the Wave 1 distortion metrics used to compare each reconstructed hardware kernel with the fixed ZZ4 statevector reference kernel. Entrywise agreement and error summaries are evaluated on the off-diagonal set `i != j`, giving 552 directed off-diagonal entries for `N = 24`. Matrix-level diagnostics, including CKA, effective rank, and centered KTA, are evaluated on the full symmetric `24 x 24` matrices and therefore include the measured hardware diagonal.
 
 The primary distortion-metric values are stored in:
 
@@ -405,7 +413,7 @@ This artifact contains:
 - diagonal-sensitivity rows for CKA, effective rank, and centered KTA;
 - directed-versus-unique off-diagonal equivalence checks.
 
-RMSE, median and maximum absolute error, off-diagonal variance, and effective rank are reported as point estimates only; no window-level jackknife is persisted for them.
+RMSE, median and maximum absolute error, off-diagonal variance, and effective rank are reported as point estimates only; no window-level jackknife is persisted for them. No formal hardware-contrast p-values are generated, so no Holm--Bonferroni correction is applied to hardware contrasts.
 
 The source-derived static label-permutation reference artifact is:
 
@@ -452,9 +460,7 @@ observed hardware shots = 3 x 300 x 1024 = 921600
 billed quantum seconds = 80 + 80 + 84 = 244 (~4.07 min)
 ```
 
-The billed quantum-second value for each regime is the IBM-reported job resource-usage metric and is persisted in the raw-result payloads under `job_metrics.usage.quantum_seconds`. For every regime the three reported usage sub-fields agree (`usage.quantum_seconds = usage.seconds = bss.seconds`), equal to 80 for `H0`/`M0` and `H1`/`M1` and to 84 for `H2`/`M2`, for a total of 244 quantum seconds (`~4.07` minutes). These values are corroborated by the `SamplerV2` device execution-span windows recorded in the same payloads under `raw_result_summary._metadata.execution.execution_spans` (79.82, 79.88, 83.14 s, which round to the billed seconds), and by the job-lifecycle timestamps under `job_metrics.timestamps`. They are a resource-usage accounting only; they are not a physical noise model and carry no kernel-survival, classifier-performance, or quantum-advantage meaning. `scripts/verify_section3_1_support_files.sh` validates these values directly from the raw-result payloads, including the three-sub-field agreement and the 244-second total.
-
-A hand-entered `hardware_analysis/zz4_wave1_quantum_usage_seconds.csv` is not required, because the values are already repository-grounded from `job_metrics`. If such a convenience file is nonetheless added, the verification script treats it as a derived copy and requires it to agree with the `job_metrics` telemetry.
+The billed quantum-second value for each regime is the IBM-reported job resource-usage metric and is persisted in the raw-result payloads under `job_metrics.usage.quantum_seconds`. For every regime the three reported usage sub-fields agree (`usage.quantum_seconds = usage.seconds = bss.seconds`), equal to 80 for `H0`/`M0` and `H1`/`M1` and to 84 for `H2`/`M2`, for a total of 244 quantum seconds (`~4.07` minutes). These values are a resource-usage accounting only; they are not a physical noise model and carry no kernel-survival, classifier-performance, or quantum-advantage meaning.
 
 Relevant artifacts:
 
@@ -485,7 +491,7 @@ scripts/verify_section3_1_support_files.sh
 
 ## Section 3.2: main distortion metrics
 
-Section 3.2 reports the main statevector-to-hardware distortion metrics for the three Wave 1 configurations. The section uses the supported direct workflow output `hardware_analysis/zz4_wave1_distortion_metrics.csv` and reports point estimates at manuscript precision. The table below is a manuscript-precision mirror of `hardware_analysis/zz4_wave1_distortion_metrics.csv`.
+Section 3.2 reports the main statevector-to-hardware distortion metrics for the three Wave 1 configurations. The section uses the supported direct workflow output `hardware_analysis/zz4_wave1_distortion_metrics.csv` and reports point estimates at manuscript precision.
 
 | Configuration | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | KTA_c hw | Eff. rank hw | min eig | PSD rel. Fro. |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -494,10 +500,6 @@ Section 3.2 reports the main statevector-to-hardware distortion metrics for the 
 | `M2` gate twirling | `H2` | 0.944 | 0.986 | 0.0257 | 0.0427 | 0.0162 | 0.264 | 0.989 | 0.171 | 19.79 | 0.232 | `<2e-15` |
 
 `M2/H2` has the best observed point estimates for statevector-geometry survival: highest Spearman, Pearson, and CKA; lowest MAE, RMSE, median absolute error, and maximum absolute error; closest effective rank to the statevector reference; and the smallest centered-KTA uplift relative to the statevector. This is a descriptive fixed-subset result, not a formal significance claim.
-
-The `M0/H0` and `M1/H1` point estimates are close. Dynamical decoupling alone is therefore documented as a small descriptive shift relative to baseline, not as a resolved improvement at the frozen-window scale.
-
-The leave-one-window-out jackknife (Section 2.13; `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`) resolves `H2` from both `H0` and `H1` for Spearman and MAE (`|z|` approximately 4-5), more weakly for Pearson, while the `H1-H0` contrast is unresolved for Pearson/MAE (`|z|` less than or approximately 1) and at most borderline for Spearman (`z` approximately 2.0). The CKA jackknife shows the same pattern: `H2` is separated from `H1` and `H0` (`z = 3.09` and `z = 2.83`), while the `H1-H0` CKA contrast is unresolved (`z = 0.63`). RMSE, MedAE, MaxAE, off-diagonal variance, and effective rank are point estimates only (no persisted jackknife).
 
 Relevant artifacts:
 
@@ -517,6 +519,72 @@ scripts/copy_section3_2_support_files.sh
 scripts/verify_section3_2_support_files.sh
 scripts/publish_section3_2_updates.sh
 scripts/run_section3_2_copy_verify_publish.sh
+```
+
+## Section 3.3: statistical confidence and label-alignment diagnostics
+
+Section 3.3 reports the supported pre-submission statistical table and RQ4 label-alignment diagnostics. The table uses leave-one-window-out jackknife standard errors and paired descriptive contrast ratios, not 95% confidence intervals or adjusted p-values. The hardware-contrast ratio is:
+
+```text
+z_desc = delta / jackknife_se_delta
+```
+
+and is a scale-free robustness diagnostic only.
+
+### Section 3.3 support table
+
+| Metric | Domain | `M0/H0` | `M1/H1` | `M2/H2` | `M2-M0` paired contrast | `M2-M1` paired contrast |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Spearman | off-diagonal | 0.7413 ± 0.0517 | 0.7750 ± 0.0459 | 0.9437 ± 0.0124 | +0.2024 ± 0.0499 (`z=4.06`) | +0.1688 ± 0.0428 (`z=3.94`) |
+| Pearson | off-diagonal | 0.8273 ± 0.0859 | 0.8428 ± 0.0628 | 0.9862 ± 0.0045 | +0.1590 ± 0.0829 (`z=1.92`) | +0.1434 ± 0.0598 (`z=2.40`) |
+| MAE | off-diagonal | 0.04904 ± 0.00790 | 0.04729 ± 0.00829 | 0.02573 ± 0.00355 | -0.02331 ± 0.00472 (`z=-4.94`) | -0.02156 ± 0.00501 (`z=-4.30`) |
+| RMSE | off-diagonal | 0.08777 | 0.08643 | 0.04273 | not persisted | not persisted |
+| CKA | full matrix | 0.9334 ± 0.0219 | 0.9374 ± 0.0190 | 0.9887 ± 0.0026 | +0.05528 ± 0.01954 (`z=2.83`) | +0.05130 ± 0.01662 (`z=3.09`) |
+| Centered KTA | full matrix | 0.1833 ± 0.0362 | 0.1815 ± 0.0350 | 0.1710 ± 0.0360 | -0.01228 ± 0.01409 (`z=-0.87`) | -0.01044 ± 0.01344 (`z=-0.78`) |
+
+RMSE is point-estimate only because no window-level jackknife is persisted for it. No adjusted hardware-contrast p-values are reported because no formal hardware-contrast p-values are generated.
+
+### Statevector label-permutation reference
+
+The fixed-seed in-package statevector label-permutation reference uses 5000 permutations of the balanced frozen label vector.
+
+| Kernel | Source row | Alignment convention | Observed | Null mean | Null SD | Null q95 | Null q99 | p_upper_tail | p_two_sided_centered | p_two_sided_2min |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `zz4` | `CKA` | centered label alignment | 0.158511 | 0.170979 | 0.035529 | 0.235387 | 0.268105 | 0.5988 | 0.7294 | 0.8024 |
+| `zz4` | `KTA` | uncentered label alignment | 0.132909 | 0.143363 | 0.029791 | 0.197369 | 0.224803 | 0.5988 | 0.7294 | 0.8024 |
+
+In manuscript notation, the source row labeled `CKA` is the centered label alignment `KTA_c(K_SV, y) = CKA(K_SV, yy^T)`. The observed centered statevector alignment lies below the permutation-null mean and below the 95th and 99th percentile reference values. The result does not support label alignment beyond the random-label reference.
+
+### CKA/KTA tension
+
+| Configuration | Artifact regime | CKA loss | Hardware KTA_c | Statevector KTA_c | Delta_KTA | Unit-diagonal KTA sensitivity |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` baseline | `H0` | 0.066609 | 0.183308 | 0.158511 | +0.024797 | +0.002342 |
+| `M1` dynamical decoupling | `H1` | 0.062627 | 0.181463 | 0.158511 | +0.022952 | +0.002512 |
+| `M2` gate twirling | `H2` | 0.011332 | 0.171025 | 0.158511 | +0.012514 | +0.003120 |
+
+`M2/H2` has the smallest CKA loss and smallest KTA uplift. The baseline has the largest hardware KTA but also the largest CKA loss. This pattern is interpreted as class-structured hardware distortion, not as supervised improvement.
+
+Relevant artifacts:
+
+```text
+scripts/09c_wave1_distortion_uncertainty.py
+scripts/09e_label_permutation_reference.py
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.json
+hardware_analysis/qiskit_kta_cka_permutation_tests.csv
+hardware_analysis/zz4_wave1_label_permutation_reference.csv
+hardware_analysis/zz4_wave1_label_permutation_reference.json
+frozen_subset/hardware_subset_event_onset_next_1h.csv
+statevector_reference/zz4_K_all_all.npy
+hardware_kernels/zz4_H0_kernel.npy
+hardware_kernels/zz4_H1_kernel.npy
+hardware_kernels/zz4_H2_kernel.npy
+scripts/copy_section3_3_support_files.sh
+scripts/verify_section3_3_support_files.sh
+scripts/publish_section3_3_updates.sh
+scripts/run_section3_3_copy_verify_publish.sh
 ```
 
 ## Included materials
@@ -613,6 +681,10 @@ scripts/run_section3_2_copy_verify_publish.sh
 - `scripts/verify_section3_2_support_files.sh`
 - `scripts/publish_section3_2_updates.sh`
 - `scripts/run_section3_2_copy_verify_publish.sh`
+- `scripts/copy_section3_3_support_files.sh`
+- `scripts/verify_section3_3_support_files.sh`
+- `scripts/publish_section3_3_updates.sh`
+- `scripts/run_section3_3_copy_verify_publish.sh`
 - `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance
 
 ### Environment, checksums, and repository metadata
@@ -634,8 +706,6 @@ From the repository root:
 ```bash
 bash scripts/verify_section3_1_support_files.sh .
 ```
-
-This command verifies the job manifest, retrieval manifest, raw hardware-result files, and long-form kernel-entry table. It does not submit IBM Quantum jobs and does not require credentials.
 
 To copy or refresh Section 3.1 support files from the upstream source repository, use:
 
@@ -671,7 +741,35 @@ python scripts/09c_wave1_distortion_uncertainty.py --project-root "$REPRO"
 bash scripts/verify_section3_2_support_files.sh "$REPRO"
 ```
 
-The Section 3.2 copy script is idempotent and does not copy `NewSection_3.2.md` into the reproducibility repository. It copies only support inputs; the curated in-package analysis scripts are retained locally. The curated `hardware_analysis/zz4_wave1_distortion_metrics.csv` is generated by the direct workflow rather than copied from the historical source table, so unsupported correlation-test p-value columns remain blank/NaN.
+The Section 3.2 copy script is idempotent and does not copy `NewSection_3.2.md` into the reproducibility repository. It copies only support inputs; the curated in-package analysis scripts are retained locally.
+
+## Reproducing Section 3.3
+
+From the repository root:
+
+```bash
+python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
+python scripts/09c_wave1_distortion_uncertainty.py --project-root .
+python scripts/09e_label_permutation_reference.py --project-root .
+python scripts/09e_label_permutation_reference.py --project-root . --check
+bash scripts/verify_section3_3_support_files.sh .
+```
+
+To copy or refresh Section 3.3 support inputs from the upstream source repository, use:
+
+```bash
+SOURCE="/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks"
+REPRO="/Users/rostyslavsipakov/Documents/GitHub/reproducibility/iaq-quantum-kernel-wave1-reproducibility"
+cd "$REPRO"
+bash scripts/copy_section3_3_support_files.sh "$SOURCE" "$REPRO"
+python scripts/09b_analyze_wave1_distortion_direct.py --project-root "$REPRO"
+python scripts/09c_wave1_distortion_uncertainty.py --project-root "$REPRO"
+python scripts/09e_label_permutation_reference.py --project-root "$REPRO"
+python scripts/09e_label_permutation_reference.py --project-root "$REPRO" --check
+bash scripts/verify_section3_3_support_files.sh "$REPRO"
+```
+
+The Section 3.3 copy script is idempotent. It copies only support inputs and the static source-derived permutation table if absent or changed. It does not copy `NewSection_3.3.md` into the reproducibility repository. The curated in-package `09c` and `09e` scripts are retained locally.
 
 ## Numerical reproduction verification
 
@@ -685,6 +783,7 @@ python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . 
 python scripts/09e_label_permutation_reference.py --project-root . --check
 bash scripts/verify_section3_1_support_files.sh .
 bash scripts/verify_section3_2_support_files.sh .
+bash scripts/verify_section3_3_support_files.sh .
 ```
 
 The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
@@ -697,20 +796,41 @@ Before regenerating outputs, verify the curated package state with:
 shasum -a 256 -c checksums/SHA256SUMS.txt
 ```
 
-This checksum manifest verifies the static curated repository state. It is not a byte-for-byte reproduction oracle for every regenerated analysis output. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` CSV/JSON reference artifacts are byte-stable; their write timestamp is kept in an ignored provenance sidecar.
+After copying or updating repository files, regenerate checksums from the repository root with:
 
-The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, local-only transfer scripts, and the checksum file itself.
+```bash
+find . -type f \
+  ! -path './.git/*' \
+  ! -path './.idea/*' \
+  ! -path './.venv/*' \
+  ! -path './venv/*' \
+  ! -path './__pycache__/*' \
+  ! -path '*/__pycache__/*' \
+  ! -name '.DS_Store' \
+  ! -name '*_provenance.json' \
+  ! -path './checksums/SHA256SUMS.txt' \
+  -print0 \
+  | sort -z \
+  | xargs -0 shasum -a 256 \
+  > checksums/SHA256SUMS.txt
+
+shasum -a 256 -c checksums/SHA256SUMS.txt
+```
+
+The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, ignored provenance sidecars, and the checksum file itself.
 
 ## Claim limitation
 
-This package supports kernel-geometry survival, hardware-distortion analysis, statistical diagnostics, and the repository-grounded Results-section summaries only. It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
+This package supports kernel-geometry survival, hardware-distortion analysis, statistical diagnostics, and repository-grounded Results-section summaries only. It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
 
-The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, and Section 3.2 main distortion metrics are descriptive diagnostics, not classifier-performance metrics.
+The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived and regenerable statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, Section 3.2 main distortion metrics, and Section 3.3 statistical confidence diagnostics are descriptive diagnostics, not classifier-performance metrics.
 
 For Section 3.1, the billed quantum seconds are repository-grounded: the values 80, 80, and 84 quantum seconds (total 244) are read from `job_metrics.usage.quantum_seconds` in the raw-result payloads, with the agreeing sub-fields `usage.seconds` and `bss.seconds`, and are verified by `scripts/verify_section3_1_support_files.sh`. They are reported as a resource-usage accounting only and carry no kernel-survival, classifier-performance, or quantum-advantage meaning.
 
 For Section 3.2, `M2/H2` is reported only as the best observed point-estimate kernel-survival configuration among the three executed Wave 1 jobs. The package does not support wording that `M2/H2 significantly outperformed` the other configurations unless a separate inferential analysis is specified and reported.
 
+For Section 3.3, the supported confidence table reports jackknife standard errors and descriptive paired contrast ratios only. It does not report 95% confidence intervals, adjusted hardware-contrast p-values, or hardware-regime permutation p-values. The statevector label-permutation reference does not support ZZ4 label alignment beyond random labels on the frozen subset, and hardware centered-KTA inflation is interpreted as distortion rather than supervised improvement.
+
 ## License
 
-This package is released under the MIT License. No license update is required for the addition of Section 3.2 documentation or the Section 3.2 support-file verification scripts.
+This package is released under the MIT License. No license update is required for the addition of Section 3.3 documentation or the Section 3.3 support-file verification scripts.

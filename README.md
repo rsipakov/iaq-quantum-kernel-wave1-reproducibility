@@ -761,4 +761,4 @@ For Section 3.5, `M2/H2` has the smallest RMSE and residual distortion term, but
 
 ## License
 
-This package is released under the MIT License. No license update is required for the addition of Section 3.5 documentation or the Section 3.5 support-file verification script.
+This package is released under the MIT License.

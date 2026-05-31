@@ -53,11 +53,14 @@ git add \
   hardware_kernels/zz4_H1_kernel.npy \
   hardware_kernels/zz4_H2_kernel.npy \
   hardware_analysis/zz4_wave1_distortion_metrics.csv \
+  hardware_analysis/zz4_wave1_distortion_summary.json \
+  hardware_analysis/zz4_wave1_distortion_summary.md \
   hardware_analysis/zz4_wave1_distortion_uncertainty.csv \
   hardware_analysis/zz4_wave1_distortion_uncertainty.json \
   hardware_analysis/qiskit_kta_cka_permutation_tests.csv \
   hardware_analysis/zz4_wave1_label_permutation_reference.csv \
   hardware_analysis/zz4_wave1_label_permutation_reference.json \
+  scripts/09b_analyze_wave1_distortion_direct.py \
   scripts/09c_wave1_distortion_uncertainty.py \
   scripts/09e_label_permutation_reference.py \
   scripts/copy_section3_3_support_files.sh \

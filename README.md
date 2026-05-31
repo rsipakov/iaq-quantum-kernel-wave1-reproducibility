@@ -12,7 +12,7 @@ Only non-sensitive files required to support manuscript claims are included. IBM
 
 ## Reproducibility scope
 
-This repository supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, leave-one-window-out jackknife and diagonal-robustness checks, statevector label-permutation reference, shot-noise reference-scale decomposition, Section 2.13 statistical-analysis policy, Section 3.1 hardware-execution summary, Section 3.2 main distortion metrics, and Section 3.3 statistical-confidence and label-alignment diagnostics from persisted frozen artifacts.
+This repository supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, leave-one-window-out jackknife and diagonal-robustness checks, statevector label-permutation reference, shot-noise reference-scale decomposition, Section 2.13 statistical-analysis policy, Section 3.1 hardware-execution summary, Section 3.2 main distortion metrics, and Section 3.3 statistical support and label-alignment diagnostics from persisted frozen artifacts.
 
 This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end-to-end. The original numbered execution scripts are retained only as archival provenance. The supported numerical reproduction path is:
 
@@ -120,7 +120,7 @@ The historical preprocessing code has been moved to `archive_legacy_preprocessin
 | Section 3.1 observed hardware-shot total | `3 x 300 x 1024 = 921600` |
 | Section 3.1 billed quantum seconds | `80 + 80 + 84 = 244` (`~4.07` min), read from `job_metrics.usage.quantum_seconds` |
 | Section 3.2 main distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, CKA, centered KTA, effective rank, off-diagonal variance, and PSD diagnostics |
-| Section 3.3 statistical diagnostics | Jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference |
+| Section 3.3 statistical support diagnostics | Jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference |
 | Purpose | Statevector-to-hardware kernel-geometry survival and distortion analysis |
 | Claim scope | No quantum-advantage claim, no hardware classifier-superiority claim, and no IAQ forecasting-performance claim |
 
@@ -348,7 +348,7 @@ Section 2.11 combines the CKA and centered-KTA results without introducing new d
 | `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 |
 | `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 |
 
-`M2/H2` best preserves statevector geometry and has the smallest KTA uplift relative to the statevector reference, while `M0/H0` has the largest absolute hardware KTA. The KTA uplift is interpreted as class-structured kernel distortion, not as classifier-performance improvement.
+`M2/H2` best preserves statevector geometry and has the smallest KTA uplift relative to the statevector reference, while `M0/H0` has the largest absolute hardware KTA. The KTA uplift is interpreted as non-affine, label-correlated kernel distortion, not as classifier-performance improvement.
 
 ## Section 2.12: shot-noise reference-scale decomposition
 
@@ -422,6 +422,8 @@ hardware_analysis/qiskit_kta_cka_permutation_tests.csv
 ```
 
 The historical table is a static source-derived reference: it is not produced by any script in this package and no permutation seed is preserved. The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, produced by `scripts/09e_label_permutation_reference.py`.
+
+The static field `p_perm_two_sided` (0.5947) and the in-package upper-tail probability (0.5988) differ only by the Monte-Carlo permutation draw; the static value lies inside the regenerated 16-seed envelope `[0.587, 0.608]`, as confirmed by `scripts/09e_label_permutation_reference.py --check`.
 
 Relevant artifacts:
 
@@ -521,9 +523,9 @@ scripts/publish_section3_2_updates.sh
 scripts/run_section3_2_copy_verify_publish.sh
 ```
 
-## Section 3.3: statistical confidence and label-alignment diagnostics
+## Section 3.3: statistical support and label-alignment diagnostics
 
-Section 3.3 reports the supported pre-submission statistical table and RQ4 label-alignment diagnostics. The table uses leave-one-window-out jackknife standard errors and paired descriptive contrast ratios, not 95% confidence intervals or adjusted p-values. The hardware-contrast ratio is:
+Section 3.3 reports the supported pre-submission statistical support table and RQ4 label-alignment diagnostics. The table uses leave-one-window-out jackknife standard errors and paired descriptive contrast ratios, not 95% confidence intervals or adjusted p-values. The hardware-contrast ratio is:
 
 ```text
 z_desc = delta / jackknife_se_delta
@@ -533,20 +535,20 @@ and is a scale-free robustness diagnostic only.
 
 ### Section 3.3 support table
 
-| Metric | Domain | `M0/H0` | `M1/H1` | `M2/H2` | `M2-M0` paired contrast | `M2-M1` paired contrast |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| Spearman | off-diagonal | 0.7413 ± 0.0517 | 0.7750 ± 0.0459 | 0.9437 ± 0.0124 | +0.2024 ± 0.0499 (`z=4.06`) | +0.1688 ± 0.0428 (`z=3.94`) |
-| Pearson | off-diagonal | 0.8273 ± 0.0859 | 0.8428 ± 0.0628 | 0.9862 ± 0.0045 | +0.1590 ± 0.0829 (`z=1.92`) | +0.1434 ± 0.0598 (`z=2.40`) |
-| MAE | off-diagonal | 0.04904 ± 0.00790 | 0.04729 ± 0.00829 | 0.02573 ± 0.00355 | -0.02331 ± 0.00472 (`z=-4.94`) | -0.02156 ± 0.00501 (`z=-4.30`) |
-| RMSE | off-diagonal | 0.08777 | 0.08643 | 0.04273 | not persisted | not persisted |
-| CKA | full matrix | 0.9334 ± 0.0219 | 0.9374 ± 0.0190 | 0.9887 ± 0.0026 | +0.05528 ± 0.01954 (`z=2.83`) | +0.05130 ± 0.01662 (`z=3.09`) |
-| Centered KTA | full matrix | 0.1833 ± 0.0362 | 0.1815 ± 0.0350 | 0.1710 ± 0.0360 | -0.01228 ± 0.01409 (`z=-0.87`) | -0.01044 ± 0.01344 (`z=-0.78`) |
+| Metric | Domain | `M0/H0` | `M1/H1` | `M2/H2` | `M1-M0` paired contrast | `M2-M1` paired contrast | `M2-M0` paired contrast |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Spearman | off-diagonal | 0.7413 ± 0.0517 | 0.7750 ± 0.0459 | 0.9437 ± 0.0124 | +0.0337 ± 0.0171 (`z=1.96`) | +0.1688 ± 0.0428 (`z=3.94`) | +0.2024 ± 0.0499 (`z=4.06`) |
+| Pearson | off-diagonal | 0.8273 ± 0.0859 | 0.8428 ± 0.0628 | 0.9862 ± 0.0045 | +0.0155 ± 0.0263 (`z=0.59`) | +0.1434 ± 0.0598 (`z=2.40`) | +0.1590 ± 0.0829 (`z=1.92`) |
+| MAE | off-diagonal | 0.04904 ± 0.00790 | 0.04729 ± 0.00829 | 0.02573 ± 0.00355 | -0.00175 ± 0.00175 (`z=-1.00`) | -0.02156 ± 0.00501 (`z=-4.30`) | -0.02331 ± 0.00472 (`z=-4.94`) |
+| RMSE | off-diagonal | 0.08777 | 0.08643 | 0.04273 | not persisted | not persisted | not persisted |
+| CKA | full matrix | 0.9334 ± 0.0219 | 0.9374 ± 0.0190 | 0.9887 ± 0.0026 | +0.00398 ± 0.00635 (`z=0.63`) | +0.05130 ± 0.01662 (`z=3.09`) | +0.05528 ± 0.01954 (`z=2.83`) |
+| Centered KTA | full matrix | 0.1833 ± 0.0362 | 0.1815 ± 0.0350 | 0.1710 ± 0.0360 | -0.00185 ± 0.00562 (`z=-0.33`) | -0.01044 ± 0.01344 (`z=-0.78`) | -0.01228 ± 0.01409 (`z=-0.87`) |
 
 RMSE is point-estimate only because no window-level jackknife is persisted for it. No adjusted hardware-contrast p-values are reported because no formal hardware-contrast p-values are generated.
 
 ### Statevector label-permutation reference
 
-The fixed-seed in-package statevector label-permutation reference uses 5000 permutations of the balanced frozen label vector.
+The fixed-seed (`seed = 0`) in-package statevector label-permutation reference uses 5000 permutations of the balanced frozen label vector. The result is seed-stable: across a 16-seed Monte-Carlo envelope the upper-tail probability spans `[0.587, 0.608]` and the centered two-sided probability spans `[0.701, 0.744]`, consistent with the binomial Monte-Carlo scale at `B = 5000`.
 
 | Kernel | Source row | Alignment convention | Observed | Null mean | Null SD | Null q95 | Null q99 | p_upper_tail | p_two_sided_centered | p_two_sided_2min |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -563,7 +565,7 @@ In manuscript notation, the source row labeled `CKA` is the centered label align
 | `M1` dynamical decoupling | `H1` | 0.062627 | 0.181463 | 0.158511 | +0.022952 | +0.002512 |
 | `M2` gate twirling | `H2` | 0.011332 | 0.171025 | 0.158511 | +0.012514 | +0.003120 |
 
-`M2/H2` has the smallest CKA loss and smallest KTA uplift. The baseline has the largest hardware KTA but also the largest CKA loss. This pattern is interpreted as class-structured hardware distortion, not as supervised improvement.
+`M2/H2` has the smallest CKA loss and smallest KTA uplift. The baseline has the largest hardware KTA but also the largest CKA loss. This pattern is interpreted as non-affine, label-correlated hardware distortion, not as supervised improvement.
 
 Relevant artifacts:
 
@@ -823,13 +825,13 @@ The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virt
 
 This package supports kernel-geometry survival, hardware-distortion analysis, statistical diagnostics, and repository-grounded Results-section summaries only. It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
 
-The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived and regenerable statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, Section 3.2 main distortion metrics, and Section 3.3 statistical confidence diagnostics are descriptive diagnostics, not classifier-performance metrics.
+The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived and regenerable statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, Section 3.2 main distortion metrics, and Section 3.3 statistical support diagnostics are descriptive diagnostics, not classifier-performance metrics.
 
 For Section 3.1, the billed quantum seconds are repository-grounded: the values 80, 80, and 84 quantum seconds (total 244) are read from `job_metrics.usage.quantum_seconds` in the raw-result payloads, with the agreeing sub-fields `usage.seconds` and `bss.seconds`, and are verified by `scripts/verify_section3_1_support_files.sh`. They are reported as a resource-usage accounting only and carry no kernel-survival, classifier-performance, or quantum-advantage meaning.
 
 For Section 3.2, `M2/H2` is reported only as the best observed point-estimate kernel-survival configuration among the three executed Wave 1 jobs. The package does not support wording that `M2/H2 significantly outperformed` the other configurations unless a separate inferential analysis is specified and reported.
 
-For Section 3.3, the supported confidence table reports jackknife standard errors and descriptive paired contrast ratios only. It does not report 95% confidence intervals, adjusted hardware-contrast p-values, or hardware-regime permutation p-values. The statevector label-permutation reference does not support ZZ4 label alignment beyond random labels on the frozen subset, and hardware centered-KTA inflation is interpreted as distortion rather than supervised improvement.
+For Section 3.3, the supported statistical support table reports jackknife standard errors and descriptive paired contrast ratios only. It does not report 95% confidence intervals, adjusted hardware-contrast p-values, or hardware-regime permutation p-values. The statevector label-permutation reference does not support ZZ4 label alignment beyond random labels on the frozen subset, and hardware centered-KTA inflation is interpreted as distortion rather than supervised improvement.
 
 ## License
 

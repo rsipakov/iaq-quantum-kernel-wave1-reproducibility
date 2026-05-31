@@ -36,7 +36,7 @@ This repository supports artifact-level reproduction of the manuscript component
 2. Section 3.2 main distortion metrics;
 3. Section 3.3 window-level statistical support and label-alignment diagnostics;
 4. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension;
-5. Section 3.5 new diagnostic result: dimensionless shot-noise reference-scale decomposition.
+5. Section 3.5 dimensionless finite-shot scale separation of the off-diagonal RMSE.
 
 ### Supported analytical modules
 
@@ -70,7 +70,7 @@ Expected high-level checks:
 - Section 3.2 verification reports the main distortion metrics, the `M2/H2` best observed point-estimate ordering for statevector geometry survival, and roundoff-scale PSD diagnostics;
 - Section 3.3 verification reports the window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement;
 - Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim;
-- Section 3.5 verification confirms the dimensionless RMSE-to-shot-reference ratios, residual variance fractions, matrix-aware scale ordering, and diagnostic-only decomposition policy.
+- Section 3.5 verification confirms the dimensionless RMSE-to-shot-reference ratios, quadrature residual fractions, matrix-aware scale ordering, and diagnostic-only decomposition policy.
 
 These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
 
@@ -115,7 +115,7 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 | Section 3.2 main distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, CKA, centered KTA, effective rank, off-diagonal variance, and PSD diagnostics |
 | Section 3.3 statistical support diagnostics | Jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference |
 | Section 3.4 central synthesis | KTA/CKA tension plus finite-shot reference-scale support for residual hardware distortion |
-| Section 3.5 new diagnostic result | Dimensionless finite-shot scale separation: RMSE-to-reference ratios and residual variance fractions |
+| Section 3.5 dimensionless scale separation | Off-diagonal RMSE in finite-shot reference units: RMSE-to-reference ratios and quadrature residual fractions |
 | Purpose | Statevector-to-hardware kernel-geometry survival and distortion analysis |
 | Claim scope | No quantum-advantage claim, no hardware classifier-superiority claim, and no IAQ forecasting-performance claim |
 
@@ -552,11 +552,11 @@ hardware_kernels/zz4_H2_kernel.npy
 scripts/verify_section3_4_support_files.sh
 ```
 
-## Section 3.5: New diagnostic result — shot-noise reference-scale decomposition
+## Section 3.5: Dimensionless finite-shot scale separation of the off-diagonal RMSE
 
-Section 3.5 isolates the finite-shot diagnostic as a dimensionless scale-separation result, avoiding duplication of the absolute decomposition already reported in Section 3.4. It reports RMSE in units of the conservative global and matrix-aware finite-shot reference scales, and reports the residual variance fraction left after quadrature subtraction of each reference.
+Section 3.5 isolates the finite-shot diagnostic as a dimensionless scale-separation result, avoiding duplication of the absolute decomposition already reported in Section 3.4. It reports RMSE in units of the conservative global and matrix-aware finite-shot reference scales, and reports the quadrature residual fraction left after subtraction of each reference in quadrature.
 
-| Configuration | Artifact regime | RMSE | sigma_shot_matrix | RMSE / sigma_ref_global | residual variance after global reference | RMSE / sigma_shot_matrix | residual variance after matrix reference |
+| Configuration | Artifact regime | RMSE | sigma_shot_matrix | RMSE / sigma_ref_global | quadrature residual fraction (global) | RMSE / sigma_shot_matrix | quadrature residual fraction (matrix) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `M0` baseline | `H0` | 0.087770 | 0.008266 | 3.97 | 93.66% | 10.62 | 99.11% |
 | `M1` dynamical decoupling | `H1` | 0.086428 | 0.008243 | 3.91 | 93.46% | 10.48 | 99.09% |
@@ -757,7 +757,7 @@ The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases f
 
 CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived and regenerable statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, Section 3.2 main distortion metrics, Section 3.3 statistical support diagnostics, Section 3.4 KTA/CKA-tension diagnostics, and Section 3.5 scale-ratio diagnostics are descriptive diagnostics, not classifier-performance metrics.
 
-For Section 3.5, `M2/H2` has the smallest RMSE and residual distortion term, but the residual remains the dominant variance component under both shot-noise references. This is a diagnostic scale accounting, not a physical noise-model fit and not a classifier-performance result.
+For Section 3.5, `M2/H2` has the smallest RMSE and residual distortion term, but the residual remains the dominant quadrature component under both shot-noise references. This is a diagnostic scale accounting, not a physical noise-model fit and not a classifier-performance result.
 
 ## License
 

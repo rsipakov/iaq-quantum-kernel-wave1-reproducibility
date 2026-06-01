@@ -559,4 +559,4 @@ The leave-one-window-out CKA and centered-KTA jackknife contrasts are descriptiv
 
 ## License
 
-Use the repository's existing license file. Section 3.6 adds analysis artifacts and documentation only and does not require a license change.
+Use the repository's existing license file.

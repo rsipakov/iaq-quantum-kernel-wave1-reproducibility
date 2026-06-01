@@ -1,8 +1,8 @@
 # IAQ Quantum Kernel Wave 1 Reproducibility Package
 
-This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.5.
+This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.6.
 
-The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival, hardware-distortion, statistical-diagnostic, label-alignment, shot-noise reference-scale, CKA/KTA-tension, and Section 3.5 dimensionless shot-noise scale-separation analyses. It is derived from the working repository:
+The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival, hardware-distortion, statistical-diagnostic, label-alignment, shot-noise reference-scale, CKA/KTA-tension, dimensionless shot-noise scale-separation, and optional 4096-shot finite-shot projection analyses. It is derived from the working repository:
 
 ```text
 rsipakov/QuantumKernel
@@ -36,13 +36,14 @@ This repository supports artifact-level reproduction of the manuscript component
 2. Section 3.2 main distortion metrics;
 3. Section 3.3 window-level statistical support and label-alignment diagnostics;
 4. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension;
-5. Section 3.5 dimensionless finite-shot scale separation of the off-diagonal RMSE.
+5. Section 3.5 dimensionless finite-shot scale separation of the off-diagonal RMSE;
+6. Section 3.6 optional projection: 4096-shot rerun.
 
 ### Supported analytical modules
 
-The package supports the following reproducible analytical modules: kernel reconstruction audit; statevector-to-hardware geometry-distortion metrics; CKA and centered-KTA diagnostics; leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks; statevector label-permutation reference; and finite-shot reference-scale decomposition.
+The package supports the following reproducible analytical modules: kernel reconstruction audit; statevector-to-hardware geometry-distortion metrics; CKA and centered-KTA diagnostics; leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks; statevector label-permutation reference; finite-shot reference-scale decomposition; and optional 4096-shot finite-shot projection.
 
-This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance.
+This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance. Section 3.6 is also not a new hardware execution: it rescales finite-shot reference terms from the realized 1024-shot run to the originally planned 4096-shot budget while keeping the observed RMSE fixed.
 
 The supported numerical reproduction path is:
 
@@ -52,11 +53,14 @@ python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
 python scripts/09c_wave1_distortion_uncertainty.py --project-root .
 python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
 python scripts/09e_label_permutation_reference.py --project-root . --check
+python scripts/09j_optional_4096_shot_projection.py --project-root .
+python scripts/09j_optional_4096_shot_projection.py --project-root . --check
 bash scripts/verify_section3_1_support_files.sh .
 bash scripts/verify_section3_2_support_files.sh .
 bash scripts/verify_section3_3_support_files.sh .
 bash scripts/verify_section3_4_support_files.sh .
 bash scripts/verify_section3_5_support_files.sh .
+bash scripts/verify_section3_6_support_files.sh .
 ```
 
 Expected high-level checks:
@@ -70,9 +74,10 @@ Expected high-level checks:
 - Section 3.2 verification reports the main distortion metrics, the `M2/H2` best observed point-estimate ordering for statevector geometry survival, and roundoff-scale PSD diagnostics;
 - Section 3.3 verification reports the window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement;
 - Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim;
-- Section 3.5 verification confirms the dimensionless RMSE-to-shot-reference ratios, quadrature residual fractions, matrix-aware scale ordering, and diagnostic-only decomposition policy.
+- Section 3.5 verification confirms the dimensionless RMSE-to-shot-reference ratios, quadrature residual fractions, matrix-aware scale ordering, and diagnostic-only decomposition policy;
+- Section 3.6 verification confirms the planned/executed shot-count distinction, the 4096-shot finite-shot reference projection, the fixed-RMSE projection policy, and the residual-dominance result under the projected precision budget.
 
-These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
+These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar. The Section 3.6 projection artifacts are deterministic functions of the persisted Section 3.4 decomposition and the scope/runtime/job-manifest files.
 
 The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_analysis/zz4_wave1_distortion_metrics.csv` are retained for schema compatibility and intentionally left blank/NaN in the supported minimal workflow. They are not used for any manuscript claim because kernel entries are dependent observations.
 
@@ -103,6 +108,7 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 | Fidelity circuits | 900 total = 300 pairs x 3 regimes |
 | Originally planned shots | 4096 per circuit |
 | Submitted shots in reported Wave 1 execution | 1024 per circuit |
+| Section 3.6 projected shots | 4096 per circuit, projection only |
 | Raw retrieved results | 300 PUB results per regime, three regimes |
 | Reconstructed hardware kernels | Three complete `24 x 24` matrices |
 | Kernel-reconstruction diagonal policy | Measured diagonal |
@@ -116,10 +122,11 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 | Section 3.3 statistical support diagnostics | Jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference |
 | Section 3.4 central synthesis | KTA/CKA tension plus finite-shot reference-scale support for residual hardware distortion |
 | Section 3.5 dimensionless scale separation | Off-diagonal RMSE in finite-shot reference units: RMSE-to-reference ratios and quadrature residual fractions |
+| Section 3.6 optional 4096-shot projection | Finite-shot reference scales rescaled to 4096 shots, with RMSE fixed to realized 1024-shot values |
 | Purpose | Statevector-to-hardware kernel-geometry survival and distortion analysis |
 | Claim scope | No quantum-advantage claim, no hardware classifier-superiority claim, and no IAQ forecasting-performance claim |
 
-The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the pair inventory, the reconstruction rules, or the distortion-metric definitions.
+The originally planned Wave 1 scope recorded 4096 shots per circuit, but the reported artifacts in this curated package correspond to the budget-safe execution using 1024 submitted shots per circuit. This affects sampling precision, not the definition of the ZZ4 feature map, the statevector reference kernel, the frozen subset, the pair inventory, the reconstruction rules, or the distortion-metric definitions. Section 3.6 uses the planned 4096-shot count only as an optional finite-shot reference projection.
 
 ## Section 2.1: dataset and prediction context
 
@@ -242,27 +249,6 @@ hardware_results/zz4_H1_raw_results.json
 hardware_results/zz4_H2_raw_results.json
 ```
 
-### Submission-log provenance note
-
-Wave 1 was submitted as budget-safe partial hardware runs. The original
-submission script wrote the human-readable submission log to a single fixed
-path; therefore the final H2 partial submission overwrote the earlier H0/H1
-human-readable logs. The retained original text log is preserved as
-`logs/zz4_wave1_submission_log_H2_final_partial_run.md`.
-
-The complete H0-H2 submission provenance is provided by the machine-readable
-combined manifest:
-
-- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json`
-- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.csv`
-
-For readability, a derived combined text log is also provided:
-
-- `logs/zz4_wave1_submission_log_budget_safe_combined.md`
-
-The job manifest, not the H2-only text log, is the source of truth for H0-H2
-submission provenance.
-
 ## Section 2.6: execution configurations
 
 The persisted artifacts use hardware-regime labels `H0`, `H1`, and `H2`. The manuscript uses `M0`, `M1`, and `M2` to avoid confusion between the artifact label `H0` and conventional null-hypothesis notation.
@@ -323,7 +309,7 @@ hardware_analysis/zz4_wave1_distortion_uncertainty.csv
 hardware_analysis/zz4_wave1_distortion_uncertainty.json
 ```
 
-## Section 2.9: CKA — centered kernel alignment
+## Section 2.9: CKA -- centered kernel alignment
 
 CKA is evaluated between each hardware kernel and the statevector reference using full centered matrices.
 
@@ -335,7 +321,7 @@ CKA is evaluated between each hardware kernel and the statevector reference usin
 
 Robustness diagnostics are stored in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`.
 
-## Section 2.10: KTA — kernel-target alignment
+## Section 2.10: KTA -- kernel-target alignment
 
 Centered KTA maps frozen binary labels as `0 -> -1` and `1 -> +1`, forms `Y = y y^T`, and evaluates the centered alignment between `K` and `Y`.
 
@@ -381,7 +367,7 @@ The global quadrature decomposition is:
 The matrix-aware plug-in reference is:
 
 ```text
-sigma_shot_matrix = sqrt(mean_{(i,j) in Omega} p_ij * (1 - p_ij) / S)
+sigma_shot_matrix = sqrt(mean_{Omega} p_ij * (1 - p_ij) / S)
 ```
 
 | Manuscript label | Artifact regime | sigma_shot_matrix | residual_matrix | ShotShare_matrix |
@@ -481,284 +467,96 @@ Section 3.3 reports the supported pre-submission statistical support table and R
 | CKA | full matrix | 0.9334 ± 0.0219 | 0.9374 ± 0.0190 | 0.9887 ± 0.0026 | +0.00398 ± 0.00635 (`z=0.63`) | +0.05130 ± 0.01662 (`z=3.09`) | +0.05528 ± 0.01954 (`z=2.83`) |
 | Centered KTA | full matrix | 0.1833 ± 0.0362 | 0.1815 ± 0.0350 | 0.1710 ± 0.0360 | -0.00185 ± 0.00562 (`z=-0.33`) | -0.01044 ± 0.01344 (`z=-0.78`) | -0.01228 ± 0.01409 (`z=-0.87`) |
 
-RMSE is point-estimate only because no window-level jackknife is persisted for it. No adjusted hardware-contrast p-values are reported because no formal hardware-contrast p-values are generated.
+Relevant artifacts include `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`, `hardware_analysis/zz4_wave1_distortion_uncertainty.json`, `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, `hardware_analysis/zz4_wave1_label_permutation_reference.json`, and `scripts/verify_section3_3_support_files.sh`.
 
-### Statevector label-permutation reference
+## Section 3.4: central synthesis
 
-The fixed-seed (`seed = 0`) in-package statevector label-permutation reference uses 5000 permutations of the balanced frozen label vector.
+Section 3.4 combines the CKA/KTA tension with the finite-shot reference-scale decomposition. The central numerical decomposition is:
 
-| Kernel | Source row | Alignment convention | Observed | Null mean | Null SD | Null q95 | Null q99 | p_upper_tail | p_two_sided_centered | p_two_sided_2min |
-| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `zz4` | `CKA` | centered label alignment | 0.158511 | 0.170979 | 0.035529 | 0.235387 | 0.268105 | 0.5988 | 0.7294 | 0.8024 |
-| `zz4` | `KTA` | uncentered label alignment | 0.132909 | 0.143363 | 0.029791 | 0.197369 | 0.224803 | 0.5988 | 0.7294 | 0.8024 |
-
-The observed centered statevector alignment lies below the permutation-null mean and below the 95th and 99th percentile reference values. The result does not support label alignment beyond the random-label reference.
-
-### Section 3.3 CKA/KTA tension
-
-| Configuration | Artifact regime | CKA loss | Hardware KTA_c | Statevector KTA_c | Delta_KTA | Unit-diagonal KTA sensitivity |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.066609 | 0.183308 | 0.158511 | +0.024797 | +0.002342 |
-| `M1` dynamical decoupling | `H1` | 0.062627 | 0.181463 | 0.158511 | +0.022952 | +0.002512 |
-| `M2` gate twirling | `H2` | 0.011332 | 0.171025 | 0.158511 | +0.012514 | +0.003120 |
-
-`M2/H2` has the smallest CKA loss and smallest KTA uplift. The baseline has the largest hardware KTA but also the largest CKA loss. This pattern is interpreted as non-affine, label-correlated hardware distortion, not as supervised improvement.
-
-## Section 3.4: Central synthesis — the CKA/KTA tension and the finite-shot reference scale
-
-Section 3.4 gives the central synthesis of RQ3 and RQ4. It uses the point estimates and statistical support established in Sections 3.2 and 3.3, adds the finite-shot reference-scale decomposition, and states the interpretation boundary.
-
-### Shot-noise reference-scale support
-
-| Configuration | Artifact regime | RMSE | sigma_ref_global | residual_global | ShotShare_global | sigma_shot_matrix | residual_matrix | ShotShare_matrix |
+| Configuration | Artifact regime | RMSE | sigma_ref_global | residual_global | Global shot share | sigma_shot_matrix | residual_matrix | Matrix-aware shot share |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `M0` baseline | `H0` | 0.087770 | 0.022097 | 0.084943 | 6.34% | 0.008266 | 0.087380 | 0.89% |
 | `M1` dynamical decoupling | `H1` | 0.086428 | 0.022097 | 0.083555 | 6.54% | 0.008243 | 0.086034 | 0.91% |
 | `M2` gate twirling | `H2` | 0.042727 | 0.022097 | 0.036570 | 26.75% | 0.008528 | 0.041868 | 3.98% |
 
-All three observed RMSE values exceed both finite-shot reference scales. Under the matrix-aware plug-in calculation, finite-shot variance accounts for less than 1% of squared off-diagonal RMSE in `H0` and `H1`, and 3.98% in `H2`. The residual discrepancy is therefore dominated by hardware distortion rather than by finite-shot sampling alone.
+Residual hardware distortion dominates the off-diagonal discrepancy rather than finite-shot sampling alone. The KTA/CKA tension is read as a distortion diagnostic, not as supervised improvement.
 
-### Cross-RQ synthesis bridge
+Relevant artifacts include `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`, `.json`, `.md`, `hardware_analysis/zz4_wave1_distortion_metrics.csv`, `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`, the statevector reference, hardware kernels, and `scripts/verify_section3_4_support_files.sh`.
 
-| Configuration | Artifact regime | L_CKA | Delta_KTA | RMSE | Matrix-aware shot share |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.066609 | +0.024797 | 0.087770 | 0.89% |
-| `M1` dynamical decoupling | `H1` | 0.062627 | +0.022952 | 0.086428 | 0.91% |
-| `M2` gate twirling | `H2` | 0.011332 | +0.012514 | 0.042727 | 3.98% |
+## Section 3.5: dimensionless finite-shot scale separation
 
-`M2/H2` best preserved the intended statevector geometry and had the smallest centered-KTA uplift. The configuration with the largest observed hardware centered KTA is therefore not the configuration with the smallest geometry loss, and the matrix-aware shot shares show that finite-shot variance is too small to explain the residual RMSE discrepancy by itself.
+Section 3.5 re-expresses the Section 3.4 decomposition in finite-shot reference units.
 
-Relevant artifacts:
-
-```text
-scripts/09b_analyze_wave1_distortion_direct.py
-scripts/09c_wave1_distortion_uncertainty.py
-scripts/09d_shot_noise_reference_scale_decomposition.py
-scripts/09e_label_permutation_reference.py
-hardware_analysis/zz4_wave1_distortion_metrics.csv
-hardware_analysis/zz4_wave1_distortion_uncertainty.csv
-hardware_analysis/zz4_wave1_distortion_uncertainty.json
-hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv
-hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json
-hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md
-hardware_analysis/qiskit_kta_cka_permutation_tests.csv
-hardware_analysis/zz4_wave1_label_permutation_reference.csv
-hardware_analysis/zz4_wave1_label_permutation_reference.json
-frozen_subset/hardware_subset_event_onset_next_1h.csv
-statevector_reference/zz4_K_all_all.npy
-hardware_kernels/zz4_H0_kernel.npy
-hardware_kernels/zz4_H1_kernel.npy
-hardware_kernels/zz4_H2_kernel.npy
-scripts/verify_section3_4_support_files.sh
-```
-
-## Section 3.5: Dimensionless finite-shot scale separation of the off-diagonal RMSE
-
-Section 3.5 isolates the finite-shot diagnostic as a dimensionless scale-separation result, avoiding duplication of the absolute decomposition already reported in Section 3.4. It reports RMSE in units of the conservative global and matrix-aware finite-shot reference scales, and reports the quadrature residual fraction left after subtraction of each reference in quadrature.
-
-| Configuration | Artifact regime | RMSE | sigma_shot_matrix | RMSE / sigma_ref_global | quadrature residual fraction (global) | RMSE / sigma_shot_matrix | quadrature residual fraction (matrix) |
+| Configuration | Artifact regime | RMSE | sigma_shot_matrix | R_global | F_residual_global | R_matrix | F_residual_matrix |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `M0` baseline | `H0` | 0.087770 | 0.008266 | 3.97 | 93.66% | 10.62 | 99.11% |
 | `M1` dynamical decoupling | `H1` | 0.086428 | 0.008243 | 3.91 | 93.46% | 10.48 | 99.09% |
 | `M2` gate twirling | `H2` | 0.042727 | 0.008528 | 1.93 | 73.25% | 5.01 | 96.02% |
 
-Section 3.5 support is checked by:
+Relevant artifacts include `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`, `.json`, `.md`, `scripts/09d_shot_noise_reference_scale_decomposition.py`, and `scripts/verify_section3_5_support_files.sh`.
 
-```bash
-bash scripts/verify_section3_5_support_files.sh .
+## Section 3.6: optional projection: 4096-shot rerun
+
+Section 3.6 projects only the finite-shot reference scales from the executed 1024-shot analysis to the originally planned 4096-shot budget. It keeps the realized off-diagonal RMSE fixed and does not simulate a new hardware kernel.
+
+Projection rules:
+
+```text
+sigma_ref_global(4096) = 1 / sqrt(2 * 4096)
+sigma_shot_matrix_r(4096) = sigma_shot_matrix_r(1024) * sqrt(1024 / 4096)
 ```
 
-This check recomputes the decomposition with `scripts/09d_shot_noise_reference_scale_decomposition.py --check`, validates the persisted rows, verifies the scale-ratio and residual-variance values used in the manuscript section, and confirms the diagnostic-only decomposition policy.
+| Configuration | Artifact regime | Fixed RMSE | sigma_ref_global(4096) | Global shot share | Global residual fraction | sigma_shot_matrix(4096) | Matrix shot share | Matrix residual fraction | R_matrix(4096) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` baseline | `H0` | 0.087770 | 0.011049 | 1.58% | 98.42% | 0.004133 | 0.22% | 99.78% | 21.24 |
+| `M1` dynamical decoupling | `H1` | 0.086428 | 0.011049 | 1.63% | 98.37% | 0.004122 | 0.23% | 99.77% | 20.97 |
+| `M2` gate twirling | `H2` | 0.042727 | 0.011049 | 6.69% | 93.31% | 0.004264 | 1.00% | 99.00% | 10.02 |
 
-The manuscript draft file `NewSection_3.5.md` is not an artifact to copy into this repository.
+The projected 4096-shot calculation supports the same residual-dominance interpretation as the executed 1024-shot analysis. It is a deterministic precision-budget projection, not a new hardware execution, not a physical noise-model decomposition, and not a classifier-performance result.
 
-## Included materials
+Relevant artifacts:
 
-### Dataset and preprocessing
-
-- `config/config.py`
-- `archive_legacy_preprocessing/preprocessing/data.py`
-- `archive_legacy_preprocessing/preprocessing/feature_maps.py`
-- `metadata/qiskit_stage_v5_scaling_report.csv`
-
-### Frozen subset and pair/circuit inventories
-
-- `frozen_subset/hardware_subset_event_onset_next_1h.csv`
-- `metadata/zz_only_pilot_operational_plan.json`
-- `metadata/zz_only_step8_execution_manifest.json`
-- `metadata/zz_only_step8_pair_inventory.csv`
-- `metadata/zz_only_step8_circuit_inventory.csv`
-- `metadata/v9_audit_freeze_manifest.json`
-- `metadata/zz4_subset_seed_stability_summary.json`
-- `circuits/zz4_wave1_circuit_index.csv`
-- `circuits/zz4_wave1_circuits.qpy`
-
-### Feature-map and statevector reference
-
-- `config/wave1_scope.json`
-- `metadata/zz4_wave1_feature_map_spec.json`
-- `metadata/statevector_reference_metadata.json`
-- `statevector_reference/zz4_K_all_all.npy`
-
-### IBM hardware protocol and execution metadata
-
-- `metadata/zz4_wave1_runtime_options.json`
-- `metadata/zz4_wave1_runtime_options_sha256.txt`
-- `metadata/zz_only_step9_live_backend_metadata.json`
-- `metadata/zz4_wave1_circuit_build_manifest.json`
-- `metadata/zz4_wave1_preflight_report.json`
-- `hardware_compile/zz4_step9_backend_compile_confirmation_ibm_fez.json`
-- `hardware_compile/zz4_step9_backend_compile_confirmation_ibm_fez.csv`
-- `job_metadata/zz4_wave1_job_manifest.json`
-- `job_metadata/zz4_wave1_job_manifest.csv`
-- `job_metadata/zz4_wave1_job_manifest_H0_1024.json`
-- `job_metadata/zz4_wave1_job_manifest_H0_1024.csv`
-- `job_metadata/zz4_wave1_job_manifest_H1_1024.json`
-- `job_metadata/zz4_wave1_job_manifest_H1_1024.csv`
-- `job_metadata/zz4_wave1_job_manifest_H2_1024.json`
-- `job_metadata/zz4_wave1_job_manifest_H2_1024.csv`
-- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.json`
-- `job_metadata/zz4_wave1_job_manifest_budget_safe_combined.csv`
-- `job_metadata/zz4_wave1_retrieval_manifest.json`
-- `logs/zz4_wave1_submission_log_budget_safe_combined.md`
-- `logs/zz4_wave1_submission_log_H2_final_partial_run.md`
-- `logs/zz4_wave1_retrieval_log.md`
-
-### Hardware results and reconstructed kernels
-
-- `hardware_results/zz4_H0_raw_results.json`
-- `hardware_results/zz4_H1_raw_results.json`
-- `hardware_results/zz4_H2_raw_results.json`
-- `metadata/zz4_wave1_kernel_manifest.json`
-- `metadata/zz4_wave1_kernel_reconstruction_audit.json`
-- `hardware_kernels/zz4_H0_kernel.npy`
-- `hardware_kernels/zz4_H1_kernel.npy`
-- `hardware_kernels/zz4_H2_kernel.npy`
-- `hardware_kernels/zz4_H0_kernel.csv`
-- `hardware_kernels/zz4_H1_kernel.csv`
-- `hardware_kernels/zz4_H2_kernel.csv`
-- `hardware_kernels/zz4_wave1_kernel_entries_long.csv`
-- `hardware_kernels/zz4_wave1_kernel_reconstruction_audit.csv`
-
-### Hardware analysis and statistical artifacts
-
-- `hardware_analysis/zz4_wave1_distortion_metrics.csv`
-- `hardware_analysis/zz4_wave1_distortion_summary.json`
-- `hardware_analysis/zz4_wave1_distortion_summary.md`
-- `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`
-- `hardware_analysis/zz4_wave1_distortion_uncertainty.json`
-- `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`
-- `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json`
-- `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md`
-- `hardware_analysis/qiskit_kta_cka_permutation_tests.csv`
-- `hardware_analysis/zz4_wave1_label_permutation_reference.csv`
-- `hardware_analysis/zz4_wave1_label_permutation_reference.json`
-
-### Supported reproduction and Results-section helper scripts
-
-- `scripts/08b_audit_kernel_reconstruction.py`
-- `scripts/09b_analyze_wave1_distortion_direct.py`
-- `scripts/09c_wave1_distortion_uncertainty.py`
-- `scripts/09d_shot_noise_reference_scale_decomposition.py`
-- `scripts/09e_label_permutation_reference.py`
-- `scripts/verify_privacy_cleanup.sh`
-- `scripts/verify_section3_1_support_files.sh`
-- `scripts/verify_section3_2_support_files.sh`
-- `scripts/verify_section3_3_support_files.sh`
-- `scripts/verify_section3_4_support_files.sh`
-- `scripts/verify_section3_5_support_files.sh`
-- `scripts/common.py` — legacy shared utility module retained for archival/source-context provenance
-
-### Environment, checksums, and repository metadata
-
-- `environment/python_version.txt`
-- `environment/pip_freeze.txt`
-- `requirements.txt`
-- `checksums/SHA256SUMS.txt`
-- `README.md`
-- `MANIFEST.md`
-- `CITATION.cff`
-- `LICENSE`
-- `.gitignore`
-
-## Reproducing Section 3.5
-
-From the repository root:
-
-```bash
-python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
-bash scripts/verify_section3_5_support_files.sh .
+```text
+scripts/09j_optional_4096_shot_projection.py
+scripts/verify_section3_6_support_files.sh
+hardware_analysis/zz4_wave1_4096_shot_projection.csv
+hardware_analysis/zz4_wave1_4096_shot_projection.json
+hardware_analysis/zz4_wave1_4096_shot_projection.md
+hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv
+config/wave1_scope.json
+metadata/zz4_wave1_runtime_options.json
+metadata/zz_only_step8_execution_manifest.json
+job_metadata/zz4_wave1_job_manifest.json
 ```
 
-## Numerical reproduction verification
+## Checksums
 
-Run:
+The reproducibility package includes:
 
-```bash
-python scripts/08b_audit_kernel_reconstruction.py --project-root .
-python scripts/09b_analyze_wave1_distortion_direct.py --project-root .
-python scripts/09c_wave1_distortion_uncertainty.py --project-root .
-python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . --check
-python scripts/09e_label_permutation_reference.py --project-root . --check
-bash scripts/verify_section3_1_support_files.sh .
-bash scripts/verify_section3_2_support_files.sh .
-bash scripts/verify_section3_3_support_files.sh .
-bash scripts/verify_section3_4_support_files.sh .
-bash scripts/verify_section3_5_support_files.sh .
+```text
+checksums/SHA256SUMS.txt
 ```
 
-The expected result is successful execution and preservation of the reported scientific values within numerical tolerance. SHA-256 hashes verify the static curated package state, not byte-for-byte identity of regenerated timestamped/numerical outputs.
-
-## Integrity verification
-
-Before regenerating outputs, verify the curated package state with:
+After adding or regenerating Section 3.6 artifacts, refresh checksums from the repository root:
 
 ```bash
-shasum -a 256 -c checksums/SHA256SUMS.txt
+mkdir -p checksums
+find . -type f \
+  -not -path './.git/*' \
+  -not -path './checksums/SHA256SUMS.txt' \
+  -print | LC_ALL=C sort | xargs shasum -a 256 > checksums/SHA256SUMS.txt
 ```
 
-After copying or updating repository files, regenerate checksums from the repository root with:
+On Linux, `sha256sum` may be used instead of `shasum -a 256`.
 
-```bash
-find . \
-  -type f \
-  ! -path './.git/*' \
-  ! -path './.idea/*' \
-  ! -path './.venv/*' \
-  ! -path './venv/*' \
-  ! -path './__pycache__/*' \
-  ! -path '*/__pycache__/*' \
-  ! -name '.DS_Store' \
-  ! -name '*_provenance.json' \
-  ! -name 'NewSection_3.4.md' \
-  ! -name 'NewSection_3.4_Revised*.md' \
-  ! -name 'NewSection_3.4_*Instructions.md' \
-  ! -name 'NewSection_3.5.md' \
-  ! -name 'NewSection_3.5_*.md' \
-  ! -name 'copy_section3_5_support_files.sh' \
-  ! -name 'publish_section3_5_updates.sh' \
-  ! -name 'run_section3_5_update_all.sh' \
-  ! -path './checksums/SHA256SUMS.txt' \
-  -print0 \
-  | sort -z \
-  | xargs -0 shasum -a 256 \
-  > checksums/SHA256SUMS.txt
+## Claim boundaries
 
-shasum -a 256 -c checksums/SHA256SUMS.txt
-```
+This package supports kernel-geometry survival and distortion analysis only.
 
-The checksum file should exclude `.git/`, IDE state such as `.idea/`, local virtual environments, Python bytecode caches, environment secrets, `.DS_Store`, ignored provenance sidecars, local-only transfer scripts, manuscript draft files, and the checksum file itself.
+It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, IAQ forecasting performance, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics, not classifier-performance metrics.
 
-## Claim limitation
-
-This package supports kernel-geometry survival, hardware-distortion analysis, statistical diagnostics, finite-shot reference-scale diagnostics, dimensionless shot-noise scale-separation diagnostics, and repository-grounded Results-section summaries only. It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory.
-
-The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope.
-
-CKA, centered KTA, leave-one-window-out jackknife contrasts, source-derived and regenerable statevector label-permutation diagnostics, shot-noise reference-scale decomposition, Section 3.1 execution-summary checks, Section 3.2 main distortion metrics, Section 3.3 statistical support diagnostics, Section 3.4 KTA/CKA-tension diagnostics, and Section 3.5 scale-ratio diagnostics are descriptive diagnostics, not classifier-performance metrics.
-
-For Section 3.5, `M2/H2` has the smallest RMSE and residual distortion term, but the residual remains the dominant quadrature component under both shot-noise references. This is a diagnostic scale accounting, not a physical noise-model fit and not a classifier-performance result.
+The leave-one-window-out CKA and centered-KTA jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests. The Section 3.6 projection is a deterministic finite-shot reference rescaling; it is not evidence that a realized 4096-shot rerun would reproduce the same kernels or the same RMSE.
 
 ## License
 
-This package is released under the MIT License.
+Use the repository's existing license file. Section 3.6 adds analysis artifacts and documentation only and does not require a license change.

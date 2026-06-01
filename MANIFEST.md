@@ -77,13 +77,13 @@ These shell scripts verify Results-section support state. They do not submit IBM
 - `scripts/verify_section3_6_support_files.sh`
 - `scripts/verify_section3_7_support_files.sh`
 
-Local update helper scripts supplied for the Section 3.6 update:
+Local update helper scripts shipped with the Section 3.6 update bundle (not part of the published repository tree and not listed in `checksums/SHA256SUMS.txt`):
 
 - `scripts/copy_section3_6_support_files.sh`
 - `scripts/publish_section3_6_updates.sh`
 - `scripts/run_section3_6_copy_verify_publish.sh`
 
-Local update helper scripts supplied for the Section 3.7 update:
+Local update helper scripts shipped with the Section 3.7 update bundle (not part of the published repository tree and not listed in `checksums/SHA256SUMS.txt`):
 
 - `scripts/copy_section3_7_support_files.sh`
 - `scripts/publish_section3_7_updates.sh`
@@ -319,7 +319,7 @@ The manuscript labels are aliases only. Persisted files remain keyed by `H0`, `H
 | `hardware_analysis/zz4_wave1_distortion_summary.md` | Human-readable distortion summary. |
 | `hardware_analysis/zz4_wave1_distortion_uncertainty.csv` | Jackknife, paired contrast, diagonal-sensitivity, and directed-versus-unique checks; includes unit-diagonal effective-rank sensitivity rows used by Section 3.7. |
 | `hardware_analysis/zz4_wave1_distortion_uncertainty.json` | JSON companion for uncertainty diagnostics and diagonal-sensitivity policy. |
-| `scripts/verify_section3_7_support_files.sh` | Verifies Section 3.7 effective-rank and PSD support values and documentation state. |
+| `scripts/verify_section3_7_support_files.sh` | Recomputes effective rank, minimum eigenvalues (before the diagnostic clip), and unit-diagonal effective-rank sensitivity from the reconstructed `.npy` matrices and checks them against the persisted Section 3.7 effective-rank and PSD support values, together with the diagnostic-only PSD policy and documentation state. |
 
 ## Shot-noise reference-scale artifacts
 
@@ -340,9 +340,6 @@ The manuscript labels are aliases only. Persisted files remain keyed by `H0`, `H
 | `hardware_analysis/zz4_wave1_4096_shot_projection.json` | JSON projection artifact with formulas, input list, and caveat. |
 | `hardware_analysis/zz4_wave1_4096_shot_projection.md` | Human-readable projection summary. |
 | `scripts/verify_section3_6_support_files.sh` | Verifies Section 3.6 support files, projection values, planned/executed shot-count distinction, and claim-boundary caveats. |
-| `scripts/copy_section3_6_support_files.sh` | Local helper to copy or skip existing dependencies, install Section 3.6 files, and generate projection outputs. |
-| `scripts/publish_section3_6_updates.sh` | Local helper to verify, update checksums, and print or run git publication commands. |
-| `scripts/run_section3_6_copy_verify_publish.sh` | Local wrapper that runs copy, verify, and publish helpers. |
 
 ## Label-permutation artifacts
 
@@ -376,16 +373,16 @@ bash scripts/verify_section3_7_support_files.sh .
 
 ## Copy/update command sequence for Section 3.7
 
-The local source repository is expected at:
+Set the local source repository path:
 
 ```bash
-SOURCE="/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks"
+SOURCE="/path/to/source/notebooks"
 ```
 
-The dedicated reproducibility repository is expected at:
+Set the dedicated reproducibility repository path:
 
 ```bash
-REPO="/Users/rostyslavsipakov/Documents/GitHub/reproducibility/iaq-quantum-kernel-wave1-reproducibility"
+REPO="/path/to/iaq-quantum-kernel-wave1-reproducibility"
 ```
 
 Run from the unpacked Section 3.7 update bundle:
@@ -394,7 +391,7 @@ Run from the unpacked Section 3.7 update bundle:
 bash scripts/run_section3_7_copy_verify_publish.sh "$SOURCE" "$REPO" "$(pwd)"
 ```
 
-The copy helper skips existing dependency artifacts in the reproducibility repository and copies them from `SOURCE` only if missing. It installs the Section 3.7 verifier and helper scripts and updates `README.md` and `MANIFEST.md`. It does not copy `NewSection_3.7.md`.
+The copy helper skips existing dependency artifacts in the reproducibility repository and copies them from `SOURCE` only if missing. It installs the Section 3.7 verification script (`scripts/verify_section3_7_support_files.sh`) and updates `README.md` and `MANIFEST.md`. The `copy_/publish_/run_` helper scripts are shipped with the Section 3.7 update bundle and are **not** part of the published repository tree; they are therefore not listed in `checksums/SHA256SUMS.txt`. It does not copy `NewSection_3.7.md`.
 
 ## Checksums
 

@@ -198,6 +198,67 @@ for token in (
     if token not in manifest_text:
         raise SystemExit(f"ERROR: MANIFEST.md missing token: {token}")
 
+# --- Section 3.7: recompute spectral diagnostics from the reconstructed .npy matrices ---
+# Closes the raw-matrix -> metric -> manuscript chain: recompute(.npy) must equal persisted(CSV/JSON).
+import numpy as np
+RECOMPUTE_TOL = 1e-9   # observed residuals are ~1e-14; 1e-9 is a conservative cross-BLAS bound
+
+def _erank(K):
+    Ks = 0.5 * (K + K.T)
+    w = np.clip(np.linalg.eigvalsh(Ks), 0.0, None)
+    s = w.sum()
+    p = w[w > 0] / s
+    return float(np.exp(-(p * np.log(p)).sum()))
+
+def _lam_min_before_clip(K):
+    return float(np.linalg.eigvalsh(0.5 * (K + K.T)).min())
+
+def _recompute_close(label, recomputed, persisted):
+    if abs(recomputed - persisted) > RECOMPUTE_TOL:
+        raise SystemExit(
+            f"ERROR: {label}: recomputed {recomputed!r} != persisted {persisted!r} "
+            f"(|delta|={abs(recomputed - persisted):.2e} > {RECOMPUTE_TOL:.0e})"
+        )
+
+import csv as _csv
+with (root / "hardware_analysis/zz4_wave1_distortion_metrics.csv").open(newline="", encoding="utf-8") as _fh:
+    _metrics = {r["regime_id"]: r for r in _csv.DictReader(_fh)}
+with (root / "hardware_analysis/zz4_wave1_distortion_uncertainty.csv").open(newline="", encoding="utf-8") as _fh:
+    _unc = list(_csv.DictReader(_fh))
+
+_K_sv = np.load(root / "statevector_reference/zz4_K_all_all.npy")
+_er_sv = _erank(_K_sv)
+_recompute_close("erank(SV) vs effective_rank_statevector",
+                 _er_sv, float(_metrics["H0"]["effective_rank_statevector"]))
+
+for _r in ("H0", "H1", "H2"):
+    _K = np.load(root / f"hardware_kernels/zz4_{_r}_kernel.npy")
+    _er = _erank(_K)
+    _recompute_close(f"{_r}: erank vs effective_rank_hardware",
+                     _er, float(_metrics[_r]["effective_rank_hardware"]))
+    _recompute_close(f"{_r}: erank - erank(SV) vs effective_rank_change",
+                     _er - _er_sv, float(_metrics[_r]["effective_rank_change"]))
+    _recompute_close(f"{_r}: lambda_min(before clip) vs min_eigenvalue_before_psd",
+                     _lam_min_before_clip(_K), float(_metrics[_r]["min_eigenvalue_before_psd"]))
+    _Ku = _K.copy()
+    np.fill_diagonal(_Ku, 1.0)
+    _er_unit = _erank(_Ku)
+    _rows = [row for row in _unc
+             if row.get("analysis_block") == "diagonal_robustness"
+             and row.get("metric") == "effective_rank"
+             and row.get("artifact_regime") == _r
+             and row.get("contrast") == "unit_diagonal_minus_measured_diagonal"]
+    if len(_rows) != 1:
+        raise SystemExit(f"ERROR: {_r}: expected one unit-diagonal effective-rank row, found {len(_rows)}")
+    _recompute_close(f"{_r}: erank(unit diagonal) vs uncertainty point_estimate",
+                     _er_unit, float(_rows[0]["point_estimate"]))
+    _recompute_close(f"{_r}: unit-diagonal delta vs uncertainty delta",
+                     _er_unit - _er, float(_rows[0]["delta"]))
+
+print("[section3.7] recompute-from-.npy: effective rank, lambda_min(before clip), "
+      "and unit-diagonal sensitivity match persisted artifacts within %.0e" % RECOMPUTE_TOL)
+# --- end recompute block ---
+
 print("[section3.7] verification passed")
 print("effective ranks: SV=17.9718916987; H0=21.1842093174; H1=21.2170261549; H2=19.7881695506")
 print("rank inflation: H0=+3.2123176186; H1=+3.2451344562; H2=+1.8162778519")

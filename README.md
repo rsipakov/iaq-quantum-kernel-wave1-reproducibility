@@ -1,8 +1,8 @@
 # IAQ Quantum Kernel Wave 1 Reproducibility Package
 
-This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.6.
+This repository is a curated artifact-level reproducibility package for the Wave 1 indoor-air-quality duplicate-sensor quantum-kernel analysis. It supports manuscript **Materials and methods** sections 2.1--2.13 and **Results** sections 3.1--3.7.
 
-The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival, hardware-distortion, statistical-diagnostic, label-alignment, shot-noise reference-scale, CKA/KTA-tension, dimensionless shot-noise scale-separation, and optional 4096-shot finite-shot projection analyses. It is derived from the working repository:
+The package preserves non-sensitive artifacts required to support the frozen ZZ4 Wave 1 statevector-to-hardware kernel-survival, hardware-distortion, statistical-diagnostic, label-alignment, shot-noise reference-scale, CKA/KTA-tension, dimensionless shot-noise scale-separation, optional 4096-shot finite-shot projection, and effective-rank/PSD diagnostic analyses. It is derived from the working repository:
 
 ```text
 rsipakov/QuantumKernel
@@ -37,15 +37,18 @@ This repository supports artifact-level reproduction of the manuscript component
 3. Section 3.3 window-level statistical support and label-alignment diagnostics;
 4. Section 3.4 central synthesis: RQ3 shot-noise reference scale and the CKA/KTA tension;
 5. Section 3.5 dimensionless finite-shot scale separation of the off-diagonal RMSE;
-6. Section 3.6 optional projection: 4096-shot rerun.
+6. Section 3.6 optional projection: 4096-shot rerun;
+7. Section 3.7 effective-rank and PSD diagnostics.
 
 ### Supported analytical modules
 
-The package supports the following reproducible analytical modules: kernel reconstruction audit; statevector-to-hardware geometry-distortion metrics; CKA and centered-KTA diagnostics; leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks; statevector label-permutation reference; finite-shot reference-scale decomposition; and optional 4096-shot finite-shot projection.
+The package supports the following reproducible analytical modules: kernel reconstruction audit; statevector-to-hardware geometry-distortion metrics; CKA and centered-KTA diagnostics; leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks; statevector label-permutation reference; finite-shot reference-scale decomposition; optional 4096-shot finite-shot projection; and Section 3.7 effective-rank/PSD diagnostics.
 
-This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance. Section 3.6 is also not a new hardware execution: it rescales finite-shot reference terms from the realized 1024-shot run to the originally planned 4096-shot budget while keeping the observed RMSE fixed.
+This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance. Section 3.6 is not a new hardware execution: it rescales finite-shot reference terms from the realized 1024-shot run to the originally planned 4096-shot budget while keeping the observed RMSE fixed. Section 3.7 introduces no new hardware execution and no new numerical analysis artifact; it reports a focused spectral/PSD reading of existing reconstruction and distortion artifacts.
 
-The supported numerical reproduction path is:
+## Supported numerical reproduction path
+
+From the repository root:
 
 ```bash
 python scripts/08b_audit_kernel_reconstruction.py --project-root .
@@ -61,6 +64,7 @@ bash scripts/verify_section3_3_support_files.sh .
 bash scripts/verify_section3_4_support_files.sh .
 bash scripts/verify_section3_5_support_files.sh .
 bash scripts/verify_section3_6_support_files.sh .
+bash scripts/verify_section3_7_support_files.sh .
 ```
 
 Expected high-level checks:
@@ -75,9 +79,12 @@ Expected high-level checks:
 - Section 3.3 verification reports the window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement;
 - Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim;
 - Section 3.5 verification confirms the dimensionless RMSE-to-shot-reference ratios, quadrature residual fractions, matrix-aware scale ordering, and diagnostic-only decomposition policy;
-- Section 3.6 verification confirms the planned/executed shot-count distinction, the 4096-shot finite-shot reference projection, the fixed-RMSE projection policy, and the residual-dominance result under the projected precision budget.
+- Section 3.6 verification confirms the planned/executed shot-count distinction, the 4096-shot finite-shot reference projection, the fixed-RMSE projection policy, and the residual-dominance result under the projected precision budget;
+- Section 3.7 verification confirms the effective-rank point estimates, the unit-diagonal effective-rank sensitivity rows, complete finite reconstructed matrices, positive uncorrected minimum eigenvalues, roundoff-scale PSD corrections, diagnostic-only PSD policy, and exclusion of `NewSection_3.7.md` from the reproducibility repository.
 
-These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar. The Section 3.6 projection artifacts are deterministic functions of the persisted Section 3.4 decomposition and the scope/runtime/job-manifest files.
+These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
+
+The Section 3.6 projection artifacts are deterministic functions of the persisted Section 3.4 decomposition and the scope/runtime/job-manifest files. The Section 3.7 manuscript section is supported by existing spectral and PSD columns in `hardware_analysis/zz4_wave1_distortion_metrics.csv`, by the PSD policy and finite-entry metadata in `metadata/zz4_wave1_kernel_manifest.json`, and by the unit-diagonal sensitivity rows in `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`.
 
 The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_analysis/zz4_wave1_distortion_metrics.csv` are retained for schema compatibility and intentionally left blank/NaN in the supported minimal workflow. They are not used for any manuscript claim because kernel entries are dependent observations.
 
@@ -99,7 +106,7 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 | Unique unordered off-diagonal pairs | 276 |
 | Diagonal entries | 24 |
 | Off-diagonal matrix entries for entrywise metrics | 552 directed entries with `i != j` |
-| Full-matrix entries for CKA and centered KTA | Complete `24 x 24` centered matrices, including measured hardware diagonal |
+| Full-matrix entries for CKA, centered KTA, and effective rank | Complete `24 x 24` matrices, including measured hardware diagonal |
 | Hardware backend | `ibm_fez` |
 | Primitive | Qiskit Runtime `SamplerV2` |
 | Artifact hardware-regime labels | `H0`, `H1`, `H2` |
@@ -123,6 +130,8 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 | Section 3.4 central synthesis | KTA/CKA tension plus finite-shot reference-scale support for residual hardware distortion |
 | Section 3.5 dimensionless scale separation | Off-diagonal RMSE in finite-shot reference units: RMSE-to-reference ratios and quadrature residual fractions |
 | Section 3.6 optional 4096-shot projection | Finite-shot reference scales rescaled to 4096 shots, with RMSE fixed to realized 1024-shot values |
+| Section 3.7 effective-rank diagnostics | Full-matrix effective rank with measured hardware diagonal; unit-diagonal sensitivity reported as a diagnostic only |
+| Section 3.7 PSD diagnostics | Positive uncorrected minimum eigenvalues and roundoff-scale PSD Frobenius corrections; no reported metric depends on PSD replacement |
 | Purpose | Statevector-to-hardware kernel-geometry survival and distortion analysis |
 | Claim scope | No quantum-advantage claim, no hardware classifier-superiority claim, and no IAQ forecasting-performance claim |
 
@@ -421,127 +430,179 @@ The regenerable in-package reference is `hardware_analysis/zz4_wave1_label_permu
 
 Section 3.1 reports the realized hardware-execution ledger for the three executed Wave 1 configurations.
 
-| Configuration | Artifact label | Job ID | Status | Shots/circuit | Pair/PUB entries | Billed quantum seconds |
+| Manuscript label | Artifact regime | Job ID | Status | Shots/circuit | PUB results | Billed quantum seconds |
 | --- | ---: | --- | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | `d7vf6n3ack5s73bfc0eg` | `DONE` | 1024 | 300 | 80 |
-| `M1` dynamical decoupling | `H1` | `d7vf8ocinasc738u1bhg` | `DONE` | 1024 | 300 | 80 |
-| `M2` gate twirling | `H2` | `d7vfbsfmrars73d84u20` | `DONE` | 1024 | 300 | 84 |
+| `M0` | `H0` | `d7vf6n3ack5s73bfc0eg` | `DONE` | 1024 | 300 | 80 |
+| `M1` | `H1` | `d7vf8ocinasc738u1bhg` | `DONE` | 1024 | 300 | 80 |
+| `M2` | `H2` | `d7vfbsfmrars73d84u20` | `DONE` | 1024 | 300 | 84 |
 
-Repository-grounded Section 3.1 totals:
+Verification script:
 
 ```text
-completed jobs = 3
-retrieved PUB results = 3 x 300 = 900
-observed hardware shots = 3 x 300 x 1024 = 921600
-billed quantum seconds = 80 + 80 + 84 = 244 (~4.07 min)
+scripts/verify_section3_1_support_files.sh
 ```
-
-Relevant artifacts include job manifests, retrieval manifests, raw-result payloads, hardware-kernel entries, and `scripts/verify_section3_1_support_files.sh`.
 
 ## Section 3.2: main distortion metrics
 
-Section 3.2 reports the main statevector-to-hardware distortion metrics for the three Wave 1 configurations.
+Section 3.2 reports the main statevector-to-hardware distortion metrics.
 
-| Configuration | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | KTA_c hw | Eff. rank hw | min eig | PSD rel. Fro. |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.741 | 0.827 | 0.0490 | 0.0878 | 0.0262 | 0.569 | 0.933 | 0.183 | 21.18 | 0.429 | `<2e-15` |
-| `M1` dynamical decoupling | `H1` | 0.775 | 0.843 | 0.0473 | 0.0864 | 0.0261 | 0.564 | 0.937 | 0.181 | 21.22 | 0.462 | `<2e-15` |
-| `M2` gate twirling | `H2` | 0.944 | 0.986 | 0.0257 | 0.0427 | 0.0162 | 0.264 | 0.989 | 0.171 | 19.79 | 0.232 | `<2e-15` |
+| Manuscript label | Artifact regime | Spearman | Pearson | MAE | RMSE | MedAE | MaxAE | CKA | KTA_c hw | Effective rank | lambda_min |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 0.741 | 0.827 | 0.0490 | 0.0878 | 0.0262 | 0.569 | 0.933 | 0.183 | 21.18 | 0.429 |
+| `M1` | `H1` | 0.775 | 0.843 | 0.0473 | 0.0864 | 0.0261 | 0.564 | 0.937 | 0.181 | 21.22 | 0.462 |
+| `M2` | `H2` | 0.944 | 0.986 | 0.0257 | 0.0427 | 0.0162 | 0.264 | 0.989 | 0.171 | 19.79 | 0.232 |
 
-`M2/H2` has the best observed point estimates for statevector-geometry survival. This is a descriptive fixed-subset result, not a formal significance claim.
+Verification script:
 
-Relevant artifacts include `scripts/09b_analyze_wave1_distortion_direct.py`, `scripts/09c_wave1_distortion_uncertainty.py`, `hardware_analysis/zz4_wave1_distortion_metrics.csv`, `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`, the statevector reference, hardware kernels, and Section 3.2 helper scripts.
+```text
+scripts/verify_section3_2_support_files.sh
+```
 
-## Section 3.3: statistical support and label-alignment diagnostics
+## Section 3.3: window-level statistical support and label-alignment reference
 
-Section 3.3 reports the supported pre-submission statistical support table and RQ4 label-alignment diagnostics. The table uses leave-one-window-out jackknife standard errors and paired descriptive contrast ratios, not 95% confidence intervals or adjusted p-values.
+Section 3.3 reports leave-one-window-out jackknife support for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE is point estimate only. It also reports the statevector label-permutation reference.
 
-### Section 3.3 support table
+Relevant artifacts:
 
-| Metric | Domain | `M0/H0` | `M1/H1` | `M2/H2` | `M1-M0` paired contrast | `M2-M1` paired contrast | `M2-M0` paired contrast |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Spearman | off-diagonal | 0.7413 ± 0.0517 | 0.7750 ± 0.0459 | 0.9437 ± 0.0124 | +0.0337 ± 0.0171 (`z=1.96`) | +0.1688 ± 0.0428 (`z=3.94`) | +0.2024 ± 0.0499 (`z=4.06`) |
-| Pearson | off-diagonal | 0.8273 ± 0.0859 | 0.8428 ± 0.0628 | 0.9862 ± 0.0045 | +0.0155 ± 0.0263 (`z=0.59`) | +0.1434 ± 0.0598 (`z=2.40`) | +0.1590 ± 0.0829 (`z=1.92`) |
-| MAE | off-diagonal | 0.04904 ± 0.00790 | 0.04729 ± 0.00829 | 0.02573 ± 0.00355 | -0.00175 ± 0.00175 (`z=-1.00`) | -0.02156 ± 0.00501 (`z=-4.30`) | -0.02331 ± 0.00472 (`z=-4.94`) |
-| RMSE | off-diagonal | 0.08777 | 0.08643 | 0.04273 | not persisted | not persisted | not persisted |
-| CKA | full matrix | 0.9334 ± 0.0219 | 0.9374 ± 0.0190 | 0.9887 ± 0.0026 | +0.00398 ± 0.00635 (`z=0.63`) | +0.05130 ± 0.01662 (`z=3.09`) | +0.05528 ± 0.01954 (`z=2.83`) |
-| Centered KTA | full matrix | 0.1833 ± 0.0362 | 0.1815 ± 0.0350 | 0.1710 ± 0.0360 | -0.00185 ± 0.00562 (`z=-0.33`) | -0.01044 ± 0.01344 (`z=-0.78`) | -0.01228 ± 0.01409 (`z=-0.87`) |
-
-Relevant artifacts include `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`, `hardware_analysis/zz4_wave1_distortion_uncertainty.json`, `hardware_analysis/zz4_wave1_label_permutation_reference.csv`, `hardware_analysis/zz4_wave1_label_permutation_reference.json`, and `scripts/verify_section3_3_support_files.sh`.
+```text
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.json
+hardware_analysis/zz4_wave1_label_permutation_reference.csv
+hardware_analysis/zz4_wave1_label_permutation_reference.json
+hardware_analysis/qiskit_kta_cka_permutation_tests.csv
+scripts/verify_section3_3_support_files.sh
+```
 
 ## Section 3.4: central synthesis
 
-Section 3.4 combines the CKA/KTA tension with the finite-shot reference-scale decomposition. The central numerical decomposition is:
+Section 3.4 combines the CKA/KTA tension with the finite-shot reference-scale decomposition. It uses no additional hardware execution and no classifier-performance endpoint.
 
-| Configuration | Artifact regime | RMSE | sigma_ref_global | residual_global | Global shot share | sigma_shot_matrix | residual_matrix | Matrix-aware shot share |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.087770 | 0.022097 | 0.084943 | 6.34% | 0.008266 | 0.087380 | 0.89% |
-| `M1` dynamical decoupling | `H1` | 0.086428 | 0.022097 | 0.083555 | 6.54% | 0.008243 | 0.086034 | 0.91% |
-| `M2` gate twirling | `H2` | 0.042727 | 0.022097 | 0.036570 | 26.75% | 0.008528 | 0.041868 | 3.98% |
+Relevant artifacts:
 
-Residual hardware distortion dominates the off-diagonal discrepancy rather than finite-shot sampling alone. The KTA/CKA tension is read as a distortion diagnostic, not as supervised improvement.
-
-Relevant artifacts include `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`, `.json`, `.md`, `hardware_analysis/zz4_wave1_distortion_metrics.csv`, `hardware_analysis/zz4_wave1_distortion_uncertainty.csv`, the statevector reference, hardware kernels, and `scripts/verify_section3_4_support_files.sh`.
+```text
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv
+hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json
+hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md
+scripts/verify_section3_4_support_files.sh
+```
 
 ## Section 3.5: dimensionless finite-shot scale separation
 
-Section 3.5 re-expresses the Section 3.4 decomposition in finite-shot reference units.
+Section 3.5 expresses the Section 3.4 off-diagonal RMSE decomposition in finite-shot-reference units. It introduces no new reference scale or new kernel.
 
-| Configuration | Artifact regime | RMSE | sigma_shot_matrix | R_global | F_residual_global | R_matrix | F_residual_matrix |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.087770 | 0.008266 | 3.97 | 93.66% | 10.62 | 99.11% |
-| `M1` dynamical decoupling | `H1` | 0.086428 | 0.008243 | 3.91 | 93.46% | 10.48 | 99.09% |
-| `M2` gate twirling | `H2` | 0.042727 | 0.008528 | 1.93 | 73.25% | 5.01 | 96.02% |
+| Artifact regime | R_global | R_matrix | Residual fraction, global | Residual fraction, matrix-aware |
+| ---: | ---: | ---: | ---: | ---: |
+| `H0` | 3.97 | 10.62 | 93.66% | 99.11% |
+| `H1` | 3.91 | 10.48 | 93.46% | 99.09% |
+| `H2` | 1.93 | 5.01 | 73.25% | 96.02% |
 
-Relevant artifacts include `hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv`, `.json`, `.md`, `scripts/09d_shot_noise_reference_scale_decomposition.py`, and `scripts/verify_section3_5_support_files.sh`.
-
-## Section 3.6: optional projection: 4096-shot rerun
-
-Section 3.6 projects only the finite-shot reference scales from the executed 1024-shot analysis to the originally planned 4096-shot budget. It keeps the realized off-diagonal RMSE fixed and does not simulate a new hardware kernel.
-
-Projection rules:
+Relevant artifacts:
 
 ```text
-sigma_ref_global(4096) = 1 / sqrt(2 * 4096)
-sigma_shot_matrix_r(4096) = sigma_shot_matrix_r(1024) * sqrt(1024 / 4096)
+hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv
+hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.json
+hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.md
+scripts/verify_section3_5_support_files.sh
 ```
 
-| Configuration | Artifact regime | Fixed RMSE | sigma_ref_global(4096) | Global shot share | Global residual fraction | sigma_shot_matrix(4096) | Matrix shot share | Matrix residual fraction | R_matrix(4096) |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `M0` baseline | `H0` | 0.087770 | 0.011049 | 1.58% | 98.42% | 0.004133 | 0.22% | 99.78% | 21.24 |
-| `M1` dynamical decoupling | `H1` | 0.086428 | 0.011049 | 1.63% | 98.37% | 0.004122 | 0.23% | 99.77% | 20.97 |
-| `M2` gate twirling | `H2` | 0.042727 | 0.011049 | 6.69% | 93.31% | 0.004264 | 1.00% | 99.00% | 10.02 |
+## Section 3.6: optional projection, 4096-shot rerun
 
-The projected 4096-shot calculation supports the same residual-dominance interpretation as the executed 1024-shot analysis. It is a deterministic precision-budget projection, not a new hardware execution, not a physical noise-model decomposition, and not a classifier-performance result.
+Section 3.6 rescales only the finite-shot reference terms from the executed 1024-shot run to the originally planned 4096-shot budget. The reconstructed kernels and realized RMSE values are held fixed.
 
 Relevant artifacts:
 
 ```text
 scripts/09j_optional_4096_shot_projection.py
-scripts/verify_section3_6_support_files.sh
 hardware_analysis/zz4_wave1_4096_shot_projection.csv
 hardware_analysis/zz4_wave1_4096_shot_projection.json
 hardware_analysis/zz4_wave1_4096_shot_projection.md
-hardware_analysis/zz4_wave1_shot_noise_reference_scale_decomposition.csv
-config/wave1_scope.json
-metadata/zz4_wave1_runtime_options.json
-metadata/zz_only_step8_execution_manifest.json
-job_metadata/zz4_wave1_job_manifest.json
+scripts/verify_section3_6_support_files.sh
 ```
+
+## Section 3.7: Effective-rank and PSD diagnostics
+
+Section 3.7 isolates the spectral and PSD diagnostics already generated by the reconstruction and distortion workflow. It introduces no new kernel, no new hardware execution, no new resampling unit, and no new classifier endpoint.
+
+### Effective-rank support values
+
+| Kernel / manuscript label | Artifact regime | Effective rank, measured diagonal | Change vs statevector | Unit-diagonal sensitivity |
+| --- | ---: | ---: | ---: | ---: |
+| Statevector reference | `SV` | 17.9718916987 | 0 | not applicable |
+| `M0` baseline | `H0` | 21.1842093174 | +3.2123176186 | +0.3053244263 |
+| `M1` dynamical decoupling | `H1` | 21.2170261549 | +3.2451344562 | +0.3087419099 |
+| `M2` gate twirling | `H2` | 19.7881695506 | +1.8162778519 | +0.4138341967 |
+
+Effective rank is a full-matrix point-estimate diagnostic. No leave-one-window-out jackknife or paired effective-rank contrast is persisted.
+
+### PSD support values
+
+| Manuscript label | Artifact regime | Finite entries | Missing entries | lambda_min before clip | lambda_min after clip | PSD Frobenius abs / rel |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `M0` | `H0` | 576 | 0 | 0.4287631111 | 0.4287631111 | `8.58e-15 / 1.63e-15` |
+| `M1` | `H1` | 576 | 0 | 0.4621559357 | 0.4621559357 | `9.26e-15 / 1.76e-15` |
+| `M2` | `H2` | 576 | 0 | 0.2321643891 | 0.2321643891 | `1.07e-14 / 1.91e-15` |
+
+All three uncorrected hardware matrices are positive semidefinite at the reported precision. PSD projection is diagnostic only; the reported hardware kernels retain the measured diagonal and the uncorrected matrices.
+
+Relevant artifacts:
+
+```text
+metadata/zz4_wave1_kernel_manifest.json
+hardware_analysis/zz4_wave1_distortion_metrics.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.csv
+hardware_analysis/zz4_wave1_distortion_uncertainty.json
+hardware_kernels/zz4_H0_kernel.csv
+hardware_kernels/zz4_H1_kernel.csv
+hardware_kernels/zz4_H2_kernel.csv
+hardware_kernels/zz4_H0_kernel.npy
+hardware_kernels/zz4_H1_kernel.npy
+hardware_kernels/zz4_H2_kernel.npy
+statevector_reference/zz4_K_all_all.npy
+scripts/verify_section3_7_support_files.sh
+```
+
+## Manuscript draft exclusion
+
+The manuscript draft file `NewSection_3.7.md` and any local Section 3.7 transfer bundles are not reproducibility artifacts and must not be committed to this repository. The Section 3.7 verifier fails if `NewSection_3.7.md`, `NewSection_3.7_*.md`, `section3_7_artifacts.zip`, or `section3_7_update_bundle.zip` is present in the repository root.
+
+## Copy/update command sequence for Section 3.7
+
+The local source repository is expected at:
+
+```bash
+SOURCE="/Users/rostyslavsipakov/Documents/GitHub/QuantumKernel/duplicate-sensor-monitoring/notebooks"
+```
+
+The dedicated reproducibility repository is expected at:
+
+```bash
+REPO="/Users/rostyslavsipakov/Documents/GitHub/reproducibility/iaq-quantum-kernel-wave1-reproducibility"
+```
+
+Run from the unpacked Section 3.7 update bundle:
+
+```bash
+bash scripts/run_section3_7_copy_verify_publish.sh "$SOURCE" "$REPO" "$(pwd)"
+```
+
+The copy helper skips existing dependency artifacts in the reproducibility repository and copies them from `SOURCE` only if missing. It installs the Section 3.7 verification and helper scripts, installs the updated `README.md` and `MANIFEST.md`, and runs the Section 3.7 verifier. It does not copy `NewSection_3.7.md`.
 
 ## Checksums
 
-The reproducibility package includes:
+The checksum file is:
 
 ```text
 checksums/SHA256SUMS.txt
 ```
 
-After adding or regenerating Section 3.6 artifacts, refresh checksums from the repository root:
+Regenerate from the repository root after intentional updates:
 
 ```bash
 mkdir -p checksums
-find . -type f \
+find . \
+  -type f \
   -not -path './.git/*' \
   -not -path './checksums/SHA256SUMS.txt' \
   -print | LC_ALL=C sort | xargs shasum -a 256 > checksums/SHA256SUMS.txt
@@ -549,14 +610,12 @@ find . -type f \
 
 On Linux, `sha256sum` may be used instead of `shasum -a 256`.
 
-## Claim boundaries
-
-This package supports kernel-geometry survival and distortion analysis only.
-
-It does not support claims of quantum advantage, hardware classifier superiority, post hoc subset optimization, post hoc threshold relaxation, uncontrolled Wave 2 expansion, IAQ forecasting performance, or any conclusion that depends on replacing or modifying the frozen `N = 24` subset or the fixed 300-row pair inventory. The manuscript execution-configuration labels `M0`, `M1`, and `M2` are aliases for the persisted artifact labels `H0`, `H1`, and `H2`; they do not expand the experimental scope. CKA and centered KTA are descriptive geometry diagnostics, not classifier-performance metrics.
-
-The leave-one-window-out CKA and centered-KTA jackknife contrasts are descriptive robustness checks on the frozen `N = 24` window scale; they are not formal significance tests. The Section 3.6 projection is a deterministic finite-shot reference rescaling; it is not evidence that a realized 4096-shot rerun would reproduce the same kernels or the same RMSE.
-
 ## License
 
-Use the repository's existing license file.
+This Section 3.7 update does not require a license change. Use the existing repository `LICENSE` file. No `LICENSE.md` update is required for this section.
+
+## Claim boundary
+
+The package supports kernel-geometry survival and hardware-distortion analysis only. It does not support claims of quantum advantage, hardware classifier superiority, IAQ forecasting performance, post hoc subset optimization, post hoc threshold relaxation, or uncontrolled Wave 2 expansion.
+
+Section 3.7 is a spectral and numerical-diagnostics section. It reports effective-rank inflation and PSD stability of the realized Wave 1 kernels. It is not a physical hardware-noise model, not a classifier result, and not evidence of quantum advantage.

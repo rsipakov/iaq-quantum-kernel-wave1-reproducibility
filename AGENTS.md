@@ -74,6 +74,18 @@ versions such as `final_new`, `updated`, or `latest`.
 Do not delete, rename, or overwrite important artifacts unless explicitly
 requested.
 
+## GitHub authentication and remote operations
+
+Treat Codex's GitHub connector and the local `gh`/`git` credential store as separate authorization layers.
+
+- Use the GitHub connector first for repository, issue, pull request, review, and metadata workflows when it is available.
+- Use local `gh` and `git` for operations the connector does not cover, including current-branch discovery, GitHub Actions logs, fetch/pull/push, commits, and remote checks.
+- If a sandboxed `gh auth status` reports an invalid token, do not treat that alone as definitive. Recheck with an approved/elevated `gh auth status -h github.com`, because the macOS keyring token may not be visible inside the sandbox.
+- The expected local GitHub account for this project is `rsipakov`; use HTTPS Git remotes with GitHub CLI credential integration unless the user explicitly asks for SSH.
+- When reauthentication is needed, prefer `gh auth login -h github.com --web --git-protocol https --skip-ssh-key`, then run `gh auth setup-git -h github.com`. Only create or upload SSH keys when explicitly needed.
+- Do not print, persist, commit, or copy GitHub tokens, credentials, or key material.
+- Before any remote-changing action such as commit, push, branch creation, PR creation, release creation, or publication, state the target repository, branch, and action unless the user already specified them.
+
 ## Git and publication actions
 
 Do not commit, push, create releases, publish packages, upload artifacts, or

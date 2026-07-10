@@ -1,7 +1,7 @@
 {
   "artifact_type": "zz4_wave1_kernel_reconstruction_audit",
   "schema_version": "v9.0.kernel_reconstruction_audit.2",
-  "created_utc": "2026-05-26T09:11:31Z",
+  "created_utc": "2026-07-09T16:26:29Z",
   "purpose": "Independent verification of the positional PUB-to-coordinate mapping and reconstruction QC summaries; no kernel value is modified.",
   "coordinate_mapping_consistent": true,
   "total_configurations_checked": 900,

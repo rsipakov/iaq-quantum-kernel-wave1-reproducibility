@@ -2,21 +2,21 @@ analysis_block,metric,configuration,artifact_regime,point_estimate,jackknife_se,
 reference,effective_rank,SV,SV,17.971891698723347,,statevector_native,,,,,Statevector reference effective rank.
 reference,kta_centered,SV,SV,0.15851109235208113,,statevector_native,,,,,Statevector reference centered kernel-target alignment.
 directed_vs_unique_offdiag_check,spearman,M0,H0,0.741297081842571,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
-directed_vs_unique_offdiag_check,pearson,M0,H0,0.8272527142734243,,offdiagonal_only,directed_minus_unique,1.1102230246251565e-16,,,Machine-precision equivalence check for symmetric kernels.
+directed_vs_unique_offdiag_check,pearson,M0,H0,0.8272527142734244,,offdiagonal_only,directed_minus_unique,1.1102230246251565e-16,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,mae,M0,H0,0.04903588514843187,,offdiagonal_only,directed_minus_unique,-6.938893903907228e-18,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,rmse,M0,H0,0.08777046763666438,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,medae,M0,H0,0.02615354758561056,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,maxae,M0,H0,0.5686656028808117,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,offdiag_variance,M0,H0,0.005386539766002768,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,spearman,M1,H1,0.7749509552911102,,offdiagonal_only,directed_minus_unique,1.1102230246251565e-16,,,Machine-precision equivalence check for symmetric kernels.
-directed_vs_unique_offdiag_check,pearson,M1,H1,0.842774178341391,,offdiagonal_only,directed_minus_unique,-1.1102230246251565e-16,,,Machine-precision equivalence check for symmetric kernels.
+directed_vs_unique_offdiag_check,pearson,M1,H1,0.8427741783413908,,offdiagonal_only,directed_minus_unique,-2.220446049250313e-16,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,mae,M1,H1,0.04728950462019737,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,rmse,M1,H1,0.08642753836276364,,offdiagonal_only,directed_minus_unique,-1.3877787807814457e-17,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,medae,M1,H1,0.026143446979889462,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,maxae,M1,H1,0.5638969084391722,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,offdiag_variance,M1,H1,0.005284249632330007,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,spearman,M2,H2,0.9437436780691297,,offdiagonal_only,directed_minus_unique,2.220446049250313e-16,,,Machine-precision equivalence check for symmetric kernels.
-directed_vs_unique_offdiag_check,pearson,M2,H2,0.9862028716378274,,offdiagonal_only,directed_minus_unique,-4.440892098500626e-16,,,Machine-precision equivalence check for symmetric kernels.
+directed_vs_unique_offdiag_check,pearson,M2,H2,0.9862028716378275,,offdiagonal_only,directed_minus_unique,2.220446049250313e-16,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,mae,M2,H2,0.025725586521733776,,offdiagonal_only,directed_minus_unique,-3.469446951953614e-18,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,rmse,M2,H2,0.042727419504658484,,offdiagonal_only,directed_minus_unique,-6.938893903907228e-18,,,Machine-precision equivalence check for symmetric kernels.
 directed_vs_unique_offdiag_check,medae,M2,H2,0.016161047901678764,,offdiagonal_only,directed_minus_unique,0.0,,,Machine-precision equivalence check for symmetric kernels.
@@ -26,38 +26,38 @@ diagonal_robustness,cka,M0,H0,0.9299004013554967,,hardware_diagonal_forced_to_on
 diagonal_robustness,effective_rank,M0,H0,21.489533743636546,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.30532442627283274,,,Sensitivity only; reported kernels retain measured diagonal.
 diagonal_robustness,kta_centered,M0,H0,0.18565077198604624,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.00234231262583659,,,Sensitivity only; reported kernels retain measured diagonal.
 diagonal_robustness,cka,M1,H1,0.9335071225031073,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,-0.0038654703415333946,,,Sensitivity only; reported kernels retain measured diagonal.
-diagonal_robustness,effective_rank,M1,H1,21.525768064821914,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.3087419099104203,,,Sensitivity only; reported kernels retain measured diagonal.
+diagonal_robustness,effective_rank,M1,H1,21.525768064821904,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.3087419099104096,,,Sensitivity only; reported kernels retain measured diagonal.
 diagonal_robustness,kta_centered,M1,H1,0.18397549003914176,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.0025121115631832336,,,Sensitivity only; reported kernels retain measured diagonal.
 diagonal_robustness,cka,M2,H2,0.9853398979028046,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,-0.003328229907204161,,,Sensitivity only; reported kernels retain measured diagonal.
-diagonal_robustness,effective_rank,M2,H2,20.202003747276425,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.41383419667421606,,,Sensitivity only; reported kernels retain measured diagonal.
+diagonal_robustness,effective_rank,M2,H2,20.202003747276414,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.41383419667421606,,,Sensitivity only; reported kernels retain measured diagonal.
 diagonal_robustness,kta_centered,M2,H2,0.17414500728075,,hardware_diagonal_forced_to_one,unit_diagonal_minus_measured_diagonal,0.0031201631769732785,,,Sensitivity only; reported kernels retain measured diagonal.
 leave_one_window_out_jackknife,spearman,M0,H0,0.741297081842571,0.05166885705375388,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,pearson,M0,H0,0.8272527142734243,0.08594432627666372,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,pearson,M0,H0,0.8272527142734244,0.08594432627666433,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,mae,M0,H0,0.04903588514843187,0.007897398198223937,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,cka,M0,H0,0.9333906746578973,0.021873441808285838,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,kta_centered,M0,H0,0.18330845936020965,0.03622250597571744,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,cka,M0,H0,0.9333906746578973,0.02187344180828574,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,kta_centered,M0,H0,0.18330845936020965,0.03622250597571749,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,spearman,M1,H1,0.7749509552911102,0.04589102325987636,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,pearson,M1,H1,0.842774178341391,0.06277675376939527,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,pearson,M1,H1,0.8427741783413908,0.06277675376939476,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,mae,M1,H1,0.04728950462019737,0.00829447068845154,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,cka,M1,H1,0.9373725928446407,0.019000594525387143,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,kta_centered,M1,H1,0.18146337847595853,0.035045211846422564,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,cka,M1,H1,0.9373725928446407,0.01900059452538718,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,kta_centered,M1,H1,0.18146337847595853,0.03504521184642253,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,spearman,M2,H2,0.9437436780691297,0.012376311673864835,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,pearson,M2,H2,0.9862028716378274,0.004459596499478107,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,pearson,M2,H2,0.9862028716378275,0.004459596499479317,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
 leave_one_window_out_jackknife,mae,M2,H2,0.025725586521733776,0.003548693125357637,offdiagonal_only,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,cka,M2,H2,0.9886681278100088,0.00256701968543053,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
-leave_one_window_out_jackknife,kta_centered,M2,H2,0.17102484410377672,0.03596248412517803,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,cka,M2,H2,0.9886681278100088,0.002567019685430395,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
+leave_one_window_out_jackknife,kta_centered,M2,H2,0.17102484410377672,0.03596248412517801,measured_diagonal_full_matrix,,,,,Point estimate plus leave-one-window-out jackknife SE.
 paired_jackknife_contrast,spearman,,,,,offdiagonal_only,M1-M0,0.03365387344853921,0.017146741380810227,1.962697908665196,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M1-M0,0.015521464067966728,0.02627441903086364,0.5907443300548039,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M1-M0,0.015521464067966395,0.026274419030865435,0.5907443300547508,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,mae,,,,,offdiagonal_only,M1-M0,-0.0017463805282345035,0.001754118141940409,-0.995588886791088,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M1-M0,0.003981918186743427,0.006352209634664499,0.6268556007682416,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M1-M0,-0.0018450808842511157,0.005620873382650389,-0.32825519428105526,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M1-M0,0.003981918186743427,0.0063522096346648035,0.6268556007682116,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M1-M0,-0.0018450808842511157,0.005620873382650455,-0.32825519428105143,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,spearman,,,,,offdiagonal_only,M2-M1,0.1687927227780195,0.04280048977562128,3.943710075816985,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M2-M1,0.14342869329643637,0.059756860352307095,2.4002046367701926,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M2-M1,0.1434286932964367,0.05975686035230524,2.4002046367702725,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,mae,,,,,offdiagonal_only,M2-M1,-0.021563918098463593,0.0050119937433453785,-4.302463092076852,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M2-M1,0.051295534965368095,0.016621093966445115,3.0861708061409314,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M2-M1,-0.010438534372181812,0.013435522037200411,-0.7769355253394317,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M2-M1,0.051295534965368095,0.016621093966445333,3.086170806140891,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M2-M1,-0.010438534372181812,0.013435522037200404,-0.776935525339432,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,spearman,,,,,offdiagonal_only,M2-M0,0.2024465962265587,0.04988991625448438,4.0578660263507995,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M2-M0,0.1589501573644031,0.08293699972115326,1.916516848919271,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,pearson,,,,,offdiagonal_only,M2-M0,0.1589501573644031,0.08293699972115262,1.9165168489192856,Descriptive paired jackknife contrast; not a significance test.
 paired_jackknife_contrast,mae,,,,,offdiagonal_only,M2-M0,-0.023310298626698096,0.004719830045904061,-4.938800422893854,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M2-M0,0.05527745315211152,0.019542775411780795,2.828536478948078,Descriptive paired jackknife contrast; not a significance test.
-paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M2-M0,-0.012283615256432928,0.014087845055608015,-0.8719300367051618,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,cka,,,,,measured_diagonal_full_matrix,M2-M0,0.05527745315211152,0.019542775411780962,2.828536478948054,Descriptive paired jackknife contrast; not a significance test.
+paired_jackknife_contrast,kta_centered,,,,,measured_diagonal_full_matrix,M2-M0,-0.012283615256432928,0.014087845055608046,-0.8719300367051599,Descriptive paired jackknife contrast; not a significance test.

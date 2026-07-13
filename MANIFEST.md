@@ -401,22 +401,23 @@ The checksum file is:
 checksums/SHA256SUMS.txt
 ```
 
-Regenerate from the repository root after intentional updates:
+Regenerate from the repository root after intentional updates. This command enumerates tracked files only and excludes the checksum manifest itself:
 
 ```bash
 mkdir -p checksums
-find . \
-  -type f \
-  -not -path './.git/*' \
-  -not -path './checksums/SHA256SUMS.txt' \
-  -print | LC_ALL=C sort | xargs shasum -a 256 > checksums/SHA256SUMS.txt
+git ls-files -z \
+  --format='./%(path)' \
+  -- . ':(exclude)checksums/SHA256SUMS.txt' \
+  | xargs -0 shasum -a 256 > checksums/SHA256SUMS.txt
 ```
 
 On Linux, `sha256sum` may be used instead of `shasum -a 256`.
 
+Review `git status` and `git diff` before regeneration: every tracked file in its current state is hashed. Ignored and untracked local files are not included.
+
 ## License
 
-Section 3.7 does not require a license change. Use the repository's existing `LICENSE` file; no `LICENSE.md` update is required.
+See [`LICENSE`](LICENSE) for the repository license.
 
 ## Claim boundary
 

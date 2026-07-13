@@ -48,6 +48,28 @@ This repository is not intended to reproduce the full upstream IAQ dataset const
 
 ## Supported numerical reproduction path
 
+### Obtain the package and verify integrity
+
+```bash
+git clone https://github.com/rsipakov/iaq-quantum-kernel-wave1-reproducibility.git
+cd iaq-quantum-kernel-wave1-reproducibility
+shasum -a 256 -c checksums/SHA256SUMS.txt
+```
+
+On Linux, use `sha256sum -c checksums/SHA256SUMS.txt`. Every listed file must report `OK` (exit code 0); the manifest covers every tracked file except itself (see the Checksums section).
+
+### Environment
+
+The supported analytical modules require Python 3.11 (`environment/python_version.txt` records the exact version used, Python 3.11.15) and the minimal dependencies in `requirements.txt` (`numpy`, `pandas`, `tabulate`; deliberately unpinned). The exact package versions used for the original analyses are preserved in `environment/pip_freeze.txt`; to reproduce that environment precisely:
+
+```bash
+pip install -r environment/pip_freeze.txt
+```
+
+The verification commands below check numerical and artifact consistency rather than byte-for-byte regeneration. Depending on platform and library versions, regenerated diagnostics may differ at roundoff or timestamp scale; use the documented tolerances and check modes below.
+
+### Run the supported reproduction
+
 From the repository root:
 
 ```bash
@@ -597,22 +619,31 @@ The checksum file is:
 checksums/SHA256SUMS.txt
 ```
 
-Regenerate from the repository root after intentional updates:
+Regenerate from the repository root after intentional updates. This command enumerates tracked files only and excludes the checksum manifest itself:
 
 ```bash
 mkdir -p checksums
-find . \
-  -type f \
-  -not -path './.git/*' \
-  -not -path './checksums/SHA256SUMS.txt' \
-  -print | LC_ALL=C sort | xargs shasum -a 256 > checksums/SHA256SUMS.txt
+git ls-files -z \
+  --format='./%(path)' \
+  -- . ':(exclude)checksums/SHA256SUMS.txt' \
+  | xargs -0 shasum -a 256 > checksums/SHA256SUMS.txt
 ```
 
 On Linux, `sha256sum` may be used instead of `shasum -a 256`.
 
+Review `git status` and `git diff` before regeneration: every tracked file in its current state is hashed. Ignored and untracked local files are not included.
+
+Verify a checkout against the manifest:
+
+```bash
+shasum -a 256 -c checksums/SHA256SUMS.txt
+```
+
+On Linux: `sha256sum -c checksums/SHA256SUMS.txt`. The check must report `OK` for every listed file and exit 0.
+
 ## License
 
-This Section 3.7 update does not require a license change. Use the existing repository `LICENSE` file. No `LICENSE.md` update is required for this section.
+See [`LICENSE`](LICENSE) for the repository license.
 
 ## Claim boundary
 

@@ -262,7 +262,7 @@ for key in (("zz4", "CKA"), ("zz4", "KTA")):
 
 print("Section 3.3 verification passed.")
 print("statistical table: jackknife SEs and paired z_desc only; no adjusted hardware-contrast p-values")
-print("RMSE: point estimate only; no persisted jackknife or paired contrast")
+print("RMSE: point estimate only in the frozen v1.2 artifact; the post hoc v1.3 LOWO probe is separate")
 print("label permutation: centered statevector alignment below null mean; p_upper_tail=0.5988")
 print("CKA/KTA tension: H2 has smallest CKA loss and smallest KTA uplift; H0 has largest hardware KTA")
 print("diagonal sensitivity: unit-diagonal KTA change <= 0.0032 and does not change ordering")

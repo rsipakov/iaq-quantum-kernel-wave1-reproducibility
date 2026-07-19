@@ -14,8 +14,7 @@ Computes, from the frozen v1.2 reproducibility-package artifacts only:
   (vi)  leave-one-window-out jackknife for RMSE and for the single-regime
         centered-KTA uplift; cross-checks against persisted jackknife values;
   (vii) frozen-window temporal ledger summaries;
-  (viii)worst-case binomial bounds on the shot share of the squared RMSE;
-  (ix)  statevector regeneration check from the frozen scaled inputs (pure numpy).
+  (viii) statevector regeneration check from the frozen scaled inputs (pure numpy).
 
 Deterministic quantities are seed-free; stochastic references use the fixed
 seeds in SEEDS below. Nothing in the frozen package is modified.
@@ -289,13 +288,7 @@ out["ledger_rows"] = [
      "split": r.hardware_split, "label": int(r.y_event_onset_next_1h)}
     for r in df.itertuples()]
 
-# ---------- (viii) worst-case binomial shot-share bound ----------
-semax = 1.0 / (2.0 * np.sqrt(S_SHOTS))
-out["worst_case_shot_share_pct"] = {
-    r: 100.0 * (semax / rmse_gen(KH[r], Ksv)) ** 2 for r in REG}
-out["worst_case_se_max"] = semax
-
-# ---------- (ix) statevector regeneration from frozen inputs ----------
+# ---------- (viii) statevector regeneration from frozen inputs ----------
 Hg = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
 H4 = np.kron(np.kron(Hg, Hg), np.kron(Hg, Hg))
 Zd = []
@@ -388,4 +381,4 @@ else:
     print(json.dumps({k: out[k] for k in ("headline", "diag_robust_cka", "kta_attribution",
           "kta_numerator_split", "shot_null_sv", "shot_resample_hw", "label_perm",
           "label_perm_split_preserving_SV", "classical_comparators", "jackknife", "temporal",
-          "worst_case_shot_share_pct", "statevector_regeneration_max_abs_err")}, indent=1, default=str))
+          "statevector_regeneration_max_abs_err")}, indent=1, default=str))

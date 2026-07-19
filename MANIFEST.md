@@ -27,7 +27,7 @@ This manifest lists the curated, non-sensitive artifacts included in the IAQ Qua
 
 ## Reproducibility status
 
-This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 hardware analysis. It supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, shot-noise reference-scale decomposition, statevector label-permutation reference, Section 2.13 statistical-analysis policy, Section 3.1 hardware-execution summary, Section 3.2 main distortion metrics, Section 3.3 statistical support and label-alignment diagnostics, Section 3.4 KTA/CKA-tension synthesis, Section 3.5 dimensionless shot-noise scale-separation diagnostics, Section 3.6 optional 4096-shot finite-shot projection, and Section 3.7 effective-rank/PSD diagnostics.
+This repository is an artifact-level reproducibility package for the frozen Wave 1 ZZ4 hardware analysis. It supports reproduction of the kernel reconstruction audit, geometry-distortion metrics, CKA/KTA diagnostics, jackknife and diagonal-robustness checks, shot-noise reference-scale decomposition, statevector label-permutation reference, Section 2.13 statistical-analysis policy, Section 3.1 hardware-execution summary, Section 3.2 main distortion metrics, Section 3.3 statistical support and label-alignment diagnostics, Section 3.4 KTA/CKA-tension synthesis, Section 3.5 dimensionless shot-noise scale-separation diagnostics, Section 3.6 optional 4096-shot finite-shot projection, Section 3.7 effective-rank/PSD diagnostics, and the post hoc v1.3 revision diagnostics and independent statevector-regeneration check.
 
 It is not a full end-to-end raw-data-to-IBM-execution pipeline. The upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission workflow, and original numbered execution pipeline are retained only as provenance where present. Section 3.6 is not a hardware rerun; it is a deterministic finite-shot reference projection. Section 3.7 introduces no new hardware execution and no new numerical analysis artifact; it reports effective-rank and PSD diagnostics already persisted by the reconstruction/distortion workflow.
 
@@ -63,6 +63,8 @@ The manuscript files `NewSection_3.1.md`, `NewSection_3.2.md`, `NewSection_3.3.m
 - `scripts/09d_shot_noise_reference_scale_decomposition.py`
 - `scripts/09e_label_permutation_reference.py`
 - `scripts/09j_optional_4096_shot_projection.py`
+- `scripts/09k_revision_diagnostics.py`
+- `scripts/verify_statevector_regeneration.py`
 
 ## Results-section support scripts
 
@@ -106,6 +108,7 @@ Local update helper scripts shipped with the Section 3.7 update bundle (not part
 - `hardware_analysis/zz4_wave1_4096_shot_projection.csv`
 - `hardware_analysis/zz4_wave1_4096_shot_projection.json`
 - `hardware_analysis/zz4_wave1_4096_shot_projection.md`
+- `hardware_analysis/zz4_wave1_revision_diagnostics.json`
 
 Section 3.7 requires no new numerical output artifact beyond existing `zz4_wave1_distortion_metrics.csv`, `zz4_wave1_distortion_uncertainty.csv/.json`, and `zz4_wave1_kernel_manifest.json`. The new support artifact for Section 3.7 is the verifier `scripts/verify_section3_7_support_files.sh`.
 
@@ -214,9 +217,9 @@ Primary sources:
 | Section 3.7 uncorrected minimum eigenvalues | `H0=0.4287631111`; `H1=0.4621559357`; `H2=0.2321643891` |
 | Section 3.7 PSD relative Frobenius corrections | `H0=1.6272012336e-15`; `H1=1.7621621375e-15`; `H2=1.9070781049e-15` |
 | Section 2.13 statistical unit | Frozen observation window |
-| Section 2.13 jackknife metrics | Spearman, Pearson, MAE, CKA, centered KTA |
-| Section 2.13 paired contrasts | `M1-M0`, `M2-M1`, `M2-M0`; descriptive contrast ratios only |
-| Section 2.13 label permutation | Static source-derived ZZ4 statevector reference and regenerable fixed-seed in-package reference, both with `n_perm = 5000`; no hardware-regime permutation p-values |
+| Section 2.13 jackknife metrics | Frozen v1.2: Spearman, Pearson, MAE, full-matrix CKA, centered KTA. Post hoc v1.3: U-centered CKA, RMSE, and single-regime `Delta_KTA` deletion probes. |
+| Section 2.13 paired contrasts | Frozen v1.2: `M1-M0`, `M2-M1`, `M2-M0` for the persisted metrics. Post hoc v1.3: paired U-centered CKA and RMSE contrasts; descriptive contrast ratios only. |
+| Section 2.13 label permutation | Frozen v1.2: static source-derived ZZ4 statevector reference and regenerable fixed-seed in-package reference, both with `n_perm = 5000`; no hardware-regime permutation p-values. Post hoc v1.3: descriptive per-regime and split-preserving fixed-seed references in `zz4_wave1_revision_diagnostics.json`. |
 | Hardware scope | Wave 1 / v9 reproduction only |
 | Purpose | Statevector-to-hardware kernel-geometry survival/distortion analysis |
 | Claim scope | No quantum-advantage claim and no hardware classifier-superiority claim |
@@ -392,6 +395,14 @@ bash scripts/run_section3_7_copy_verify_publish.sh "$SOURCE" "$REPO" "$(pwd)"
 ```
 
 The copy helper skips existing dependency artifacts in the reproducibility repository and copies them from `SOURCE` only if missing. It installs the Section 3.7 verification script (`scripts/verify_section3_7_support_files.sh`) and updates `README.md` and `MANIFEST.md`. The `copy_/publish_/run_` helper scripts are shipped with the Section 3.7 update bundle and are **not** part of the published repository tree; they are therefore not listed in `checksums/SHA256SUMS.txt`. It does not copy `NewSection_3.7.md`.
+
+## Revision diagnostics artifacts (v1.3, post hoc)
+
+- `scripts/09k_revision_diagnostics.py` (fixed-seed revision diagnostics; seeds 101, 102, 104, 105, 106, and 107 documented in the script; `--check` performs a non-destructive tolerance comparison with the persisted JSON)
+- `scripts/verify_statevector_regeneration.py` (statevector regeneration check from the frozen subset table)
+- `hardware_analysis/zz4_wave1_revision_diagnostics.json` (persisted output of the revision diagnostics at the documented seeds)
+
+These artifacts support the manuscript Section 2.13 "Revision additions" and Supplementary Tables S2.5--S2.9. They are computed from the frozen v1.2 artifacts only and modify no frozen quantity; the `v1.2-wave1-manuscript` release remains the provenance reference for the frozen analysis.
 
 ## Checksums
 

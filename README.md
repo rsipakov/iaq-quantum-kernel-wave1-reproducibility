@@ -42,7 +42,7 @@ This repository supports artifact-level reproduction of the manuscript component
 
 ### Supported analytical modules
 
-The package supports the following reproducible analytical modules: kernel reconstruction audit; statevector-to-hardware geometry-distortion metrics; CKA and centered-KTA diagnostics; leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks; statevector label-permutation reference; finite-shot reference-scale decomposition; optional 4096-shot finite-shot projection; and Section 3.7 effective-rank/PSD diagnostics.
+The package supports the following reproducible analytical modules: kernel reconstruction audit; statevector-to-hardware geometry-distortion metrics; CKA and centered-KTA diagnostics; leave-one-window-out jackknife, paired descriptive contrasts, and diagonal-robustness checks; statevector label-permutation reference; finite-shot reference-scale decomposition; optional 4096-shot finite-shot projection; Section 3.7 effective-rank/PSD diagnostics; and the post hoc v1.3 revision diagnostics and independent statevector-regeneration check.
 
 This repository is not intended to reproduce the full upstream IAQ dataset construction, full preprocessing/feature-engineering workflow, IBM Quantum job submission, or original execution environment end to end. The original numbered execution scripts are retained only as archival provenance. Section 3.6 is not a new hardware execution: it rescales finite-shot reference terms from the realized 1024-shot run to the originally planned 4096-shot budget while keeping the observed RMSE fixed. Section 3.7 introduces no new hardware execution and no new numerical analysis artifact; it reports a focused spectral/PSD reading of existing reconstruction and distortion artifacts.
 
@@ -80,6 +80,8 @@ python scripts/09d_shot_noise_reference_scale_decomposition.py --project-root . 
 python scripts/09e_label_permutation_reference.py --project-root . --check
 python scripts/09j_optional_4096_shot_projection.py --project-root .
 python scripts/09j_optional_4096_shot_projection.py --project-root . --check
+python scripts/verify_statevector_regeneration.py
+python scripts/09k_revision_diagnostics.py --check
 bash scripts/verify_section3_1_support_files.sh .
 bash scripts/verify_section3_2_support_files.sh .
 bash scripts/verify_section3_3_support_files.sh .
@@ -98,11 +100,12 @@ Expected high-level checks:
 - label-permutation reference check validates the static source-derived copy against the regenerable in-package reference;
 - Section 3.1 verification reports three `DONE` jobs, 300 retrieved PUB results per regime, 1024 shots per retrieved entry, 900 long-form kernel-entry rows, and billed quantum seconds `H0=80`, `H1=80`, `H2=84`;
 - Section 3.2 verification reports the main distortion metrics, the `M2/H2` best observed point-estimate ordering for statevector geometry survival, and roundoff-scale PSD diagnostics;
-- Section 3.3 verification reports the window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement;
-- Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim;
+- Section 3.3 verification reports the persisted window-level jackknife support table, confirms that no adjusted hardware-contrast p-values are generated, verifies that RMSE is point-estimate only in the frozen v1.2 analysis, validates the statevector label-permutation reference, and confirms that CKA/KTA tension is interpreted as distortion rather than supervised improvement; the revision-added RMSE deletion probe is reproduced separately by `scripts/09k_revision_diagnostics.py`;
+- Section 3.4 verification confirms the CKA/KTA-tension ordering, the finite-shot reference-scale decomposition, the residual-distortion interpretation, matrix-aware shot share below 5% in all regimes, non-window-resolved centered-KTA paired jackknife contrasts, and the absence of a hardware-regime label-permutation claim in the frozen v1.2 analysis; the v1.3 revision diagnostics add descriptive per-regime references without changing that frozen provenance;
 - Section 3.5 verification confirms the dimensionless RMSE-to-shot-reference ratios, quadrature residual fractions, matrix-aware scale ordering, and diagnostic-only decomposition policy;
 - Section 3.6 verification confirms the planned/executed shot-count distinction, the 4096-shot finite-shot reference projection, the fixed-RMSE projection policy, and the residual-dominance result under the projected precision budget;
 - Section 3.7 verification confirms the effective-rank point estimates, the unit-diagonal effective-rank sensitivity rows, complete finite reconstructed matrices, positive uncorrected minimum eigenvalues, roundoff-scale PSD corrections, diagnostic-only PSD policy, and exclusion of `NewSection_3.7.md` from the reproducibility repository.
+- the v1.3 statevector-regeneration check reproduces the frozen reference kernel at float64 precision, and the v1.3 revision-diagnostics check compares the regenerated post hoc diagnostics with the persisted JSON using the documented numerical tolerances without overwriting it.
 
 These commands verify numerical reproduction and artifact consistency, not byte-for-byte identity of every regenerated diagnostic file. Some supported scripts write timestamps or floating-point eigensolver diagnostics that may differ at roundoff scale across machines. The `09e` reference CSV/JSON artifacts are byte-stable under the fixed seed; its local write timestamp is emitted only to an ignored provenance sidecar.
 
@@ -148,7 +151,7 @@ The `offdiag_spearman_pvalue` and `offdiag_pearson_pvalue` columns in `hardware_
 | Section 3.1 observed hardware-shot total | `3 x 300 x 1024 = 921600` |
 | Section 3.1 billed quantum seconds | `80 + 80 + 84 = 244` (`~4.07` min), read from `job_metrics.usage.quantum_seconds` |
 | Section 3.2 main distortion metrics | Spearman, Pearson, MAE, RMSE, MedAE, MaxAE, CKA, centered KTA, effective rank, off-diagonal variance, and PSD diagnostics |
-| Section 3.3 statistical support diagnostics | Jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference |
+| Section 3.3 statistical support diagnostics | Frozen v1.2: jackknife SEs and paired descriptive contrasts for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE point estimate only; statevector label-permutation reference. Post hoc v1.3: LOWO RMSE probe and descriptive per-regime label-permutation references. |
 | Section 3.4 central synthesis | KTA/CKA tension plus finite-shot reference-scale support for residual hardware distortion |
 | Section 3.5 dimensionless scale separation | Off-diagonal RMSE in finite-shot reference units: RMSE-to-reference ratios and quadrature residual fractions |
 | Section 3.6 optional 4096-shot projection | Finite-shot reference scales rescaled to 4096 shots, with RMSE fixed to realized 1024-shot values |
@@ -367,7 +370,7 @@ KTA is a supervised label-geometry diagnostic. It is not classifier accuracy, no
 
 ## Section 2.11: KTA/CKA tension analysis
 
-Section 2.11 combines CKA and centered-KTA results without introducing new data artifacts.
+Section 2.11 combines CKA and centered-KTA results. The frozen v1.2 analysis introduces no additional artifact at this step; the post hoc v1.3 diagnostics add the numerator/denominator attribution and trace/off-diagonal split used to refine the interpretation of the KTA uplift.
 
 | Manuscript label | Artifact regime | CKA | CKA loss | Hardware KTA | Statevector KTA | Delta_KTA |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -375,7 +378,7 @@ Section 2.11 combines CKA and centered-KTA results without introducing new data 
 | `M1` | `H1` | 0.9373725928 | 0.0626274072 | 0.1814633785 | 0.1585110924 | +0.0229522861 |
 | `M2` | `H2` | 0.9886681278 | 0.0113318722 | 0.1710248441 | 0.1585110924 | +0.0125137518 |
 
-`M2/H2` best preserves statevector geometry and has the smallest KTA uplift relative to the statevector reference, while `M0/H0` has the largest absolute hardware KTA. The KTA uplift is interpreted as non-affine, label-correlated kernel distortion, not as classifier-performance improvement.
+`M2/H2` best preserves statevector geometry and has the smallest KTA uplift relative to the statevector reference, while `M0/H0` has the largest absolute hardware KTA. The revision attribution identifies the uplift as a normalization-associated property of the non-affine distortion: the centered kernel norm contracts more strongly than the label-directed numerator. It is not interpreted as classifier-performance improvement.
 
 ## Section 2.12: shot-noise reference-scale decomposition
 
@@ -438,7 +441,7 @@ This artifact contains:
 - diagonal-sensitivity rows for CKA, effective rank, and centered KTA;
 - directed-versus-unique off-diagonal equivalence checks.
 
-RMSE, median and maximum absolute error, off-diagonal variance, and effective rank are reported as point estimates only; no window-level jackknife is persisted for them. No formal hardware-contrast p-values are generated, so no Holm--Bonferroni correction is applied to hardware contrasts.
+In the frozen v1.2 analysis, RMSE, median and maximum absolute error, off-diagonal variance, and effective rank are reported as point estimates only; no window-level jackknife is persisted for them. The post hoc v1.3 diagnostics add a LOWO deletion probe for RMSE, while the other three quantities remain point estimates only. No formal hardware-contrast p-values are generated, so no Holm--Bonferroni correction is applied to hardware contrasts.
 
 The source-derived static label-permutation reference artifact is:
 
@@ -482,7 +485,7 @@ scripts/verify_section3_2_support_files.sh
 
 ## Section 3.3: window-level statistical support and label-alignment reference
 
-Section 3.3 reports leave-one-window-out jackknife support for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE is point estimate only. It also reports the statevector label-permutation reference.
+Section 3.3 reports the frozen v1.2 leave-one-window-out jackknife support for Spearman, Pearson, MAE, CKA, and centered KTA; RMSE is point estimate only in that frozen analysis. The post hoc v1.3 diagnostics add a LOWO RMSE probe and descriptive per-regime label-permutation references. The frozen statevector label-permutation reference remains the provenance anchor.
 
 Relevant artifacts:
 
@@ -612,6 +615,49 @@ bash scripts/run_section3_7_copy_verify_publish.sh "$SOURCE" "$REPO" "$(pwd)"
 ```
 
 The copy helper skips existing dependency artifacts in the reproducibility repository and copies them from `SOURCE` only if missing. It installs the Section 3.7 verification script (`scripts/verify_section3_7_support_files.sh`) and updates `README.md` and `MANIFEST.md`. The `copy_/publish_/run_` helper scripts are shipped with the Section 3.7 update bundle and are **not** part of the published repository tree; they are therefore not listed in `checksums/SHA256SUMS.txt`. It does not copy `NewSection_3.7.md`.
+
+## Revision diagnostics (v1.3, post hoc)
+
+Release `v1.3-revision-diagnostics` adds the fixed-seed diagnostics introduced at
+manuscript revision (manuscript Section 2.13, "Revision additions"; Supplementary
+Tables S2.5--S2.9). All revision quantities are computed from the frozen v1.2
+artifacts only -- the three hardware kernels, the statevector reference, the frozen
+labels, and the scaled inputs -- deterministically or under fixed, documented seeds.
+No frozen artifact is modified; the `v1.2-wave1-manuscript` release remains the
+provenance reference for every frozen quantity.
+
+Files:
+
+- `scripts/09k_revision_diagnostics.py` -- fixed-seed revision diagnostics: diagonal-excluded
+  (U-centered, HSIC1) CKA variants with leave-one-window-out contrasts; centered-KTA
+  numerator/denominator attribution with the trace/off-diagonal split; count-level
+  finite-shot resampling references (20,000 binomial replicates around statevector and
+  measured hardware probabilities); per-regime hardware label-permutation references and a
+  split-preserving variant (B=5000); linear/RBF comparator kernels (median-heuristic and
+  alternative bandwidth); leave-one-window-out RMSE and Delta-KTA probes; frozen-window
+  temporal ledger summaries; and a statevector regeneration check. Seeds are documented in
+  the script header (101, 102, 104, 105, 106, 107).
+- `hardware_analysis/zz4_wave1_revision_diagnostics.json` -- the persisted output of
+  `scripts/09k_revision_diagnostics.py` at the documented seeds.
+- `scripts/verify_statevector_regeneration.py` -- standalone check that the statevector
+  reference kernel regenerates from the public frozen-subset table alone (pure NumPy,
+  manuscript Section 2.3 conventions); expected maximum deviation is at the 1e-15 scale.
+
+Reproduction:
+
+```bash
+python3 scripts/verify_statevector_regeneration.py
+python3 scripts/09k_revision_diagnostics.py --check
+```
+
+The second command regenerates the diagnostics in memory and compares them numerically
+with the checksummed `hardware_analysis/zz4_wave1_revision_diagnostics.json` without
+overwriting it (default `rtol=atol=1e-12`). Fixed seeds make the stochastic streams
+reproducible, but last-bit floating-point values and therefore exact JSON bytes may vary
+with NumPy and BLAS versions. To inspect a regenerated file separately, pass
+`--out PATH` without `--check`. These diagnostics are post hoc sensitivity and reference
+analyses (manuscript Section 2.13); they extend no manuscript claim and do not alter the
+claim boundary below.
 
 ## Checksums
 

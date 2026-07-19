@@ -6,6 +6,7 @@ authors:
   - family-names: Sipakov
     given-names: Rostyslav
 year: 2026
+version: v1.3-revision-diagnostics
 repository-code: "https://github.com/rsipakov/iaq-quantum-kernel-wave1-reproducibility"
 abstract: "Curated reproducibility package supporting the manuscript materials-and-methods subsection on real indoor air-quality sensor data, event-onset prediction, the F_quantum_4 feature set, frozen N=24 subset, and ZZ4 quantum kernel."
 keywords:

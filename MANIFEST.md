@@ -393,6 +393,14 @@ bash scripts/run_section3_7_copy_verify_publish.sh "$SOURCE" "$REPO" "$(pwd)"
 
 The copy helper skips existing dependency artifacts in the reproducibility repository and copies them from `SOURCE` only if missing. It installs the Section 3.7 verification script (`scripts/verify_section3_7_support_files.sh`) and updates `README.md` and `MANIFEST.md`. The `copy_/publish_/run_` helper scripts are shipped with the Section 3.7 update bundle and are **not** part of the published repository tree; they are therefore not listed in `checksums/SHA256SUMS.txt`. It does not copy `NewSection_3.7.md`.
 
+## Revision diagnostics artifacts (v1.3, post hoc)
+
+- `scripts/09k_revision_diagnostics.py` (fixed-seed revision diagnostics; seeds 101-107 documented in the script; `--check` performs a non-destructive tolerance comparison with the persisted JSON)
+- `scripts/verify_statevector_regeneration.py` (statevector regeneration check from the frozen subset table)
+- `hardware_analysis/zz4_wave1_revision_diagnostics.json` (persisted output of the revision diagnostics at the documented seeds)
+
+These artifacts support the manuscript Section 2.13 "Revision additions" and Supplementary Tables S2.5--S2.9. They are computed from the frozen v1.2 artifacts only and modify no frozen quantity; the `v1.2-wave1-manuscript` release remains the provenance reference for the frozen analysis.
+
 ## Checksums
 
 The checksum file is:

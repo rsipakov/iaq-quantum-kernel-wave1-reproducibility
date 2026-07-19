@@ -613,6 +613,49 @@ bash scripts/run_section3_7_copy_verify_publish.sh "$SOURCE" "$REPO" "$(pwd)"
 
 The copy helper skips existing dependency artifacts in the reproducibility repository and copies them from `SOURCE` only if missing. It installs the Section 3.7 verification script (`scripts/verify_section3_7_support_files.sh`) and updates `README.md` and `MANIFEST.md`. The `copy_/publish_/run_` helper scripts are shipped with the Section 3.7 update bundle and are **not** part of the published repository tree; they are therefore not listed in `checksums/SHA256SUMS.txt`. It does not copy `NewSection_3.7.md`.
 
+## Revision diagnostics (v1.3, post hoc)
+
+Release `v1.3-revision-diagnostics` adds the fixed-seed diagnostics introduced at
+manuscript revision (manuscript Section 2.13, "Revision additions"; Supplementary
+Tables S2.5--S2.9). All revision quantities are computed from the frozen v1.2
+artifacts only -- the three hardware kernels, the statevector reference, the frozen
+labels, and the scaled inputs -- deterministically or under fixed, documented seeds.
+No frozen artifact is modified; the `v1.2-wave1-manuscript` release remains the
+provenance reference for every frozen quantity.
+
+Files:
+
+- `scripts/09k_revision_diagnostics.py` -- fixed-seed revision diagnostics: diagonal-excluded
+  (U-centered, HSIC1) CKA variants with leave-one-window-out contrasts; centered-KTA
+  numerator/denominator attribution with the trace/off-diagonal split; count-level
+  finite-shot resampling references (20,000 binomial replicates around statevector and
+  measured hardware probabilities); per-regime hardware label-permutation references and a
+  split-preserving variant (B=5000); linear/RBF comparator kernels (median-heuristic and
+  alternative bandwidth); leave-one-window-out RMSE and Delta-KTA probes; frozen-window
+  temporal ledger summaries; and a statevector regeneration check. Seeds are documented in
+  the script header (101, 102, 104, 105, 106, 107).
+- `hardware_analysis/zz4_wave1_revision_diagnostics.json` -- the persisted output of
+  `scripts/09k_revision_diagnostics.py` at the documented seeds.
+- `scripts/verify_statevector_regeneration.py` -- standalone check that the statevector
+  reference kernel regenerates from the public frozen-subset table alone (pure NumPy,
+  manuscript Section 2.3 conventions); expected maximum deviation is at the 1e-15 scale.
+
+Reproduction:
+
+```bash
+python3 scripts/verify_statevector_regeneration.py
+python3 scripts/09k_revision_diagnostics.py --check
+```
+
+The second command regenerates the diagnostics in memory and compares them numerically
+with the checksummed `hardware_analysis/zz4_wave1_revision_diagnostics.json` without
+overwriting it (default `rtol=atol=1e-12`). Fixed seeds make the stochastic streams
+reproducible, but last-bit floating-point values and therefore exact JSON bytes may vary
+with NumPy and BLAS versions. To inspect a regenerated file separately, pass
+`--out PATH` without `--check`. These diagnostics are post hoc sensitivity and reference
+analyses (manuscript Section 2.13); they extend no manuscript claim and do not alter the
+claim boundary below.
+
 ## Checksums
 
 The checksum file is:
